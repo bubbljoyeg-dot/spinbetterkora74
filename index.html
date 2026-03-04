@@ -670,6 +670,227 @@
             .telegram-float { width: 50px; height: 50px; bottom: 15px; right: 15px; }
             .telegram-float svg { width: 26px; height: 26px; }
         }
+
+        /* ── FOOTER LINKS BAR ── */
+        .footer-links-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin-bottom: 22px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .footer-link-btn {
+            background: none;
+            border: none;
+            color: #94A3B8;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 4px 0;
+            transition: color 0.2s;
+            letter-spacing: 0.3px;
+            position: relative;
+        }
+        .footer-link-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 1px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.25s ease;
+        }
+        .footer-link-btn:hover { color: var(--primary); }
+        .footer-link-btn:hover::after { transform: scaleX(1); }
+
+        /* ── PAGE MODAL (full-screen) ── */
+        .page-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: #04080F;
+            z-index: 20000;
+            overflow-y: auto;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.35s ease, visibility 0.35s;
+            isolation: isolate;
+            /* belt-and-suspenders: solid colour, no bleed-through */
+            -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+        }
+        .page-modal-overlay.open {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .page-modal-inner {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 28px 100px;
+            min-height: 100vh;
+        }
+
+        .page-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 22px 0 18px;
+            margin-bottom: 36px;
+            border-bottom: 1px solid rgba(255,184,0,0.18);
+            position: sticky;
+            top: 0;
+            background: #04080F;
+            z-index: 10;
+        }
+        /* gold accent line under header */
+        .page-modal-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0;
+            width: 80px; height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        .page-modal-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-modal-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px; height: 22px;
+            background: var(--primary);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .page-modal-close {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #94A3B8;
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            font-family: var(--font-main);
+        }
+        .page-modal-close:hover {
+            background: rgba(255,59,0,0.12);
+            border-color: rgba(255,59,0,0.3);
+            color: #FF6B6B;
+        }
+
+        /* Content Styles inside page modals */
+        .pmc { color: #CBD5E1; line-height: 1.85; }
+        .pmc h2 {
+            font-size: 1.05rem; font-weight: 900; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.8px;
+            margin: 38px 0 16px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .pmc h2::before {
+            content: '';
+            display: inline-block;
+            width: 20px; height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .pmc h2:first-child { margin-top: 0; }
+        .pmc p { margin-bottom: 10px; font-size: 0.94rem; color: #B8C8D8; }
+        .pmc strong { color: #fff; }
+        .pmc .ar {
+            color: #64748B; font-size: 0.88rem;
+            margin: 6px 0 22px;
+            padding: 10px 14px;
+            border-right: 2px solid rgba(255,184,0,0.2);
+            background: rgba(255,255,255,0.02);
+            border-radius: 0 6px 6px 0;
+            text-align: right; direction: rtl;
+            line-height: 1.7;
+        }
+        .pmc ul {
+            padding-left: 0;
+            margin-bottom: 14px;
+            list-style: none;
+        }
+        .pmc ul li {
+            margin-bottom: 9px; font-size: 0.92rem; color: #B8C8D8;
+            padding-left: 20px; position: relative;
+        }
+        .pmc ul li::before {
+            content: '›';
+            position: absolute; left: 4px;
+            color: var(--primary); font-weight: 900;
+        }
+        .pmc .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 22px; }
+        .pmc .badge {
+            background: rgba(255,184,0,0.06);
+            border: 1px solid rgba(255,184,0,0.18);
+            color: #FFD54F;
+            padding: 6px 14px; border-radius: 6px;
+            font-size: 0.8rem; font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+        .pmc .contact-box {
+            background: linear-gradient(135deg, #0D1525 0%, #091018 100%);
+            border: 1px solid rgba(0,136,204,0.2);
+            border-top: 2px solid rgba(0,136,204,0.5);
+            border-radius: 12px;
+            padding: 28px 24px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .pmc .contact-box h3 { color: #fff; font-size: 1.05rem; margin-bottom: 8px; font-weight: 900; }
+        .pmc .contact-box p { color: #64748B; font-size: 0.88rem; margin-bottom: 18px; line-height: 1.6; }
+        .pmc .tg-cta {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: #0088cc;
+            color: #fff; padding: 13px 26px; border-radius: 8px;
+            font-weight: 900; font-size: 0.92rem; text-decoration: none;
+            transition: background 0.2s, transform 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .pmc .tg-cta:hover { background: #0099e6; transform: translateY(-2px); }
+        .pmc .tg-cta svg { width: 19px; height: 19px; fill: #fff; flex-shrink: 0; }
+        .pmc .divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin: 28px 0;
+        }
+        .pmc .highlight {
+            background: rgba(255,184,0,0.05);
+            border-left: 3px solid rgba(255,184,0,0.5);
+            padding: 13px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0 20px;
+            font-size: 0.9rem; color: #94A3B8;
+        }
+        .pmc table.info-table {
+            width: 100%; border-collapse: collapse; margin-bottom: 20px;
+        }
+        .pmc table.info-table td {
+            padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.9rem;
+        }
+        .pmc table.info-table td:first-child { color: var(--primary); font-weight: 800; width: 35%; }
+        @media (max-width: 600px) {
+            .page-modal-inner { padding: 0 16px 80px; }
+            .page-modal-title { font-size: 1.05rem; }
+            .pmc h2 { font-size: 0.95rem; }
+        }
     </style>
 </head>
 <body>
@@ -1050,10 +1271,17 @@
 
     <footer>
         <div class="container">
+            <!-- Footer Nav Links -->
+            <div class="footer-links-bar">
+                <button class="footer-link-btn" onclick="openPage('about')">About Us | من نحن</button>
+                <button class="footer-link-btn" onclick="openPage('terms')">Terms &amp; Conditions | الشروط والأحكام</button>
+                <button class="footer-link-btn" onclick="openPage('privacy')">Privacy Policy | سياسة الخصوصية</button>
+                <button class="footer-link-btn" onclick="openPage('faqpage')">FAQ | الأسئلة الشائعة</button>
+            </div>
+
             <p>All Rights Reserved © 2026 SpinBetter Morocco Promo</p>
             <p style="font-size: 0.8rem; margin-top: 5px; opacity: 0.5;">This is a promotional website and not the official platform.</p>
 
-            <!-- Facebook Policy Disclaimer -->
             <div class="fb-disclaimer">
                 <strong>Disclaimer:</strong> This site is not a part of the Facebook website or Meta Platforms, Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.
             </div>
@@ -1281,8 +1509,327 @@
         modal.addEventListener('click', (e) => {
             if (e.target === modal) modal.classList.remove('active');
         });
+
+        // === PAGE MODALS (About, Terms, Privacy, FAQ) ===
+        function openPage(id) {
+            const el = document.getElementById('page-' + id);
+            if (!el) return;
+            el.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            el.scrollTop = 0;
+        }
+        function closePage(id) {
+            const el = document.getElementById('page-' + id);
+            if (!el) return;
+            el.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        // Close on backdrop click
+        document.querySelectorAll('.page-modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+        // ESC key closes all modals
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.page-modal-overlay.open').forEach(el => {
+                    el.classList.remove('open');
+                    document.body.style.overflow = '';
+                });
+                document.querySelectorAll('.modal-overlay.active').forEach(el => {
+                    el.classList.remove('active');
+                });
+            }
+        });
     </script>
 
+
+
+    <!-- ═══════════════════════════════════════════════════
+         PAGE MODAL: ABOUT US | من نحن
+    ═══════════════════════════════════════════════════ -->
+    <div class="page-modal-overlay" id="page-about">
+        <div class="page-modal-inner">
+            <div class="page-modal-header">
+                <div class="page-modal-title">About Us | من نحن</div>
+                <button class="page-modal-close" onclick="closePage('about')">✕</button>
+            </div>
+            <div class="pmc">
+                <h2>Who We Are | من نحن</h2>
+                <p>SpinBetter Morocco Promo is an independent promotional platform dedicated to bringing Moroccan sports betting enthusiasts the best exclusive offers, bonus codes, and guides for the SpinBetter platform.</p>
+                <p class="ar">نحن منصة ترويجية مستقلة متخصصة في تقديم أفضل العروض الحصرية وأكواد البونص والأدلة الإرشادية لمنصة SpinBetter للمراهنات الرياضية في المغرب.</p>
+
+                <h2>Our Mission | مهمتنا</h2>
+                <p>Our mission is simple: help Moroccan players get the most value from their sports betting experience. We provide honest, up-to-date information about bonuses, payment methods, and features available on SpinBetter.</p>
+                <p class="ar">مهمتنا بسيطة: مساعدة اللاعبين المغاربة على الحصول على أفضل تجربة في المراهنات الرياضية. نقدم معلومات صادقة ومحدّثة عن البونص وطرق الدفع والميزات المتاحة على SpinBetter.</p>
+
+                <div class="badge-row">
+                    <div class="badge">🇲🇦 المغرب أولاً</div>
+                    <div class="badge">✅ معلومات موثوقة</div>
+                    <div class="badge">🎁 عروض حصرية</div>
+                    <div class="badge">📲 دعم مجاني</div>
+                </div>
+
+                <h2>What We Offer | ما نقدمه</h2>
+                <ul>
+                    <li>Exclusive promo codes like <strong style="color:var(--primary);">W300</strong> not available elsewhere — أكواد ترويجية حصرية مثل W300</li>
+                    <li>Step-by-step registration and download guides — أدلة تسجيل وتحميل مفصّلة</li>
+                    <li>Daily updates on bonuses and promotions via Telegram — تحديثات يومية عبر تيليجرام</li>
+                    <li>Support in Arabic and French for Moroccan users — دعم بالعربية والفرنسية</li>
+                    <li>Honest comparison with other platforms — مقارنة صادقة مع المنصات الأخرى</li>
+                </ul>
+
+                <h2>Why SpinBetter? | لماذا SpinBetter؟</h2>
+                <p>SpinBetter is one of the fastest-growing sports betting platforms in North Africa and the Middle East, offering competitive odds on football, basketball, tennis, and more — with full support for Moroccan local payment methods.</p>
+                <p class="ar">SpinBetter هي واحدة من أسرع منصات المراهنات الرياضية نمواً في شمال أفريقيا، تقدم أفضل الأوزان على كرة القدم، كرة السلة، التنس والمزيد — مع دعم كامل لطرق الدفع المحلية المغربية.</p>
+
+                <div class="highlight">⚡ We are not affiliated with SpinBetter officially. We are an independent affiliate promotional website. | نحن لسنا تابعين رسمياً لـ SpinBetter. نحن موقع ترويجي مستقل.</div>
+
+                <div class="contact-box">
+                    <h3>📬 تواصل معنا | Contact Us</h3>
+                    <p>للاستفسارات أو الدعم، انضم إلى قناتنا على تيليجرام — For support, join our Telegram channel</p>
+                    <a href="https://t.me/+i5vOt35UIvkzMjJh" target="_blank" class="tg-cta">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.27-.48.74-.74 2.93-1.28 4.88-2.12 5.85-2.53 2.78-1.16 3.36-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.08.02.21 0 .32z"/></svg>
+                        انضم لقناة تيليجرام | Join Telegram
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         PAGE MODAL: TERMS & CONDITIONS | الشروط والأحكام
+    ═══════════════════════════════════════════════════ -->
+    <div class="page-modal-overlay" id="page-terms">
+        <div class="page-modal-inner">
+            <div class="page-modal-header">
+                <div class="page-modal-title">Terms &amp; Conditions | الشروط والأحكام</div>
+                <button class="page-modal-close" onclick="closePage('terms')">✕</button>
+            </div>
+            <div class="pmc">
+                <div class="highlight">📅 Last Updated | آخر تحديث: January 2026</div>
+
+                <h2>1. Acceptance of Terms | قبول الشروط</h2>
+                <p>By accessing and using this promotional website, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use this website.</p>
+                <p class="ar">باستخدام هذا الموقع الترويجي، فإنك توافق على الالتزام بهذه الشروط والأحكام. إذا كنت لا توافق على أي جزء منها، يرجى عدم استخدام الموقع.</p>
+
+                <h2>2. Eligibility | الأهلية</h2>
+                <p>This website and the SpinBetter platform are intended for adults only (18+). By using this site, you confirm that you are of legal age to participate in sports betting in your jurisdiction.</p>
+                <p class="ar">هذا الموقع ومنصة SpinBetter مخصصان للبالغين فقط (18 سنة فأكثر). باستخدامك للموقع، تؤكد أنك في السن القانوني للمشاركة في المراهنات الرياضية في منطقتك.</p>
+                <div class="badge-row">
+                    <div class="badge">🔞 +18 فقط</div>
+                    <div class="badge">⚠️ للبالغين حصراً</div>
+                </div>
+
+                <h2>3. Nature of This Website | طبيعة هذا الموقع</h2>
+                <p>This is an <strong>independent affiliate promotional website</strong>. We are not the official SpinBetter platform. We provide referral links and promotional codes that may earn us a commission at no extra cost to you.</p>
+                <p class="ar">هذا موقع ترويجي مستقل وتابع. نحن لسنا منصة SpinBetter الرسمية. نقدم روابط إحالة وأكواد ترويجية قد تجلب لنا عمولة دون أي تكلفة إضافية عليك.</p>
+
+                <h2>4. Bonus & Promo Code Terms | شروط البونص والأكواد</h2>
+                <ul>
+                    <li>Promo code <strong style="color:var(--primary);">W300</strong> must be entered at registration — يجب إدخال الكود عند التسجيل</li>
+                    <li>Bonuses are subject to SpinBetter's own wagering requirements — البونص خاضع لشروط SpinBetter الرسمية</li>
+                    <li>Offers may change without prior notice — قد تتغير العروض دون إشعار مسبق</li>
+                    <li>One account per user — حساب واحد لكل مستخدم</li>
+                    <li>We cannot guarantee the availability of any specific bonus — لا نضمن توفر أي بونص بشكل دائم</li>
+                </ul>
+
+                <h2>5. Responsible Gambling | المقامرة المسؤولة</h2>
+                <p>We strongly encourage responsible gambling. Never bet more than you can afford to lose. If you feel you have a gambling problem, please seek professional help.</p>
+                <p class="ar">نشجع بشدة على المراهنة المسؤولة. لا تراهن بأكثر مما تستطيع خسارته. إذا شعرت أن لديك مشكلة في القمار، يرجى طلب المساعدة المتخصصة.</p>
+                <div class="highlight">🛑 المراهنة قد تسبب الإدمان. العب بمسؤولية. | Gambling can be addictive. Play responsibly.</div>
+
+                <h2>6. Limitation of Liability | حدود المسؤولية</h2>
+                <p>We are not responsible for any losses incurred through the use of SpinBetter or any other platform accessed through our links. All betting activities are at your own risk.</p>
+                <p class="ar">لسنا مسؤولين عن أي خسائر ناتجة عن استخدام SpinBetter أو أي منصة أخرى يتم الوصول إليها عبر روابطنا. جميع أنشطة المراهنة على مسؤوليتك الخاصة.</p>
+
+                <h2>7. Intellectual Property | الملكية الفكرية</h2>
+                <p>All content on this website, including text, design, and graphics, is the property of SpinBetter Morocco Promo unless otherwise stated. Unauthorized reproduction is prohibited.</p>
+                <p class="ar">جميع محتويات هذا الموقع، بما في ذلك النصوص والتصميم والرسومات، هي ملك لـ SpinBetter Morocco Promo ما لم يُذكر خلاف ذلك.</p>
+
+                <h2>8. Changes to Terms | التغييرات على الشروط</h2>
+                <p>We reserve the right to update these terms at any time. Continued use of the website after changes constitutes acceptance of the new terms.</p>
+                <p class="ar">نحتفظ بحق تحديث هذه الشروط في أي وقت. الاستمرار في استخدام الموقع بعد التغييرات يعني قبولك للشروط الجديدة.</p>
+
+                <div class="contact-box">
+                    <h3>📬 استفسارات | Inquiries</h3>
+                    <p>للاستفسار عن الشروط والأحكام، تواصل معنا عبر تيليجرام — For T&C inquiries, contact us via Telegram</p>
+                    <a href="https://t.me/+i5vOt35UIvkzMjJh" target="_blank" class="tg-cta">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.27-.48.74-.74 2.93-1.28 4.88-2.12 5.85-2.53 2.78-1.16 3.36-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.08.02.21 0 .32z"/></svg>
+                        تواصل معنا | Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         PAGE MODAL: PRIVACY POLICY | سياسة الخصوصية
+    ═══════════════════════════════════════════════════ -->
+    <div class="page-modal-overlay" id="page-privacy">
+        <div class="page-modal-inner">
+            <div class="page-modal-header">
+                <div class="page-modal-title">Privacy Policy | سياسة الخصوصية</div>
+                <button class="page-modal-close" onclick="closePage('privacy')">✕</button>
+            </div>
+            <div class="pmc">
+                <div class="highlight">📅 Last Updated | آخر تحديث: January 2026</div>
+
+                <h2>1. Introduction | مقدمة</h2>
+                <p>SpinBetter Morocco Promo ("we", "our", "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website.</p>
+                <p class="ar">يلتزم SpinBetter Morocco Promo بحماية خصوصيتك. توضح سياسة الخصوصية هذه كيفية جمع معلوماتك واستخدامها وحمايتها عند زيارة موقعنا.</p>
+
+                <h2>2. Information We Collect | المعلومات التي نجمعها</h2>
+                <p>We may collect the following types of information:</p>
+                <ul>
+                    <li><strong>Usage Data:</strong> Pages visited, time spent, browser type, device — بيانات الاستخدام: الصفحات المزارة، وقت التصفح، نوع المتصفح</li>
+                    <li><strong>Cookies:</strong> Small files stored on your device to improve experience — ملفات تعريف الارتباط لتحسين تجربة التصفح</li>
+                    <li><strong>Analytics:</strong> Aggregated, anonymized data via analytics tools — بيانات مجمّعة ومجهولة الهوية عبر أدوات التحليل</li>
+                </ul>
+                <p>We do <strong>not</strong> collect personal data like your name, email, or payment information — نحن لا نجمع بيانات شخصية مثل اسمك أو بريدك الإلكتروني أو معلومات الدفع.</p>
+
+                <h2>3. How We Use Your Information | كيف نستخدم معلوماتك</h2>
+                <ul>
+                    <li>To improve website performance and user experience — لتحسين أداء الموقع وتجربة المستخدم</li>
+                    <li>To analyze traffic and popular content — لتحليل الزيارات والمحتوى الأكثر شعبية</li>
+                    <li>To ensure the website functions correctly — للتأكد من أن الموقع يعمل بشكل صحيح</li>
+                </ul>
+
+                <h2>4. Cookies | ملفات تعريف الارتباط</h2>
+                <p>This website uses cookies for analytics and performance. You can disable cookies in your browser settings at any time, though this may affect some website features.</p>
+                <p class="ar">يستخدم هذا الموقع ملفات تعريف الارتباط للتحليل والأداء. يمكنك تعطيل ملفات تعريف الارتباط في إعدادات متصفحك في أي وقت، وإن كان ذلك قد يؤثر على بعض ميزات الموقع.</p>
+
+                <h2>5. Third-Party Links | روابط الطرف الثالث</h2>
+                <p>Our website contains links to SpinBetter and other third-party sites. We are not responsible for the privacy practices of those external sites. We encourage you to review their privacy policies.</p>
+                <p class="ar">يحتوي موقعنا على روابط لـ SpinBetter ومواقع أخرى تابعة لجهات خارجية. لسنا مسؤولين عن ممارسات الخصوصية لتلك المواقع الخارجية.</p>
+
+                <h2>6. Affiliate Disclosure | الإفصاح عن الشراكة</h2>
+                <p>This website participates in affiliate marketing. When you click our links and register or download the SpinBetter app, we may earn a commission. This does not affect the price or bonus you receive.</p>
+                <p class="ar">يشارك هذا الموقع في التسويق بالعمولة. عند النقر على روابطنا والتسجيل أو تحميل تطبيق SpinBetter، قد نحصل على عمولة. لا يؤثر ذلك على السعر أو البونص الذي تحصل عليه.</p>
+
+                <h2>7. Data Security | أمان البيانات</h2>
+                <p>We implement industry-standard security measures to protect any data processed through our website. However, no internet transmission is 100% secure.</p>
+                <p class="ar">نطبق معايير أمان متوافقة مع المعايير الصناعية لحماية أي بيانات تتم معالجتها عبر موقعنا. ومع ذلك، لا يوجد نقل بيانات عبر الإنترنت آمن بنسبة 100٪.</p>
+
+                <h2>8. Your Rights | حقوقك</h2>
+                <ul>
+                    <li>Right to access information we hold — حق الوصول إلى المعلومات التي نحتفظ بها</li>
+                    <li>Right to request deletion of data — حق طلب حذف البيانات</li>
+                    <li>Right to opt-out of analytics — حق رفض التحليلات</li>
+                </ul>
+
+                <h2>9. Contact | التواصل</h2>
+                <p>For any privacy-related questions, reach us via our Telegram channel — لأي استفسارات تتعلق بالخصوصية، تواصل معنا عبر قناة تيليجرام.</p>
+
+                <div class="contact-box">
+                    <h3>🔒 خصوصيتك تهمنا | Your Privacy Matters</h3>
+                    <p>لأي استفسار حول خصوصيتك، نحن هنا للمساعدة — We're here to help with any privacy concern</p>
+                    <a href="https://t.me/+i5vOt35UIvkzMjJh" target="_blank" class="tg-cta">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.27-.48.74-.74 2.93-1.28 4.88-2.12 5.85-2.53 2.78-1.16 3.36-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.08.02.21 0 .32z"/></svg>
+                        تيليجرام | Telegram
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         PAGE MODAL: FAQ | الأسئلة الشائعة
+    ═══════════════════════════════════════════════════ -->
+    <div class="page-modal-overlay" id="page-faqpage">
+        <div class="page-modal-inner">
+            <div class="page-modal-header">
+                <div class="page-modal-title">FAQ | الأسئلة الشائعة</div>
+                <button class="page-modal-close" onclick="closePage('faqpage')">✕</button>
+            </div>
+            <div class="pmc">
+
+                <h2>📲 التحميل والتسجيل | Download & Registration</h2>
+
+                <p><strong>Q: كيف أحمّل تطبيق SpinBetter؟ | How do I download the SpinBetter app?</strong></p>
+                <p>اضغط على زر "تحميل التطبيق" في الصفحة الرئيسية وسيتم توجيهك لتنزيل النسخة المناسبة لجهازك تلقائياً (Android / iOS).</p>
+                <p class="ar">Tap the "Download App" button on the homepage and you'll be redirected to download the correct version for your device automatically (Android / iOS).</p>
+                <hr class="divider">
+
+                <p><strong>Q: هل التسجيل مجاني؟ | Is registration free?</strong></p>
+                <p>نعم، التسجيل مجاني تماماً بنسبة 100٪. لا تحتاج إلى دفع أي شيء لإنشاء حسابك.</p>
+                <p class="ar">Yes, registration is 100% free. You don't need to pay anything to create your account.</p>
+                <hr class="divider">
+
+                <p><strong>Q: ما الفرق بين رابط التسجيل والتحميل؟ | What's the difference between the register and download links?</strong></p>
+                <p>رابط التسجيل يوجّهك لإنشاء حسابك أولاً، ثم تحميل التطبيق. رابط التحميل يوجّهك مباشرة لتحميل التطبيق. كلاهما يتطلب إنشاء حساب.</p>
+                <p class="ar">The register link directs you to create your account first, then download the app. The download link goes directly to the app download. Both require creating an account.</p>
+
+                <h2>🎁 البونص والأكواد | Bonuses & Codes</h2>
+
+                <p><strong>Q: كيف أستخدم كود W300؟ | How do I use code W300?</strong></p>
+                <p>أثناء التسجيل، ستجد حقل "كود العرض" أو "Promo Code". أدخل <strong style="color:var(--primary);">W300</strong> في هذا الحقل قبل إتمام التسجيل لتفعيل مكافأة الترحيب الحصرية.</p>
+                <p class="ar">During registration, find the "Promo Code" field and enter <strong style="color:var(--primary);">W300</strong> before completing sign-up to unlock your exclusive welcome bonus.</p>
+                <hr class="divider">
+
+                <p><strong>Q: هل الكود W300 لا يزال يعمل؟ | Is code W300 still working?</strong></p>
+                <p>نعم، الكود فعّال وصالح للاستخدام. تابع قناتنا على تيليجرام للاطلاع على أحدث الأكواد والعروض يومياً.</p>
+                <p class="ar">Yes, the code is active and valid. Follow our Telegram channel for the latest codes and daily offers.</p>
+                <hr class="divider">
+
+                <p><strong>Q: ما هي قيمة البونص الترحيبي؟ | What is the welcome bonus value?</strong></p>
+                <p>قيمة البونص قد تتغير حسب العروض الحالية. تابع صفحتنا على تيليجرام للحصول على أحدث المعلومات عن العروض والبونصات المتاحة.</p>
+                <p class="ar">The bonus value may change based on current promotions. Follow our Telegram page for the latest information on available offers and bonuses.</p>
+
+                <h2>💳 الدفع والسحب | Payments & Withdrawals</h2>
+
+                <p><strong>Q: ما طرق الدفع المتاحة في المغرب؟ | What payment methods are available in Morocco?</strong></p>
+                <div class="badge-row">
+                    <div class="badge">Attijariwafa Bank</div>
+                    <div class="badge">CIH Bank</div>
+                    <div class="badge">Banque Populaire</div>
+                    <div class="badge">BMCE Bank</div>
+                    <div class="badge">CMI</div>
+                    <div class="badge">Carte Visa/Mastercard</div>
+                </div>
+                <hr class="divider">
+
+                <p><strong>Q: كم يستغرق السحب؟ | How long do withdrawals take?</strong></p>
+                <p>معظم عمليات السحب تتم في غضون دقائق إلى ساعات قليلة حسب طريقة الدفع المختارة.</p>
+                <p class="ar">Most withdrawals are processed within minutes to a few hours depending on the chosen payment method.</p>
+                <hr class="divider">
+
+                <p><strong>Q: هل هناك حد أدنى للإيداع؟ | Is there a minimum deposit?</strong></p>
+                <p>نعم، هناك حد أدنى للإيداع يختلف حسب طريقة الدفع. تحقق من منصة SpinBetter الرسمية للاطلاع على التفاصيل الحالية.</p>
+                <p class="ar">Yes, there is a minimum deposit that varies by payment method. Check the official SpinBetter platform for current details.</p>
+
+                <h2>📱 التطبيق والجهاز | App & Device</h2>
+
+                <p><strong>Q: هل التطبيق متاح على Android وiOS؟ | Is the app available on Android and iOS?</strong></p>
+                <p>نعم، التطبيق متاح لكلا النظامين Android وiOS. اضغط على زر التحميل وسيتم توجيهك للنسخة المناسبة.</p>
+                <p class="ar">Yes, the app is available for both Android and iOS. Tap the download button and you'll be directed to the right version.</p>
+                <hr class="divider">
+
+                <p><strong>Q: هل يعمل التطبيق بدون VPN؟ | Does the app work without VPN?</strong></p>
+                <p>في أغلب الحالات نعم. إذا واجهت أي مشكلة في الوصول، يمكنك التواصل معنا عبر تيليجرام للمساعدة.</p>
+                <p class="ar">In most cases yes. If you face any access issues, contact us via Telegram for assistance.</p>
+
+                <h2>💬 الدعم والتواصل | Support & Contact</h2>
+
+                <p><strong>Q: كيف أتواصل مع الدعم؟ | How do I contact support?</strong></p>
+                <p>للمساعدة والاستفسارات، انضم إلى قناتنا على تيليجرام. نحن متاحون للرد على أسئلتكم يومياً.</p>
+                <p class="ar">For help and inquiries, join our Telegram channel. We are available to answer your questions daily.</p>
+
+                <div class="contact-box">
+                    <h3>💬 هل لديك سؤال آخر؟ | Have another question?</h3>
+                    <p>انضم لقناتنا المجانية واحصل على إجابات فورية وأكواد يومية مجانية — Join our free channel for instant answers and daily free codes</p>
+                    <a href="https://t.me/+i5vOt35UIvkzMjJh" target="_blank" class="tg-cta">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.27-.48.74-.74 2.93-1.28 4.88-2.12 5.85-2.53 2.78-1.16 3.36-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.08.02.21 0 .32z"/></svg>
+                        انضم مجاناً | Join Free
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
