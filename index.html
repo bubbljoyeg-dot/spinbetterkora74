@@ -106,7 +106,7 @@ html[lang="ar"] .footer-links { direction: rtl; }
 html[lang="ar"] .footer-bottom-grid { direction: rtl; }
 html[lang="ar"] .tg-float { right: auto; left: 22px; }
 @media(max-width:600px){
-  html[lang="ar"] .tg-float { right: auto; left: 14px; }
+  html[lang="ar"] .tg-float { right: auto; left: 14px; bottom: 64px; }
 }
 html[lang="ar"] .pc-lbl { border-right: none; border-left: 1px solid var(--g-bdr); }
 html[lang="ar"] .pcb-val { border-right: none; border-left: 1px solid var(--g-bdr); }
@@ -413,51 +413,55 @@ header{
 .sticky-bar{display:none}
 @media(max-width:600px){
   .sticky-bar{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
     position:fixed;bottom:0;left:0;right:0;z-index:850;
-    background:rgba(10,10,15,.97);
-    border-top:1px solid rgba(0,255,135,.22);
-    padding:10px 16px 14px;
+    background:rgba(10,10,15,.98);
+    border-top:1px solid rgba(0,255,135,.3);
+    padding:8px 12px;
     backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    height:48px;
   }
   .sticky-bar-code{
-    display:flex;flex-direction:column;gap:2px;
+    display:flex;align-items:center;gap:8px;
+    flex:1;
   }
-  .sticky-bar-code .sbc-lbl{font-size:.58rem;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:1px}
-  .sticky-bar-code .sbc-val{font-family:var(--fh);font-size:1.35rem;color:var(--g);letter-spacing:4px;line-height:1}
+  .sticky-bar-code .sbc-lbl{font-size:.5rem;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap}
+  .sticky-bar-code .sbc-val{font-family:var(--fh);font-size:1.1rem;color:var(--g);letter-spacing:2px;line-height:1;white-space:nowrap}
   .sticky-bar-btn{
-    display:inline-flex;align-items:center;gap:8px;
+    display:inline-flex;align-items:center;gap:6px;
     background:linear-gradient(135deg,#0A0A0F,#1C1C35);
     color:var(--g);
-    padding:12px 20px;border-radius:12px;
-    font-family:var(--fh);font-size:.9rem;letter-spacing:.8px;text-transform:uppercase;
-    border:2px solid rgba(0,255,135,0.3);
-    box-shadow:0 0 0 1px rgba(0,255,135,0.1),
-               0 6px 24px rgba(0,255,135,0.15),
+    padding:6px 12px;border-radius:8px;
+    font-family:var(--fh);font-size:.65rem;letter-spacing:0.6px;text-transform:uppercase;
+    border:1px solid rgba(0,255,135,0.4);
+    box-shadow:0 0 0 1px rgba(0,255,135,0.15),
+               0 4px 16px rgba(0,255,135,0.2),
                inset 0 1px 0 rgba(255,255,255,0.05);
     animation:sticky-pulse 2.5s ease-in-out infinite;
     will-change:box-shadow,transform;
     flex-shrink:0;
     transition:all .3s cubic-bezier(.4,0,.2,1);
+    height:32px;
+    min-width:80px;
   }
   .sticky-bar-btn:hover{
-    transform:translateY(-2px) scale(1.02);
+    transform:translateY(-1px) scale(1.02);
     box-shadow:0 0 0 1px rgba(0,255,135,0.2),
-               0 8px 32px rgba(0,255,135,0.25),
+               0 6px 20px rgba(0,255,135,0.25),
                inset 0 1px 0 rgba(255,255,255,0.1);
   }
   @keyframes sticky-pulse{
-    0%,100%{box-shadow:0 0 0 1px rgba(0,255,135,0.1),
-                     0 6px 24px rgba(0,255,135,0.15)}
-    50%{box-shadow:0 0 0 1px rgba(0,255,135,0.2),
-                 0 8px 32px rgba(0,255,135,0.25)}
+    0%,100%{box-shadow:0 0 0 1px rgba(0,255,135,0.15),
+                     0 4px 16px rgba(0,255,135,0.2)}
+    50%{box-shadow:0 0 0 1px rgba(0,255,135,0.25),
+                 0 6px 20px rgba(0,255,135,0.3)}
   }
-  .sticky-bar-btn svg{width:16px;height:16px;fill:var(--g);transition:transform .3s}
+  .sticky-bar-btn svg{width:12px;height:12px;fill:var(--g);transition:transform .3s}
   .sticky-bar-btn:hover svg{transform:scale(1.1)}
   /* Push body content up so sticky bar doesn't cover it */
-  body{padding-bottom:70px}
+  body{padding-bottom:48px}
   /* Hide TG float on mobile when sticky bar is shown */
-  .tg-float{bottom:80px;right:14px}
+  .tg-float{bottom:64px;right:14px}
 }
 
 /* ═══════════════════════════════════════════
@@ -1455,15 +1459,30 @@ footer {
    RESPONSIVE — MOBILE ≤600px - Enhanced Mobile First
 ═══════════════════════════════════════════ */
 @media(max-width:600px){
-  :root{--hdr:56px;--r:12px;--rsm:8px}
+  :root{--hdr:48px;--r:12px;--rsm:8px}
   .inner{padding:0 16px}
   .sec{padding:50px 0}
   .sec-h{font-size:clamp(2rem,8vw,2.8rem);margin-bottom:25px;line-height:1.4}
   .sec-sub{font-size:1rem;line-height:2.2;margin-bottom:20px}
 
-  /* header */
-  .logo{font-size:1.4rem}
-  .logo-dot{width:6px;height:6px}
+  /* header - completely redesigned */
+  .hdr{flex-direction:row-reverse;gap:12px;padding:0 16px}
+  .logo{font-size:1.1rem;order:2}
+  .logo-dot{width:4px;height:4px}
+  .btn-hdr{
+    order:1;
+    padding:4px 12px;font-size:.65rem;
+    border-radius:20px;
+    background:linear-gradient(135deg,var(--g),var(--g2));
+    color:#001C0E;
+    border:none;
+    box-shadow:0 2px 8px rgba(0,212,170,.2);
+    height:32px;
+    display:inline-flex;align-items:center;justify-content:center;
+    gap:6px;
+  }
+  .btn-hdr svg{width:12px;height:12px;fill:#001C0E}
+  .hdr-nav{display:none}
 
   /* hero */
   .hero-grid{padding-top:30px;padding-bottom:60px}
@@ -1529,7 +1548,7 @@ footer {
   .final-ctas{flex-direction:column;align-items:center;gap:16px}
   
   /* floating elements */
-  .tg-float{width:52px;height:52px;bottom:20px;right:20px}
+  .tg-float{width:52px;height:52px;bottom:64px;right:20px}
   .tg-float svg{width:24px;height:24px}
 
   /* improved touch targets */
