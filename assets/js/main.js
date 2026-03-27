@@ -11,13 +11,52 @@ function closeSidebar() {
     document.body.style.overflow = '';
 }
 function copyCodeSb() {
-    navigator.clipboard.writeText("W300").catch(() => { });
+    if(navigator.clipboard) navigator.clipboard.writeText("W300").catch(() => { });
     const btn = document.querySelector('.sb-promo-btn');
-    const orig = btn.textContent;
-    btn.textContent = 'تم النسخ!';
-    btn.style.background = '#22c55e';
-    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+    if(btn) {
+        const orig = btn.textContent;
+        btn.textContent = 'تم النسخ!';
+        btn.style.background = '#22c55e';
+        setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+    }
 }
+
+function copyCode() {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText("W300").catch(() => { });
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = "W300";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try { document.execCommand('copy'); } catch (e) { }
+        document.body.removeChild(textarea);
+    }
+
+    const toast = document.getElementById('copyToast');
+    if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+    
+    if (window.event) {
+        const target = window.event.currentTarget || window.event.srcElement;
+        if (target && target.tagName === 'BUTTON') {
+            const orig = target.textContent;
+            target.textContent = 'تم النسخ!';
+            target.style.background = '#22c55e';
+            target.style.color = '#000';
+            setTimeout(() => {
+                target.textContent = orig;
+                target.style.background = '';
+                target.style.color = '';
+            }, 2000);
+        }
+    }
+}
+
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeSidebar();
 });
