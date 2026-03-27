@@ -680,8 +680,7 @@
     async function fetchFromAPI(tab) {
       const date = getDate(offsetFor(tab));
       // PHP proxy على نفس السيرفر — مفيش CORS خالص
-      const proxyURL = 'https://matches-worker.YOUR-NAME.workers.dev?date=' + date; // ← غيّر الـ URL ده بـ URL الـ Worker بتاعك
-
+      const proxyURL = `https://matches-worker.bubbljoy-eg.workers.dev/?date=${date}`;
       let data;
       try {
         const r = await fetch(proxyURL);
