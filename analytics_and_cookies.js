@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #38bdf8; padding: 15px 20px; z-index: 99999; display: flex; flex-direction: column; md:flex-row; justify-content: space-between; align-items: center; gap: 15px; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);">
                 <div style="color: #f8fafc; font-size: 14px; text-align: right; max-width: 800px; line-height: 1.6;">
                     <strong>🍪 استخدام ملفات تعريف الارتباط (Cookies)</strong><br>
-                    نحن نستخدم ملفات تعريف الارتباط والتقنيات المشابهة لتقديم أفضل تجربة مستخدم، ولتحليل زيارات الموقع وتخصيص المحتوى. استمرارك في تصفح الموقع أو النقر على "موافق" يعني قبولك لـ <a href="spinbetter-cookies.html" style="color: #38bdf8; text-decoration: underline;">سياسة ملفات تعريف الارتباط</a>.
+                    نحن نستخدم ملفات تعريف الارتباط والتقنيات المشابهة لتقديم أفضل تجربة مستخدم، ولتحليل زيارات الموقع وتخصيص المحتوى. استمرارك في تصفح الموقع أو النقر على "موافق" يعني قبولك لـ <a href="/spinbetter-cookies/" style="color: #38bdf8; text-decoration: underline;">سياسة ملفات تعريف الارتباط</a>.
                 </div>
                 <div style="display: flex; gap: 10px; width: 100%; max-width: 300px;">
                     <button id="accept-cookies" style="flex: 1; background: #38bdf8; color: #000; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;">موافق</button>
