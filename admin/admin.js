@@ -70,7 +70,11 @@ window.handleLogin = async function() {
         });
         if (error) throw error;
         
-        currentAdminSession = data.session;
+        if (!data.session) {
+            alert("تم تسجيل الدخول لكن لا توجد جلسة نشطة (Session). قد تحتاج لتأكيد إيميلك.");
+        }
+        
+        currentAdminSession = data.session || { user: data.user || {email: email} };
         showDashboard();
     } catch (err) {
         console.error("Login Error:", err);
@@ -101,10 +105,22 @@ function showLogin() {
 }
 
 function showDashboard() {
-    loginScreen.classList.remove('active');
-    dashboardScreen.classList.add('active');
-    document.getElementById('admin-user-display').innerText = currentAdminSession.user.email;
-    loadTickets();
+    try {
+        loginScreen.classList.remove('active');
+        dashboardScreen.classList.add('active');
+        
+        let userEmail = 'Admin';
+        if (currentAdminSession && currentAdminSession.user && currentAdminSession.user.email) {
+            userEmail = currentAdminSession.user.email;
+        } else if (document.getElementById('admin-email') && document.getElementById('admin-email').value) {
+            userEmail = document.getElementById('admin-email').value;
+        }
+        
+        document.getElementById('admin-user-display').innerText = userEmail;
+        loadTickets();
+    } catch (e) {
+        alert("حدث خطأ أثناء فتح اللوحة: " + e.message);
+    }
 }
 
 // Load Tickets Logic
@@ -118,7 +134,10 @@ async function loadTickets() {
             .select('*')
             .order('created_at', { ascending: false });
             
-        if (error) throw error;
+        if (error) {
+            alert('خطأ في تحميل التذاكر: ' + error.message);
+            throw error;
+        }
         
         // Update Stats
         document.getElementById('stat-total').innerText = tickets.length;
