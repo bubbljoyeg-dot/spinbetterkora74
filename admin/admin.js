@@ -40,21 +40,29 @@ async function checkAuth() {
 
 // Login execution
 window.handleLogin = async function() {
-    const email = document.getElementById('admin-email').value;
-    const password = document.getElementById('admin-password').value;
-    const loginError = document.getElementById('login-error');
-    const loginBtn = document.getElementById('loginBtn');
-    const spinner = document.getElementById('loginSpinner');
-    
-    if (!supabase) {
-        loginError.innerText = 'يوجد مانع إعلانات (AdBlocker) يوقف السكربت أو لا يوجد اتصال إنترنت. يرجى إيقافه وتحديث الصفحة.';
-        loginError.style.display = 'block';
-        return;
-    }
+    try {
+        const email = document.getElementById('admin-email').value;
+        const password = document.getElementById('admin-password').value;
+        const loginError = document.getElementById('login-error');
+        const loginBtn = document.getElementById('loginBtn');
+        const spinner = document.getElementById('loginSpinner');
+        
+        loginError.style.display = 'none';
+        
+        if (!email || !password) {
+            loginError.innerText = 'يرجى إدخال البريد الإلكتروني وكلمة المرور.';
+            loginError.style.display = 'block';
+            return;
+        }
+        
+        if (!supabase) {
+            loginError.innerText = 'يوجد مانع إعلانات (AdBlocker) يوقف السكربت أو لا يوجد اتصال إنترنت. يرجى إيقافه وتحديث الصفحة.';
+            loginError.style.display = 'block';
+            return;
+        }
 
-    loginBtn.disabled = true;
-    spinner.style.display = 'block';
-    loginError.style.display = 'none';
+        loginBtn.disabled = true;
+        spinner.style.display = 'block';
     
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -71,8 +79,11 @@ window.handleLogin = async function() {
             : 'عذراً: ' + err.message;
         loginError.style.display = 'block';
     } finally {
-        loginBtn.disabled = false;
-        spinner.style.display = 'none';
+        if(document.getElementById('loginBtn')) document.getElementById('loginBtn').disabled = false;
+        if(document.getElementById('loginSpinner')) document.getElementById('loginSpinner').style.display = 'none';
+    }
+    } catch (criticalErr) {
+        alert("حدث خطأ غير متوقع أثناء المعالجة: " + criticalErr.message);
     }
 };
 
