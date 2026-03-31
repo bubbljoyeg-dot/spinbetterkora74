@@ -52,7 +52,7 @@ if (fileInput) {
 function generateTrackingCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = 'TCK-';
-    for (let i = 0; i < 6; i++) {
+    for ( let i = 0; i < 6; i++ ) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return result;
@@ -63,63 +63,53 @@ const createForm = document.getElementById('create-ticket-form');
 if (createForm) {
     createForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
+        
         const name = document.getElementById('ticket-name').value.trim();
         const issue = document.getElementById('ticket-issue').value;
         const message = document.getElementById('ticket-message').value.trim();
-        // ✅ FIX: الصورة اختيارية - مش إجبارية
-        const file = document.getElementById('ticket-image').files[0] || null;
-
+        const file = document.getElementById('ticket-image').files[0];
+        
         const submitBtn = document.getElementById('submitBtn');
         const spinner = document.getElementById('submitSpinner');
         const resultDiv = document.getElementById('ticket-result');
-
-        // ✅ FIX: Validation قبل ما نبعت أي حاجة
-        if (!name) {
-            resultDiv.className = 'ticket-result error';
-            resultDiv.innerHTML = '⚠️ يرجى كتابة اسمك أولاً.';
-            resultDiv.style.display = 'block';
-            return;
-        }
-        if (!issue || issue === '' || issue === 'اختر نوع المشكلة') {
-            resultDiv.className = 'ticket-result error';
-            resultDiv.innerHTML = '⚠️ يرجى اختيار نوع المشكلة.';
-            resultDiv.style.display = 'block';
-            return;
-        }
-
+        
         submitBtn.disabled = true;
         spinner.style.display = 'block';
         resultDiv.style.display = 'none';
         resultDiv.className = 'ticket-result';
-
+        
+        if (!name || name.length < 2 || !issue || !message || message.length < 5) {
+            resultDiv.classList.add('error');
+            resultDiv.innerHTML = `❌ الرجاء إدخال اسمك الحقيقي، واختيار نوع المشكلة، وكتابة مسودة عن التفاصيل (5 أحرف على الأقل).`;
+            resultDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            spinner.style.display = 'none';
+            return;
+        }
+        
         try {
-            // ✅ FIX: رفع الصورة بس لو موجودة
+            // Upload Image (Optional)
             let imageUrl = null;
             if (file) {
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                if (!allowedTypes.includes(file.type)) {
-                    throw new Error('نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPG أو PNG أو GIF.');
-                }
-
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-                const filePath = `tickets/${fileName}`;
-
+                const filePath = `tickets/${fileName}`; 
+                
                 const { data: uploadData, error: uploadError } = await supabaseClient
                     .storage
-                    .from('ticket')
+                    .from('ticket-images')
                     .upload(filePath, file);
-
-                if (uploadError) throw new Error('فشل رفع الصورة: ' + uploadError.message);
-
-                const { data: publicUrlData } = supabaseClient.storage.from('ticket').getPublicUrl(filePath);
+                    
+                if (uploadError) throw uploadError;
+                
+                // Get public URL
+                const { data: publicUrlData } = supabaseClient.storage.from('ticket-images').getPublicUrl(filePath);
                 imageUrl = publicUrlData.publicUrl;
             }
-
+            
             // Generate tracking code
             const trackingCode = generateTrackingCode();
-
+            
             // Save to database
             const { error: dbError } = await supabaseClient
                 .from('support_tickets')
@@ -129,13 +119,13 @@ if (createForm) {
                         customer_name: name,
                         issue_type: issue,
                         issue_description: message,
-                        image_url: imageUrl, // ✅ هيكون null لو مفيش صورة - وده مقبول
-                        status: 'قيد الانتظار'
+                        image_url: imageUrl,
+                        status: 'قيد الانتظار' // Default
                     }
                 ]);
-
-            if (dbError) throw new Error('فشل حفظ التذكرة: ' + dbError.message);
-
+                
+            if (dbError) throw dbError;
+            
             // Success
             resultDiv.classList.add('success');
             resultDiv.innerHTML = `
@@ -146,14 +136,14 @@ if (createForm) {
             `;
             resultDiv.style.display = 'block';
             createForm.reset();
-            if (previewImage) previewImage.style.display = 'none';
-            if (uploadPlaceholder) uploadPlaceholder.style.display = 'block';
-
+            previewImage.style.display = 'none';
+            uploadPlaceholder.style.display = 'block';
+            
         } catch (error) {
             console.error(error);
             resultDiv.classList.add('error');
             let errMsg = error.message || JSON.stringify(error);
-            resultDiv.innerHTML = `❌ فشل الإرسال!<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
+            resultDiv.innerHTML = `❌ فشل الإرسال! السبب من الداتا بيز:<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
             resultDiv.style.display = 'block';
         } finally {
             submitBtn.disabled = false;
@@ -167,78 +157,66 @@ const trackForm = document.getElementById('track-ticket-form');
 if (trackForm) {
     trackForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
+        
         const codeInput = document.getElementById('track-code').value.trim().toUpperCase();
-
+        
         const trackBtn = document.getElementById('trackBtn');
         const spinner = document.getElementById('trackSpinner');
         const resultDiv = document.getElementById('track-result');
         const detailsCard = document.getElementById('ticket-details-card');
-
-        // ✅ FIX: Validation للكود
-        if (!codeInput || codeInput.length < 5) {
-            resultDiv.className = 'ticket-tracking-result error';
-            resultDiv.innerHTML = '⚠️ يرجى إدخال رقم التذكرة كاملاً.';
-            resultDiv.style.display = 'block';
-            return;
-        }
-
+        
         trackBtn.disabled = true;
         spinner.style.display = 'block';
         resultDiv.style.display = 'none';
         detailsCard.style.display = 'none';
         resultDiv.className = 'ticket-tracking-result';
-
+        
         try {
             const { data, error } = await supabaseClient
                 .from('support_tickets')
                 .select('*')
                 .eq('tracking_code', codeInput)
                 .single();
-
-            // ✅ FIX: error من supabase لما مش لاقي record بييجي كـ PGRST116
-            // مش لازم نعامله كـ crash - ده expected behavior
-            if (!data) {
+                
+            if (error || !data) {
                 resultDiv.classList.add('error');
-                resultDiv.innerHTML = `❌ لم يتم العثور على تذكرة بهذا الرقم. تأكد من رقم التذكرة.`;
+                resultDiv.innerHTML = `❌ لم يتم العثور على تذكرة بهذا الرقم. تآكد من رقم التذكرة.`;
                 resultDiv.style.display = 'block';
-                return;
-            }
-
-            // Populate details
-            document.getElementById('detail-code').innerText = data.tracking_code;
-            document.getElementById('detail-name').innerText = data.customer_name;
-            document.getElementById('detail-issue').innerText = data.issue_type;
-
-            const statusSpan = document.getElementById('detail-status');
-            statusSpan.innerText = data.status;
-
-            // Color formatting
-            statusSpan.className = 'status-badge';
-            if (data.status === 'قيد الانتظار') {
-                statusSpan.classList.add('status-pending');
-            } else if (data.status === 'تم الرد' || data.status === 'مغلقة' || data.status === 'تم الحل') {
-                statusSpan.classList.add('status-replied');
             } else {
-                statusSpan.style.background = 'rgba(255,255,255,0.1)';
-                statusSpan.style.border = '1px solid #fff';
+                // Populate details
+                document.getElementById('detail-code').innerText = data.tracking_code;
+                document.getElementById('detail-name').innerText = data.customer_name;
+                document.getElementById('detail-issue').innerText = data.issue_type;
+                
+                const statusSpan = document.getElementById('detail-status');
+                statusSpan.innerText = data.status;
+                
+                // Color formatting
+                statusSpan.className = 'status-badge';
+                if (data.status === 'قيد الانتظار') {
+                    statusSpan.classList.add('status-pending');
+                } else if (data.status === 'تم الرد' || data.status === 'مغلقة' || data.status === 'تم الحل') {
+                    statusSpan.classList.add('status-replied');
+                } else {
+                    statusSpan.style.background = 'rgba(255,255,255,0.1)';
+                    statusSpan.style.border = '1px solid #fff';
+                }
+                
+                const replySection = document.getElementById('detail-reply-section');
+                if (data.admin_reply && data.admin_reply.trim() !== '') {
+                    document.getElementById('detail-reply').innerText = data.admin_reply;
+                    replySection.style.display = 'block';
+                } else {
+                    replySection.style.display = 'none';
+                }
+                
+                detailsCard.style.display = 'block';
             }
-
-            const replySection = document.getElementById('detail-reply-section');
-            if (data.admin_reply && data.admin_reply.trim() !== '') {
-                document.getElementById('detail-reply').innerText = data.admin_reply;
-                replySection.style.display = 'block';
-            } else {
-                replySection.style.display = 'none';
-            }
-
-            detailsCard.style.display = 'block';
-
         } catch (error) {
             console.error(error);
             resultDiv.classList.add('error');
             let errMsg = error.message || JSON.stringify(error);
-            resultDiv.innerHTML = `❌ حدث خطأ بالاتصال بقاعدة البيانات:<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
+            resultDiv.innerHTML = `❌ حدث خطأ بالاتصال بالداتا بيز:<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
             resultDiv.style.display = 'block';
         } finally {
             trackBtn.disabled = false;
