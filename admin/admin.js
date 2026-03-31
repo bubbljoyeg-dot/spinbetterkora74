@@ -7,8 +7,29 @@ try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (e) {
     console.error("Supabase failed to load:", e);
-    alert("Warning: Database library failed to load! If you are using an AdBlocker, please disable it and ensure you have internet connection.");
+    setTimeout(() => showToast("Warning: Database library failed to load! Check AdBlocker.", 'warning'), 1000);
 }
+
+// Toast Notification System
+window.showToast = function(message, type = 'success') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'error' ? '❌' : (type === 'warning' ? '⚠️' : '✅');
+    toast.innerHTML = `<span style="font-size:18px">${icon}</span> <span>${message}</span>`;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('fadeOut');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+};
 
 // DOM Elements
 const loginScreen = document.getElementById('login-screen');
@@ -71,7 +92,7 @@ window.handleLogin = async function() {
         if (error) throw error;
         
         if (!data.session) {
-            alert("Logged in but no active session found. You may need to confirm your email.");
+            showToast("Logged in but no active session found. Confirm email.", 'warning');
         }
         
         currentAdminSession = data.session || { user: data.user || {email: email} };
@@ -87,7 +108,7 @@ window.handleLogin = async function() {
         if(document.getElementById('loginSpinner')) document.getElementById('loginSpinner').style.display = 'none';
     }
     } catch (criticalErr) {
-        alert("Unexpected processing error: " + criticalErr.message);
+        showToast("Unexpected processing error: " + criticalErr.message, 'error');
     }
 };
 
@@ -116,10 +137,10 @@ function showDashboard() {
             userEmail = document.getElementById('admin-email').value;
         }
         
-        document.getElementById('admin-user-display').innerText = userEmail;
+        document.getElementById('admin-user-info').innerText = userEmail;
         loadTickets();
     } catch (e) {
-        alert("Error loading dashboard: " + e.message);
+        showToast("Error loading dashboard: " + e.message, 'error');
     }
 }
 
@@ -135,7 +156,7 @@ async function loadTickets() {
             .order('created_at', { ascending: false });
             
         if (error) {
-            alert('Error loading tickets: ' + error.message);
+            showToast('Error loading tickets: ' + error.message, 'error');
             throw error;
         }
         
@@ -164,12 +185,12 @@ async function loadTickets() {
             else badgeClass += ' badge-replied';
             
             tr.innerHTML = `
-                <td><strong style="color:var(--accent);">${ticket.tracking_code}</strong></td>
-                <td style="color:var(--text-muted);">${formattedDate}</td>
-                <td>${ticket.customer_name}</td>
-                <td>${ticket.issue_type}</td>
-                <td><span class="${badgeClass}">${ticket.status}</span></td>
-                <td>
+                <td data-label="Tracking ID"><strong style="color:var(--accent);">${ticket.tracking_code}</strong></td>
+                <td data-label="Date" style="color:var(--text-muted);">${formattedDate}</td>
+                <td data-label="Customer Name">${ticket.customer_name}</td>
+                <td data-label="Issue Category">${ticket.issue_type}</td>
+                <td data-label="Status"><span class="${badgeClass}">${ticket.status}</span></td>
+                <td data-label="Actions">
                     <button class="btn btn-secondary btn-sm review-btn">Review</button>
                 </td>
             `;
@@ -284,18 +305,69 @@ document.getElementById('saveReplyBtn').addEventListener('click', async () => {
             
         if (error) throw error;
         
-        alert('Ticket successfully updated and resolution saved!');
+        showToast('Ticket successfully updated and resolution saved!', 'success');
         document.getElementById('ticket-modal').classList.remove('active');
         loadTickets(); // Refresh table
     } catch (err) {
-        alert('Failed to save data: ' + err.message);
+        showToast('Failed to save data: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
         spinner.style.display = 'none';
     }
 });
 
-// Delete Ticket feature disabled in new UI as requested to prioritize reply/resolve flows.
+// Delete Ticket Logic
+const deleteBtn = document.getElementById('deleteTicketBtn');
+if(deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+        if(!currentViewingTicket) return;
+        
+        const confirmDelete = confirm("Are you sure you want to PERMANENTLY delete this ticket?");
+        if (!confirmDelete) return;
+        
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.innerHTML = 'Deleting...';
+        deleteBtn.disabled = true;
+        
+        try {
+            const { error } = await supabaseClient
+                .from('support_tickets')
+                .delete()
+                .eq('id', currentViewingTicket.id);
+                
+            if (error) throw error;
+            
+            showToast('Ticket has been permanently deleted.', 'success');
+            document.getElementById('ticket-modal').classList.remove('active');
+            loadTickets();
+        } catch (err) {
+            showToast('Failed to delete: ' + err.message, 'error');
+        } finally {
+            deleteBtn.innerHTML = originalText;
+            deleteBtn.disabled = false;
+        }
+    });
+}
 
 // Initialize
 checkAuth();
+
+// Mobile Sidebar Toggle
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+const openSidebarBtn = document.getElementById('openSidebarBtn');
+const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+
+function openAdminSidebar() {
+    if(sidebar) sidebar.classList.add('active');
+    if(sidebarOverlay) sidebarOverlay.classList.add('active');
+}
+
+function closeAdminSidebar() {
+    if(sidebar) sidebar.classList.remove('active');
+    if(sidebarOverlay) sidebarOverlay.classList.remove('active');
+}
+
+if(openSidebarBtn) openSidebarBtn.addEventListener('click', openAdminSidebar);
+if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeAdminSidebar);
+if(sidebarOverlay) sidebarOverlay.addEventListener('click', closeAdminSidebar);

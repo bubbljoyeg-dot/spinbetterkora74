@@ -5,6 +5,36 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Initialize Supabase Client
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Client-Side Toast System
+window.showToast = function(message, type = 'success') {
+    let container = document.getElementById('sp-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'sp-toast-container';
+        container.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    const bColor = type === 'error' ? '#ef4444' : (type === 'warning' ? '#eab308' : '#38bdf8');
+    const icon = type === 'error' ? '<svg viewBox="0 0 24 24" width="24" height="24" fill="#ef4444"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>' : 
+                 (type === 'warning' ? '<svg viewBox="0 0 24 24" width="24" height="24" fill="#eab308"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>' : 
+                 '<svg viewBox="0 0 24 24" width="24" height="24" fill="#38bdf8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>');
+    
+    toast.style.cssText = `background:rgba(15,23,42,0.95); backdrop-filter:blur(10px); color:#fff; padding:15px 20px; border-radius:12px; border-right:4px solid ${bColor}; box-shadow:0 10px 25px rgba(0,0,0,0.5); display:flex; align-items:center; gap:12px; font-family:'Tajawal',sans-serif; font-weight:700; transform:translateX(-100%); opacity:0; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);`;
+    toast.innerHTML = `<span style="display:flex; align-items:center;">${icon}</span> <span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => { toast.style.transform = 'translateX(0)'; toast.style.opacity = '1'; }, 10);
+    
+    // Animate out
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-100%)'; toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+};
+
 // Tab Switching functionality
 function switchTicketTab(tabId) {
     document.querySelectorAll('.ticket-tab').forEach(t => t.classList.remove('active'));
@@ -52,7 +82,7 @@ function renderSavedTickets() {
             btn.style = 'padding: 14px 20px; border-radius: 12px; border: 1px solid var(--accent); background: rgba(56, 189, 248, 0.08); color: #fff; cursor: pointer; text-align: right; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-family: var(--font-family); font-size: 15px; transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);';
             btn.onmouseover = () => { btn.style.background = 'rgba(56, 189, 248, 0.15)'; btn.style.transform = 'translateY(-2px)' };
             btn.onmouseout = () => { btn.style.background = 'rgba(56, 189, 248, 0.08)'; btn.style.transform = 'translateY(0)' };
-            btn.innerHTML = `<span style="display:flex; align-items:center; gap:8px;">🎫 تذكرة ${code}</span> <span style="font-size:13px; color:var(--accent); background:rgba(0,0,0,0.5); padding:6px 12px; border-radius:8px;">استعلام فوري</span>`;
+            btn.innerHTML = `<span style="display:flex; align-items:center; gap:8px; font-weight:900;"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22 10V6a2 2 0 00-2-2H4c-1.1 0-1.99.89-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-2 7.74c-1.53-.9-2.61-2.48-2.91-4.32a6.002 6.002 0 010-2.84C17.39 8.74 18.47 7.16 20 6.26V6h-2v12h2v-.26zM11 15h2v-2h-2v2zm0-4h2V9h-2v2z"/></svg> التذكرة ${code}</span> <span style="font-size:13px; color:var(--accent); background:rgba(0,0,0,0.5); padding:6px 12px; border-radius:8px; font-weight:bold;">عرض التفاصيل</span>`;
             btn.onclick = () => {
                 document.getElementById('track-code').value = code;
                 const form = document.getElementById('track-ticket-form');
@@ -84,7 +114,7 @@ if (fileInput) {
             const file = this.files[0];
             // Check size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                alert('عذراً، حجم الصورة يجب ألا يتعدى 5 ميجابايت.');
+                showToast('عذراً، حجم الصورة يجب ألا يتعدى 5 ميجابايت.', 'warning');
                 this.value = '';
                 return;
             }
@@ -134,7 +164,7 @@ if (createForm) {
         
         if (!name || name.length < 2 || !issue || !message || message.length < 5) {
             resultDiv.classList.add('error');
-            resultDiv.innerHTML = `❌ الرجاء إدخال اسمك الحقيقي، واختيار نوع المشكلة، وكتابة مسودة عن التفاصيل (5 أحرف على الأقل).`;
+            resultDiv.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;"><svg viewBox="0 0 24 24" width="24" height="24" fill="#ef4444"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg> خطأ في الإدخال</div>الرجاء إدخال اسم المستخدم أو رقم الحساب، واختيار صنف المشكلة، وكتابة شرح (5 أحرف على الأقل).`;
             resultDiv.style.display = 'block';
             submitBtn.disabled = false;
             spinner.style.display = 'none';
@@ -190,7 +220,7 @@ if (createForm) {
             resultDiv.style.padding = '25px';
             resultDiv.style.borderRadius = '12px';
             resultDiv.innerHTML = `
-                <div style="font-size: 24px; margin-bottom: 10px;">✨</div>
+                <div style="margin-bottom: 10px; display:flex; justify-content:center;"><svg viewBox="0 0 24 24" width="48" height="48" fill="#22c55e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
                 <div style="font-size: 20px; font-weight: 800; margin-bottom: 8px; color:#fff;">تم تسلّم طلبك بنجاح!</div>
                 <div style="color:var(--text-muted); font-size:15px; margin-bottom: 15px;">شكراً لتواصلك معنا. هذا هو الكود المرجعي لطلبك، وقد تم حفظه تلقائياً في جهازك لمتابعته لاحقاً متى شئت.</div>
                 
@@ -211,7 +241,7 @@ if (createForm) {
             console.error(error);
             resultDiv.classList.add('error');
             let errMsg = error.message || JSON.stringify(error);
-            resultDiv.innerHTML = `❌ فشل الإرسال! السبب من الداتا بيز:<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
+            resultDiv.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;"><svg viewBox="0 0 24 24" width="24" height="24" fill="#ef4444"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg> خطأ في الإرسال</div>عذراً، تعذر إرسال الطلب في الوقت الحالي. يرجى المحاولة لاحقاً.<br><br><span style="color:#cbd5e1; font-family:monospace; font-size:11px;">[System Alert: ${errMsg}]</span>`;
             resultDiv.style.display = 'block';
         } finally {
             submitBtn.disabled = false;
@@ -248,7 +278,7 @@ if (trackForm) {
                 
             if (error || !data) {
                 resultDiv.classList.add('error');
-                resultDiv.innerHTML = `❌ لم يتم العثور على تذكرة بهذا الرقم. تآكد من رقم التذكرة.`;
+                resultDiv.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="#ef4444"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> لم يتم العثور على تذكرة بهذا الرقم. تآكد من البيانات المطلوبة.</div>`;
                 resultDiv.style.display = 'block';
             } else {
                 // Populate details
@@ -313,7 +343,7 @@ if (trackForm) {
             console.error(error);
             resultDiv.classList.add('error');
             let errMsg = error.message || JSON.stringify(error);
-            resultDiv.innerHTML = `❌ حدث خطأ بالاتصال بالداتا بيز:<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
+            resultDiv.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;"><svg viewBox="0 0 24 24" width="24" height="24" fill="#ef4444"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg> خطأ اتصال</div>عذراً، تعذر تحميل البيانات حالياً.<br><br><span style="color:#cbd5e1; font-family:monospace; font-size:12px;">[Network Error: ${errMsg}]</span>`;
             resultDiv.style.display = 'block';
         } finally {
             trackBtn.disabled = false;

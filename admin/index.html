@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | SpinBetter Support</title>
 
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="/admin/admin.css?v=3">
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -50,10 +50,14 @@
     <!-- Dashboard Screen -->
     <div class="dashboard-screen" id="dashboard-screen">
         
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
         <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h1>SpinBetter <span>Admin</span></h1>
+                <button class="close-sidebar-btn" id="closeSidebarBtn">&times;</button>
             </div>
             
             <div class="sidebar-menu">
@@ -72,6 +76,15 @@
         <!-- Main Workspace -->
         <main class="main-content">
             
+            <!-- Mobile Header with Hamburger -->
+            <div class="mobile-header">
+                <button class="hamburger-btn" id="openSidebarBtn">
+                    <svg viewBox="0 0 24 24" style="width: 24px; fill: #fff;"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                </button>
+                <h2>SpinBetter <span>Admin</span></h2>
+                <div style="width:24px;"></div> <!-- Spacer -->
+            </div>
+
             <!-- Statistics Overview -->
             <section class="stats-grid">
                 <div class="stat-card">
@@ -199,19 +212,25 @@
                         <label>Post-action Ticket Status:</label>
                         <select id="modal-status-select">
                             <option value="قيد الانتظار">Pending (Awaiting Further Check)</option>
+                            <option value="جاري التحقيق">Under Investigation (In Progress)</option>
                             <option value="تم الرد">Resolved & Replied (Closed)</option>
+                            <option value="مرفوضة">Rejected (Spam / Invalid)</option>
+                            <option value="تصعيد للإدارة">Escalated to Management</option>
                         </select>
                     </div>
                 </div>
                 
             </div>
             
-            <div class="modal-footer">
-                <button class="btn-secondary" id="closeModalBtnFooter" style="padding:12px 24px;">Cancel</button>
-                <button class="btn-save" id="saveReplyBtn">
-                    Commit Resolution & Notify
-                    <div class="spinner" id="saveSpinner" style="display: none; border-left-color: #000; width:16px; height:16px; margin-left:8px; vertical-align:middle;"></div>
-                </button>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button class="btn-danger" id="deleteTicketBtn" style="width: auto; padding: 12px 20px; font-size: 14px;">🗑️ Delete Ticket</button>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn-secondary" id="closeModalBtnFooter" style="padding:12px 24px;">Cancel</button>
+                    <button class="btn-save" id="saveReplyBtn">
+                        Commit Resolution & Notify
+                        <div class="spinner" id="saveSpinner" style="display: none; border-left-color: #000; width:16px; height:16px; margin-left:8px; vertical-align:middle;"></div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -219,7 +238,7 @@
     <!-- Hidden Input for Delete Logic -->
     <input type="hidden" id="modal-ticket-id">
 
-    <script src="admin.js?v=2024"></script>
+    <script src="/admin/admin.js?v=2025"></script>
 </body>
 
 </html>
