@@ -3,7 +3,7 @@ const SUPABASE_URL = 'https://whwilmaizmfqgcgowrwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 
 // Initialize Supabase Client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Tab Switching functionality
 function switchTicketTab(tabId) {
@@ -84,7 +84,7 @@ if (createForm) {
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
             const filePath = `tickets/${fileName}`; // Save in "tickets" folder inside "ticket" bucket
             
-            const { data: uploadData, error: uploadError } = await supabase
+            const { data: uploadData, error: uploadError } = await supabaseClient
                 .storage
                 .from('ticket')
                 .upload(filePath, file);
@@ -92,14 +92,14 @@ if (createForm) {
             if (uploadError) throw uploadError;
             
             // Get public URL
-            const { data: publicUrlData } = supabase.storage.from('ticket').getPublicUrl(filePath);
+            const { data: publicUrlData } = supabaseClient.storage.from('ticket').getPublicUrl(filePath);
             const imageUrl = publicUrlData.publicUrl;
             
             // Generate tracking code
             const trackingCode = generateTrackingCode();
             
             // Save to database
-            const { error: dbError } = await supabase
+            const { error: dbError } = await supabaseClient
                 .from('support_tickets')
                 .insert([
                     {
@@ -159,7 +159,7 @@ if (trackForm) {
         resultDiv.className = 'ticket-tracking-result';
         
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('support_tickets')
                 .select('*')
                 .eq('tracking_code', codeInput)
