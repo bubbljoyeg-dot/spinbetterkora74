@@ -5,6 +5,34 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Initialize Supabase Client
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Client-Side Toast System
+window.showToast = function(message, type = 'success') {
+    let container = document.getElementById('sp-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'sp-toast-container';
+        container.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    const bColor = type === 'error' ? '#ef4444' : (type === 'warning' ? '#eab308' : '#38bdf8');
+    const icon = type === 'error' ? '❌' : (type === 'warning' ? '⚠️' : '✅');
+    
+    toast.style.cssText = `background:rgba(15,23,42,0.95); backdrop-filter:blur(10px); color:#fff; padding:15px 20px; border-radius:12px; border-right:4px solid ${bColor}; box-shadow:0 10px 25px rgba(0,0,0,0.5); display:flex; align-items:center; gap:12px; font-family:'Tajawal',sans-serif; font-weight:700; transform:translateX(-100%); opacity:0; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);`;
+    toast.innerHTML = `<span style="font-size:18px">${icon}</span> <span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => { toast.style.transform = 'translateX(0)'; toast.style.opacity = '1'; }, 10);
+    
+    // Animate out
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-100%)'; toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+};
+
 // Tab Switching functionality
 function switchTicketTab(tabId) {
     document.querySelectorAll('.ticket-tab').forEach(t => t.classList.remove('active'));
@@ -84,7 +112,7 @@ if (fileInput) {
             const file = this.files[0];
             // Check size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                alert('عذراً، حجم الصورة يجب ألا يتعدى 5 ميجابايت.');
+                showToast('عذراً، حجم الصورة يجب ألا يتعدى 5 ميجابايت.', 'warning');
                 this.value = '';
                 return;
             }
