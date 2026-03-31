@@ -19,8 +19,47 @@
 
   <link rel="stylesheet" href="../assets/css/style.css">
   <script src="../analytics_and_cookies.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/support-ticket.js" defer></script>
+  <style>
+    .ticket-system-container { margin-top: 20px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); overflow: hidden; }
+    .ticket-tabs { display: flex; border-bottom: 1px solid var(--border); }
+    .ticket-tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: 600; color: var(--text-muted); transition: all 0.3s ease; }
+    .ticket-tab.active { background: rgba(56, 189, 248, 0.1); color: var(--accent); border-bottom: 2px solid var(--accent); }
+    .ticket-tab-content { display: none; padding: 20px; }
+    .ticket-tab-content.active { display: block; }
 
-  
+    .ticket-form-group { margin-bottom: 20px; text-align: right; }
+    .ticket-form-group label { display: block; font-size: 14px; margin-bottom: 8px; color: #fff; font-weight: 500;}
+    .ticket-form-group input, .ticket-form-group select, .ticket-form-group textarea { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 10px; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; transition: all 0.3s; resize: vertical; }
+    .ticket-form-group input:focus, .ticket-form-group select:focus, .ticket-form-group textarea:focus { border-color: var(--accent); background: rgba(0,0,0,0.8); box-shadow: 0 0 10px rgba(56, 189, 248, 0.15); }
+    .ticket-form-group select option { background: #020617; color: #ffffff; padding: 10px; }
+    
+    .file-upload-wrapper { position: relative; width: 100%; height: 100px; border: 2px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.02); }
+    .file-upload-wrapper:hover { border-color: var(--accent); background: rgba(56,189,248,0.05); }
+    .file-upload-wrapper input[type="file"] { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
+    .file-upload-inner { text-align: center; color: var(--text-muted); }
+    .file-upload-inner svg { width: 30px; height: 30px; fill: var(--accent); margin-bottom: 5px; }
+    #preview-image { max-height: 80px; display: none; border-radius: 4px; z-index: 2; position: absolute; }
+
+    .btn-submit-ticket { width: 100%; background: var(--accent); color: #000; font-weight: 700; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family: 'Tajawal', sans-serif; transition: all 0.3s ease; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+    .btn-submit-ticket:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4); }
+    .btn-submit-ticket:disabled { background: #555; color: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .ticket-result, .ticket-tracking-result { margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; display: none; }
+    .ticket-result.success, .ticket-tracking-result.success { background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; color: #4ade80; }
+    .ticket-result.error, .ticket-tracking-result.error { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #f87171; }
+    .tracking-code-display { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: 2px; margin: 10px 0; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; display: inline-block; font-family: monospace; }
+    
+    .spinner { border: 3px solid rgba(0,0,0,0.1); width: 20px; height: 20px; border-radius: 50%; border-left-color: #000; animation: spin 1s linear infinite; display: none; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .ticket-details-card { text-align: right; background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+    .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+    .status-pending { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid #facc15; }
+    .status-replied { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+    .admin-reply-box { margin-top: 15px; padding: 15px; background: rgba(56, 189, 248, 0.1); border-right: 3px solid var(--accent); border-radius: 4px; }
+  </style>
   
 
   <link rel="icon" type="image/png" href="../favicon.png">
@@ -31,6 +70,7 @@
 
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "SpinBetter", "operatingSystem": "ANDROID, WINDOWS, IOS", "applicationCategory": "GameApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "15320"}}</script>
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "SpinBetter Portal", "url": "https://kora74.online", "logo": "https://kora74.online/imgi_411_spinbetter-new-logo.png", "sameAs": ["https://redirspinner.com/2N0q?p=%2Fregistration%2F"]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ContactPage", "name": "دعم عملاء SpinBetter", "description": "بوابة الشكاوى والدعم الفني لمنصة SpinBetter، لتقديم التذاكر والتواصل مع خدمة العملاء.", "url": "https://kora74.online/spinbetter-support/", "mainEntity": {"@type": "Organization", "name": "SpinBetter", "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "availableLanguage": "Arabic"}}}</script>
 </head>
 <body class="rtl">
 
@@ -145,6 +185,11 @@
         <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg> اسكريبت التفاحة
       </a>
       <div class="sb-section-label">قانوني</div>
+      <a href="../spinbetter-scam-awareness/" class="sb-link" style="color:#ffcc00;">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M12 2L1 21h22M12 6l7.53 13H4.47M11 10v4h2v-4m-2 6v2h2v-2"></path>
+        </svg> أحذر المحتالين والنصب
+      </a>
       <a href="../spinbetter-about/" class="sb-link">
         <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
@@ -216,6 +261,92 @@
       <div class="box-icon">💬</div>
       <h1>دعم SpinBetter – خدمة العملاء باللغة العربية</h1>
       <p>فريق الدعم في سبين بيتر متاح على مدار الساعة طوال أيام الأسبوع لمساعدتك في أي استفسار أو مشكلة تواجهها.</p>
+    </div>
+
+    <!-- Ticket System Section -->
+    <div class="content-box reveal" style="padding: 0; background: transparent; border: none; box-shadow: none;">
+      <h2 style="margin-bottom: 0;">🎫 نظام الدعم الفني المباشر</h2>
+      
+      <div class="ticket-system-container">
+        <!-- Tabs -->
+        <div class="ticket-tabs">
+          <div class="ticket-tab active" onclick="switchTicketTab('create')">تقديم تذكرة جديدة</div>
+          <div class="ticket-tab" onclick="switchTicketTab('track')">متابعة حالة التذكرة</div>
+        </div>
+
+        <!-- Create Ticket Form -->
+        <div id="tab-create" class="ticket-tab-content active">
+          <form id="create-ticket-form">
+            <div class="ticket-form-group">
+              <label for="ticket-name">الاسم بالكامل / الـ ID الخاص بك</label>
+              <input type="text" id="ticket-name" required placeholder="أدخل اسمك أو رقم حسابك (ID)">
+            </div>
+            <div class="ticket-form-group">
+              <label for="ticket-issue">نوع المشكلة</label>
+              <select id="ticket-issue" required>
+                <option value="" disabled selected>-- اختر نوع المشكلة --</option>
+                <option value="تأخر سحب (Withdrawal Delay)">تأخر سحب (Withdrawal Delay)</option>
+                <option value="تأخر إيداع (Deposit Delay)">تأخر إيداع (Deposit Delay)</option>
+                <option value="مشكلة في الإيداع بفودافون كاش">مشكلة في الإيداع بفودافون كاش أو إنستا باي</option>
+                <option value="استفسار عن البونص (Bonus Query)">استفسار عن البونص (Bonus Query)</option>
+                <option value="مشكلة تقنية (Technical Issue)">مشكلة تقنية أو رسالة خطأ (Technical Issue)</option>
+                <option value="أخرى (Other)">أخرى (Other)</option>
+              </select>
+            </div>
+            <div class="ticket-form-group">
+              <label for="ticket-message">تفاصيل المشكلة بدقة</label>
+              <textarea id="ticket-message" rows="4" required placeholder="اشرح مشكلتك بالتفصيل هنا ليتمكن فريقنا من مساغدتك بأسرع وقت..."></textarea>
+            </div>
+            <div class="ticket-form-group">
+              <label>إرفاق صورة للمشكلة (إيصال التحويل أو لقطة شاشة الخطأ)</label>
+              <div class="file-upload-wrapper">
+                <input type="file" id="ticket-image" accept="image/png, image/jpeg, image/webp" required>
+                <div class="file-upload-inner" id="upload-placeholder">
+                  <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                  <div>اضغط هنا لاختيار صورة</div>
+                  <div style="font-size: 11px; margin-top: 4px; opacity: 0.7;">(JPG, PNG, WEBP) بحد أقصى 5MB</div>
+                </div>
+                <img id="preview-image" src="" alt="Preview">
+              </div>
+            </div>
+            
+            <button type="submit" class="btn-submit-ticket" id="submitBtn">
+              إرسال التذكرة الآن 
+              <div class="spinner" id="submitSpinner"></div>
+            </button>
+            <div id="ticket-result" class="ticket-result"></div>
+          </form>
+        </div>
+
+        <!-- Track Ticket -->
+        <div id="tab-track" class="ticket-tab-content">
+          <form id="track-ticket-form">
+            <div class="ticket-form-group">
+              <label for="track-code">رقم التذكرة (Tracking ID)</label>
+              <input type="text" id="track-code" required placeholder="مثال: TCK-XXXXXX" style="text-transform: uppercase;">
+            </div>
+            <button type="submit" class="btn-submit-ticket" id="trackBtn">
+              استعلام عن التذكرة
+              <div class="spinner" id="trackSpinner"></div>
+            </button>
+            <div id="track-result" class="ticket-tracking-result"></div>
+            
+            <div id="ticket-details-card" class="ticket-details-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <strong id="detail-code" style="color: var(--accent); font-size: 18px;"></strong>
+                <span id="detail-status" class="status-badge"></span>
+              </div>
+              <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;"><strong>الاسم:</strong> <span id="detail-name"></span></div>
+              <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;"><strong>المشكلة:</strong> <span id="detail-issue"></span></div>
+              
+              <div id="detail-reply-section" class="admin-reply-box" style="display: none;">
+                <div style="font-weight: 700; color: var(--accent); margin-bottom: 8px;">📩 رد الدعم الفني:</div>
+                <div id="detail-reply" style="color: #fff; line-height: 1.6; white-space: pre-wrap;"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <div class="content-box reveal">

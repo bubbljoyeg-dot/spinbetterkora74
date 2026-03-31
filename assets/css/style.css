@@ -2416,3 +2416,76 @@ h1 {
     flex: 1;
     justify-content: flex-end;
 }
+
+/* Chat Bubbles (Scam Awareness) */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 30px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.chat-bubble.scammer {
+  background: var(--accent);
+  color: #fff;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-bubble.victim {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble .time {
+  font-size: 11px;
+  opacity: 0.7;
+  display: block;
+  text-align: right;
+  margin-top: 5px;
+}
+
+.chat-divider {
+  text-align: center;
+  font-size: 12px;
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.1);
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin: 10px auto;
+  display: inline-block;
+  font-weight: bold;
+}
+
+.awareness-warning {
+  background: linear-gradient(135deg, rgba(255, 77, 77, 0.1) 0%, rgba(255, 0, 0, 0.2) 100%);
+  border-left: 4px solid #ff4d4d;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 30px 0;
+  text-align: center;
+}
+
+.awareness-warning h3 {
+  color: #ff4d4d;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+

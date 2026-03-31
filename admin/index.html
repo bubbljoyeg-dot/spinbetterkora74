@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>لوحة التحكم | نظام التذاكر</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen full-center active">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>🔐 لوحة الإدارة</h2>
+                <p>قم بتسجيل الدخول للوصول إلى التذاكر</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="admin-email" required placeholder="admin@example.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="admin-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="loginBtn">دخول <div class="spinner" id="loginSpinner"></div></button>
+                <div id="login-error" class="error-msg"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="screen">
+        <header class="admin-header">
+            <div class="brand">🎫 نظام إدارة التذاكر</div>
+            <div class="header-actions">
+                <span id="admin-user-display" class="user-display"></span>
+                <button class="btn btn-danger btn-sm" id="logoutBtn">تسجيل الخروج</button>
+            </div>
+        </header>
+        
+        <main class="admin-main">
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-title">إجمالي التذاكر</div>
+                    <div class="stat-value" id="stat-total">0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-title">قيد الانتظار</div>
+                    <div class="stat-value" id="stat-pending">0</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-title">تم الرد</div>
+                    <div class="stat-value" id="stat-replied">0</div>
+                </div>
+            </div>
+
+            <div class="tickets-container">
+                <div class="section-header">
+                    <h2>قائمة التذاكر الحديثة</h2>
+                    <button class="btn btn-secondary btn-sm" id="refreshBtn">🔄 تحديث البيانات</button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="tickets-table">
+                        <thead>
+                            <tr>
+                                <th>رقم التذكرة</th>
+                                <th>تاريخ الإنشاء</th>
+                                <th>اسم العميل</th>
+                                <th>المشكلة</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tickets-tbody">
+                            <!-- Injected by JS -->
+                            <tr id="loading-row"><td colspan="6" class="text-center">جاري تحميل البيانات...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Viewing/Replying to Ticket -->
+    <div id="ticket-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تفاصيل التذكرة <span id="modal-track-code" style="color:var(--accent);"></span></h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-info-grid">
+                    <div><strong>اسم العميل:</strong> <span id="model-customer-name"></span></div>
+                    <div><strong>تاريخ الإنشاء:</strong> <span id="model-date"></span></div>
+                    <div><strong>نوع المشكلة:</strong> <span id="model-issue-type"></span></div>
+                    <div><strong>الحالة الحالية:</strong> <span id="model-status"></span></div>
+                    <div style="grid-column: 1 / -1;">
+                        <strong>التفاصيل التي كتبها العميل:</strong>
+                        <div id="model-issue-desc" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 8px; white-space: pre-wrap; line-height: 1.6; color: #fff; border: 1px solid var(--border);"></div>
+                    </div>
+                </div>
+                
+                <div class="ticket-image-box">
+                    <strong>الصورة المرفقة:</strong>
+                    <div style="margin-top: 10px;">
+                        <a id="modal-image-link" href="#" target="_blank">
+                            <img id="modal-image" src="" alt="مرفق التذكرة">
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ticket-reply-box">
+                    <label>رد الإدارة المستتر للعميل (يظهر للعميل عند الاستعلام)</label>
+                    <textarea id="modal-admin-reply" rows="4" placeholder="اكتب ردك هنا... العميل سيراه عند التحقق من التذكرة"></textarea>
+                    
+                    <label style="margin-top: 15px;">تغيير حالة التذكرة</label>
+                    <select id="modal-status-select">
+                        <option value="قيد الانتظار">قيد الانتظار</option>
+                        <option value="تأكيد الاستلام وجاري التحقق">تأكيد الاستلام وجاري التحقق</option>
+                        <option value="تم الرد">تم الرد - بانتظار العميل</option>
+                        <option value="تم الحل">تم الحل</option>
+                        <option value="مغلقة">مغلقة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="modal-delete-btn">🗑️ مسح التذكرة بالكامل</button>
+                <button class="btn btn-primary" id="modal-save-btn">💾 حفظ التعديلات والرد</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
