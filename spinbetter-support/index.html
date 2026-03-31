@@ -1,324 +1,833 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مركز الدعم الفني | SpinBetter</title>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#020617">
+  <title>دعم SpinBetter | تواصل مع خدمة العملاء 24/7</title>
+  <link rel="canonical" href="https://kora74.online/spinbetter-support/">
+  <meta name="description"
+    content="خدمة عملاء SpinBetter متاحة 24 ساعة يومياً. تواصل عبر الدردشة المباشرة، البريد الإلكتروني أو تيليغرام للحصول على مساعدة فورية.">
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;900&family=Poppins:wght@400;500;600;700;900&display=swap"
+    rel="stylesheet">
+
+
   <link rel="stylesheet" href="../assets/css/style.css?v=2024">
   <script src="../analytics_and_cookies.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../assets/js/support-ticket.js?v=2024" defer></script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-  
   <style>
-    /* Premium Support UI Styles */
-    :root {
-        --sp-bg: #0f172a;
-        --sp-card-bg: rgba(30, 41, 59, 0.7);
-        --sp-accent: #38bdf8;
-        --sp-accent-glow: rgba(56, 189, 248, 0.4);
-        --sp-text: #f8fafc;
-        --sp-text-muted: #94a3b8;
-        --sp-border: rgba(255, 255, 255, 0.08);
-        --sp-danger: #ef4444;
-        --sp-success: #22c55e;
+    .ticket-system-container {
+      margin-top: 20px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      overflow: hidden;
     }
-    
-    body {
-        background-color: var(--sp-bg);
-        background-image: radial-gradient(circle at top right, rgba(56,189,248,0.1) 0%, transparent 40%),
-                          radial-gradient(circle at bottom left, rgba(14,165,233,0.15) 0%, transparent 40%);
-        background-attachment: fixed;
-        color: var(--sp-text);
-        font-family: 'Tajawal', sans-serif;
-        margin: 0; padding: 0; min-height: 100vh;
-    }
-    
-    .sp-wrapper {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 20px;
-        box-sizing: border-box;
-    }
-    
-    .sp-card {
-        background: var(--sp-card-bg);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid var(--sp-border);
-        border-radius: 24px;
-        width: 100%;
-        max-width: 600px;
-        padding: 40px;
-        box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    /* Decoration Line */
-    .sp-card::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-        background: linear-gradient(90deg, transparent, var(--sp-accent), transparent);
-        opacity: 0.8;
-    }
-    
-    .sp-header {
-        text-align: center; margin-bottom: 35px;
-    }
-    .sp-header h1 {
-        font-size: 28px; font-weight: 900; margin: 0 0 10px; color: #fff;
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .sp-header h1 span { color: var(--sp-accent); }
-    .sp-header p {
-        color: var(--sp-text-muted); font-size: 15px; margin: 0;
-    }
-    
-    /* Tabs */
-    .sp-tabs {
-        display: flex; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 16px; margin-bottom: 30px;
-    }
-    .ticket-tab {
-        flex: 1; text-align: center; padding: 14px; font-size: 15px; font-weight: 700; color: var(--sp-text-muted);
-        border-radius: 12px; cursor: pointer; transition: all 0.3s; user-select: none;
-    }
-    .ticket-tab.active {
-        background: var(--sp-accent); color: #000; box-shadow: 0 4px 15px var(--sp-accent-glow);
-    }
-    
-    /* Content Sections */
-    .ticket-tab-content { display: none; animation: spFadeIn 0.4s ease; }
-    .ticket-tab-content.active { display: block; }
-    
-    @keyframes spFadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Form Elements */
-    .sp-form-group { margin-bottom: 22px; }
-    .sp-form-group label {
-        display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #e2e8f0;
-    }
-    .sp-form-group label span { color: var(--sp-danger); margin-right: 4px; }
-    
-    .sp-input, .sp-select, .sp-textarea {
-        width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.4); border: 2px solid transparent;
-        border-bottom: 2px solid var(--sp-border); color: #fff; border-radius: 12px;
-        padding: 16px; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; transition: all 0.3s;
-    }
-    .sp-select option { background: #0f172a; }
-    .sp-input:focus, .sp-select:focus, .sp-textarea:focus {
-        background: rgba(0,0,0,0.6); border-bottom-color: var(--sp-accent);
-    }
-    .sp-textarea { min-height: 120px; resize: vertical; }
-    
-    /* Upload Box */
-    .sp-upload-box {
-        border: 2px dashed var(--sp-border); border-radius: 16px; padding: 30px; text-align: center;
-        background: rgba(0,0,0,0.2); cursor: pointer; transition: all 0.3s; position: relative;
-    }
-    .sp-upload-box:hover { border-color: var(--sp-accent); background: rgba(56,189,248,0.05); }
-    .sp-upload-box input { display: none; }
-    .sp-upload-icon { font-size: 32px; color: var(--sp-accent); margin-bottom: 10px; }
-    .sp-upload-text { font-size: 14px; font-weight: 600; color: var(--sp-text-muted); }
-    .sp-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; display: none; }
-    
-    /* Buttons */
-    .sp-btn {
-        width: 100%; border: none; padding: 18px; border-radius: 14px; font-family: 'Tajawal', sans-serif;
-        font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .sp-btn-primary {
-        background: linear-gradient(135deg, var(--sp-accent), #0ea5e9); color: #000;
-        box-shadow: 0 10px 20px -5px var(--sp-accent-glow);
-    }
-    .sp-btn-primary:hover {
-        transform: translateY(-2px); box-shadow: 0 15px 25px -5px var(--sp-accent-glow);
-    }
-    .sp-btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-    
-    /* Alerts & Results */
-    .ticket-result, .ticket-tracking-result { display: none; padding: 20px; border-radius: 16px; margin-top: 25px; text-align: center; }
-    .ticket-result.error, .ticket-tracking-result.error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
-    
-    /* Saved Tickets UI */
-    #saved-tickets-container { margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; display: none;}
-    #saved-tickets-container h3 { font-size: 15px; margin: 0 0 15px; color: var(--sp-text-muted); text-align: center; }
-    #saved-tickets-list { display: flex; flex-direction: column; gap: 10px; }
-    
-    /* Detailed Card (Track) */
-    .sp-detail-card {
-        background: rgba(0,0,0,0.4); border: 1px solid var(--sp-border); border-radius: 16px;
-        padding: 25px; margin-top: 25px; display: none; text-align: right; animation: spFadeIn 0.5s ease;
-    }
-    .sp-detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--sp-border); align-items: center;}
-    .sp-detail-row:last-child { border-bottom: none; }
-    .sp-label { font-size: 14px; color: var(--sp-text-muted); }
-    .sp-value { font-size: 15px; font-weight: 700; color: #fff; }
-    .sp-value.code { color: var(--sp-accent); font-family: monospace; font-size: 18px; letter-spacing: 1px;}
-    
-    .status-badge {
-        padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800;
-    }
-    .status-pending { background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234,179,8,0.3); }
-    .status-replied { background: rgba(34, 197, 94, 0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
-    
-    .reply-box {
-        margin-top: 20px; background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3);
-        border-radius: 16px; padding: 25px; position: relative;
-    }
-    .reply-box h4 { margin: 0 0 15px; font-size: 15px; color: var(--sp-accent); display: flex; align-items: center; gap: 8px;}
-    .reply-content { font-size: 15px; line-height: 1.8; color: #f8fafc; }
-    
-    /* Spinner */
-    .spinner {
-        width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.2); border-left-color: #000;
-        border-radius: 50%; display: none; animation: spin 1s linear infinite;
-    }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* Home Btn */
-    .btn-home {
-        display: inline-flex; align-items: center; gap: 8px; color: var(--sp-text-muted);
-        text-decoration: none; font-size: 14px; font-weight: 700; transition: color 0.3s;
-        margin-bottom: 20px;
+    .ticket-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
     }
-    .btn-home:hover { color: var(--sp-accent); }
-    
-    @media (max-width: 600px) {
-        .sp-card { padding: 25px; border-radius: 0; min-height: 100vh; border: none; }
-        .sp-wrapper { padding: 0; }
-        .sp-tabs { flex-direction: column; gap: 5px;}
-        .sp-detail-row { flex-direction: column; align-items: flex-start; gap: 8px;}
+
+    .ticket-tab {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .ticket-tab.active {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .ticket-tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .ticket-tab-content.active {
+      display: block;
+    }
+
+    .ticket-form-group {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+
+    .ticket-form-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .ticket-form-group input,
+    .ticket-form-group select,
+    .ticket-form-group textarea {
+      width: 100%;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-radius: 10px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s;
+      resize: vertical;
+    }
+
+    .ticket-form-group input:focus,
+    .ticket-form-group select:focus,
+    .ticket-form-group textarea:focus {
+      border-color: var(--accent);
+      background: rgba(0, 0, 0, 0.8);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+    }
+
+    .ticket-form-group select option {
+      background: #020617;
+      color: #ffffff;
+      padding: 10px;
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100px;
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .file-upload-wrapper:hover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .file-upload-wrapper input[type="file"] {
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-upload-inner {
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .file-upload-inner svg {
+      width: 30px;
+      height: 30px;
+      fill: var(--accent);
+      margin-bottom: 5px;
+    }
+
+    #preview-image {
+      max-height: 80px;
+      display: none;
+      border-radius: 4px;
+      z-index: 2;
+      position: absolute;
+    }
+
+    .btn-submit-ticket {
+      width: 100%;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: 'Tajawal', sans-serif;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit-ticket:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-submit-ticket:disabled {
+      background: #555;
+      color: #aaa;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .ticket-result,
+    .ticket-tracking-result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+
+    .ticket-result.success,
+    .ticket-tracking-result.success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid #22c55e;
+      color: #4ade80;
+    }
+
+    .ticket-result.error,
+    .ticket-tracking-result.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      color: #f87171;
+    }
+
+    .tracking-code-display {
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 2px;
+      margin: 10px 0;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 8px;
+      display: inline-block;
+      font-family: monospace;
+    }
+
+    .spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border-left-color: #000;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .ticket-details-card {
+      text-align: right;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-pending {
+      background: rgba(234, 179, 8, 0.2);
+      color: #facc15;
+      border: 1px solid #facc15;
+    }
+
+    .status-replied {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid #4ade80;
+    }
+
+    .admin-reply-box {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(56, 189, 248, 0.1);
+      border-right: 3px solid var(--accent);
+      border-radius: 4px;
     }
   </style>
 
+
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../favicon.png">
+
+
+
+
+  <script
+    type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "SpinBetter", "operatingSystem": "ANDROID, WINDOWS, IOS", "applicationCategory": "GameApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "15320"}}</script>
+  <script
+    type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "SpinBetter Portal", "url": "https://kora74.online", "logo": "https://kora74.online/imgi_411_spinbetter-new-logo.png", "sameAs": ["https://redirspinner.com/2N0q?p=%2Fregistration%2F"]}</script>
+  <script
+    type="application/ld+json">{"@context": "https://schema.org", "@type": "ContactPage", "name": "دعم عملاء SpinBetter", "description": "بوابة الشكاوى والدعم الفني لمنصة SpinBetter، لتقديم التذاكر والتواصل مع خدمة العملاء.", "url": "https://kora74.online/spinbetter-support/", "mainEntity": {"@type": "Organization", "name": "SpinBetter", "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "availableLanguage": "Arabic"}}}</script>
 </head>
-<body>
 
-<div class="sp-wrapper">
-    <div class="sp-card">
-        
-        <a href="../" class="btn-home">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21 11H6.83l3.58-3.59L9 6l-6 6 6 6 1.41-1.41L6.83 13H21v-2z"/></svg>
-            العودة للرئيسية
-        </a>
+<body class="rtl">
 
-        <div class="sp-header">
-            <h1>دعم <span>SpinBetter</span> الفني</h1>
-            <p>نحن هنا لمساعدتك على مدار الساعة، بكفاءة وسرعة احترافية.</p>
+  <!-- ===[ Sidebar Overlay ]=== -->
+  <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ===[ Sidebar ]=== -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">Spin<span>Better</span></div>
+      <button class="sb-close" onclick="closeSidebar()">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+        </svg>
+      </button>
+    </div>
+    <div class="sb-promo">
+      <div class="sb-promo-label">بروموكود حصري</div>
+      <div class="sb-promo-code">W300</div>
+      <button class="sb-promo-btn"
+        onclick="window.open('https://redirspinner.com/2N0q?p=%2Fregistration%2F','_blank')">سجّل
+        الآن</button>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section-label">الرئيسية</div>
+      <a href="../" class="sb-link active">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg> الرئيسية
+      </a>
+      <div class="sb-section-label">الحساب</div>
+      <a href="../spinbetter-registration/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        </svg> التسجيل
+      </a>
+      <a href="../spinbetter-promo-code/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" />
+        </svg> بروموكود W300
+      </a>
+      <a href="../spinbetter-deposit/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1H7.29c.13 2.18 1.75 3.4 3.71 3.81V21h3v-2.14c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.41z" />
+        </svg> الإيداع
+      </a>
+      <a href="../spinbetter-withdrawal/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+        </svg> السحب
+      </a>
+      <a href="../spinbetter-support/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+        </svg> الدعم الفني
+      </a>
+      <div class="sb-section-label">المحتوى</div>
+      <a href="../spinbetter-sports-betting/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.53 0 10-4.48 10-10S17.53 2 12 2zM9.5 16.5v-9l7 4.5-7 4.5z" />
+        </svg> المراهنات الرياضية
+      </a>
+      <a href="../spinbetter-casino/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z" />
+        </svg> الكازينو
+      </a>
+      <a href="../spinbetter-egypt/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+        </svg> SpinBetter مصر
+      </a>
+      <a href="../spinbetter-ios/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" />
+        </svg> iOS / iPhone
+      </a>
+      <a href="../spinbetter-pc/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z" />
+        </svg> الكمبيوتر (PC)
+      </a>
+      <a href="../spinbetter-comprehensive/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" />
+        </svg> الدليل الشامل
+      </a>
+      <a href="../spinbetter-apple-script/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+        </svg> سكربت التفاحه
+      </a>
+
+      <div class="sb-section-label">للمصريين 🇪🇬</div>
+      <a href="../spinbetter-egypt-guide/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+        </svg> الدليل المصري
+      </a>
+      <a href="../spinbetter-vodafone-cash/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1H7.29c.13 2.18 1.75 3.4 3.71 3.81V21h3v-2.14c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.41z" />
+        </svg> سحب فودافون كاش
+      </a>
+      <a href="../spinbetter-apple-script-egypt/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+        </svg> اسكريبت التفاحة
+      </a>
+      <div class="sb-section-label">قانوني</div>
+      <a href="../spinbetter-scam-awareness/" class="sb-link" style="color:#ffcc00;">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M12 2L1 21h22M12 6l7.53 13H4.47M11 10v4h2v-4m-2 6v2h2v-2"></path>
+        </svg> أحذر المحتالين والنصب
+      </a>
+      <a href="../spinbetter-about/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+        </svg> من نحن
+      </a>
+      <a href="../spinbetter-privacy/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+        </svg> سياسة الخصوصية
+      </a>
+      <a href="../spinbetter-cookies/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M21.93 12.35c-.15-.46-.62-.7-1.09-.56C19.84 12.1 18.73 11.6 18.73 10.53c0-.92.75-1.68 1.68-1.68.49 0 .95.21 1.27.57.32.36.85.4 1.21.09.36-.31.4-.85.09-1.2C22.11 7.47 21.09 7 20 7c-1.65 0-3 1.35-3 3 0 .85.35 1.63.91 2.19-.72.24-1.41.6-2 1.09C14.02 11.08 12.04 10 9.8 10c-2.79 0-5.11 1.81-5.84 4.36C2.77 14.63 2 15.71 2 17c0 1.93 1.57 3.5 3.5 3.5h13.5c1.93 0 3.5-1.57 3.5-3.5 0-1.93-1.57-3.5-3.5-3.5-.2 0-.39.02-.57.05z" />
+        </svg> الكوكيز
+      </a>
+      <a href="../spinbetter-faq/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+        </svg> أسئلة شائعة (FAQ)
+      </a>
+    </nav>
+    <div class="sb-foot">
+      <a href="https://redirspinner.com/2N0q?p=%2Fregistration%2F" class="sb-reg-btn">سجّل الآن وابدأ مع W300</a>
+    </div>
+  </div>
+
+
+  <!-- ===[ Top Marquee Bar ]=== -->
+  <div class="top-bar" role="marquee" aria-label="عروض وأخبار">
+    <div class="marquee-content" id="top-marquee">
+      🔥 استخدم كود W300 واحصل على مكافأة 200%! &nbsp; ✦ &nbsp; 💎 منصة SpinBetter الأولى في الوطن العربي. &nbsp; ✦
+      &nbsp; 🎰 أكثر من 7000 لعبة كازينو وماكينات سلوت بين يديك. &nbsp; ✦ &nbsp; ⚽ أفضل تغطية للمباريات العالمية
+      والمحلية مع أعلى الاحتمالات. &nbsp; ✦ &nbsp; 🚀 طرق دفع وسحب متعددة وآمنة وبدون عمولات. &nbsp; ✦ &nbsp; 📊 دعم
+      عربي مباشر على مدار 24 ساعة لخدمتك. &nbsp; ✦ &nbsp; 💰 التسجيل مجاني مع بونص ترحيبي ضخم عند أول إيداع!
+    </div>
+  </div>
+
+  <!-- ===[ App Header ]=== -->
+  <div class="app-header">
+    <div class="header-inner">
+      <a href="../" class="logo logo-img">
+        <img src="../imgi_411_spinbetter-new-logo.png" alt="SpinBetter" class="header-logo-img">
+      </a>
+      <nav class="header-nav" aria-label="التنقل الرئيسي">
+        <a href="../">الرئيسية</a>
+        <a href="../sports/">المباريات</a>
+        <a href="../spinbetter-about/">من نحن</a>
+        <a href="../spinbetter-support/">الدعم</a>
+      </nav>
+      <div class="hdr-actions">
+        <button class="hdr-search-bar" onclick="openSearch()" aria-label="البحث في الموقع">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+          <span>عن ماذا تبحث...؟</span>
+        </button>
+        <button class="hdr-burger" id="menuBtn" onclick="toggleSidebar()" aria-label="فتح القائمة"
+          aria-expanded="false">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <main class="container">
+
+    <div class="main-container">
+      <div class="content-grid">
+
+        <div class="content-box reveal">
+          <div class="box-icon">💬</div>
+          <h1>دعم SpinBetter – خدمة العملاء باللغة العربية</h1>
+          <p>فريق الدعم في سبين بيتر متاح على مدار الساعة طوال أيام الأسبوع لمساعدتك في أي استفسار أو مشكلة تواجهها.</p>
         </div>
 
-        <div class="sp-tabs">
-            <div class="ticket-tab active" onclick="switchTicketTab('create')">✍️ فتح تذكرة جديدة</div>
-            <div class="ticket-tab" onclick="switchTicketTab('track')">🔍 متابعة حالة الطلب</div>
-        </div>
+        <!-- Ticket System Section -->
+        <div class="content-box reveal" style="padding: 0; background: transparent; border: none; box-shadow: none;">
+          <h2 style="margin-bottom: 0;">🎫 نظام الدعم الفني المباشر</h2>
 
-        <!-- CREATE TICKET TAB -->
-        <div id="tab-create" class="ticket-tab-content active">
-            <form id="create-ticket-form">
-                
-                <div class="sp-form-group">
-                    <label>الاسم بالكامل <span>*</span></label>
-                    <input type="text" id="ticket-name" class="sp-input" placeholder="اكتب اسمك الحقيقي للتواصل..." required>
+          <div class="ticket-system-container">
+            <!-- Tabs -->
+            <div class="ticket-tabs">
+              <div class="ticket-tab active" onclick="switchTicketTab('create')">تقديم تذكرة جديدة</div>
+              <div class="ticket-tab" onclick="switchTicketTab('track')">متابعة حالة التذكرة</div>
+            </div>
+
+            <!-- Create Ticket Form -->
+            <div id="tab-create" class="ticket-tab-content active">
+              <form id="create-ticket-form">
+                <div class="ticket-form-group">
+                  <label for="ticket-name">الاسم بالكامل / الـ ID الخاص بك</label>
+                  <input type="text" id="ticket-name" required placeholder="أدخل اسمك أو رقم حسابك (ID)">
                 </div>
-                
-                <div class="sp-form-group">
-                    <label>نوع المشكلة أو الاستفسار <span>*</span></label>
-                    <select id="ticket-issue" class="sp-select" required>
-                        <option value="" disabled selected>-- اختر التصنيف المناسب --</option>
-                        <option value="مشكلة في الإيداع (Deposit Issue)">مشكلة في الإيداع (Deposit Issue)</option>
-                        <option value="مشكلة في السحب (Withdraw Issue)">مشكلة في السحب (Withdraw Issue)</option>
-                        <option value="استفسار عن البونص (Bonus Query)">استفسار عن البونص (Bonus Query)</option>
-                        <option value="توثيق الحساب (KYC/Verification)">توثيق الحساب (Account Verification)</option>
-                        <option value="مشكلة تقنية (Technical Issue)">عطل فني في الموقع أو لعبة (Technical)</option>
-                        <option value="أخرى (Other)">أسباب أخرى</option>
-                    </select>
+                <div class="ticket-form-group">
+                  <label for="ticket-issue">نوع المشكلة</label>
+                  <select id="ticket-issue" required>
+                    <option value="" disabled selected>-- اختر نوع المشكلة --</option>
+                    <option value="تأخر سحب (Withdrawal Delay)">تأخر سحب (Withdrawal Delay)</option>
+                    <option value="تأخر إيداع (Deposit Delay)">تأخر إيداع (Deposit Delay)</option>
+                    <option value="مشكلة في الإيداع بفودافون كاش">مشكلة في الإيداع بفودافون كاش أو إنستا باي</option>
+                    <option value="استفسار عن البونص (Bonus Query)">استفسار عن البونص (Bonus Query)</option>
+                    <option value="مشكلة تقنية (Technical Issue)">مشكلة تقنية أو رسالة خطأ (Technical Issue)</option>
+                    <option value="أخرى (Other)">أخرى (Other)</option>
+                  </select>
+                </div>
+                <div class="ticket-form-group">
+                  <label for="ticket-message">تفاصيل المشكلة بدقة</label>
+                  <textarea id="ticket-message" rows="4" required
+                    placeholder="اشرح مشكلتك بالتفصيل هنا ليتمكن فريقنا من مساغدتك بأسرع وقت..."></textarea>
+                </div>
+                <div class="ticket-form-group">
+                  <label>إرفاق صورة للمشكلة (اختياري)</label>
+                  <div class="file-upload-wrapper">
+                    <input type="file" id="ticket-image" accept="image/png, image/jpeg, image/webp">
+                    <div class="file-upload-inner" id="upload-placeholder">
+                      <svg viewBox="0 0 24 24">
+                        <path
+                          d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+                      </svg>
+                      <div>اضغط هنا لاختيار صورة</div>
+                      <div style="font-size: 11px; margin-top: 4px; opacity: 0.7;">(JPG, PNG, WEBP) بحد أقصى 5MB</div>
+                    </div>
+                    <img id="preview-image" src="" alt="Preview">
+                  </div>
                 </div>
 
-                <div class="sp-form-group">
-                    <label>شرح تفصيلي للمشكلة <span>*</span></label>
-                    <textarea id="ticket-message" class="sp-textarea" placeholder="يرجى توضيح المشكلة بدقة ليمكننا حلها فوراً..." required></textarea>
-                </div>
-
-                <div class="sp-form-group">
-                    <label>صورة أو إثبات (اختياري)</label>
-                    <label for="ticket-image" class="sp-upload-box">
-                        <div id="upload-placeholder">
-                            <div class="sp-upload-icon">📸</div>
-                            <div class="sp-upload-text">اضغط هنا لإرفاق لقطة شاشة تدعم طلبك (Max 5MB)</div>
-                        </div>
-                        <img id="preview-image" class="sp-preview" alt="معاينة الصورة المرفقة">
-                        <input type="file" id="ticket-image" accept="image/png, image/jpeg, image/jpg, image/webp">
-                    </label>
-                </div>
-
-                <button type="submit" id="submitBtn" class="sp-btn sp-btn-primary">
-                    إرسال التذكرة الآن
-                    <div class="spinner" id="submitSpinner"></div>
+                <button type="submit" class="btn-submit-ticket" id="submitBtn">
+                  إرسال التذكرة الآن
+                  <div class="spinner" id="submitSpinner"></div>
                 </button>
-                
                 <div id="ticket-result" class="ticket-result"></div>
-            </form>
-        </div>
-
-        <!-- TRACK TICKET TAB -->
-        <div id="tab-track" class="ticket-tab-content">
-            
-            <div id="saved-tickets-container">
-                <h3>تذاكرك المحفوظة مؤخراً 📌</h3>
-                <div id="saved-tickets-list"></div>
+              </form>
             </div>
 
-            <form id="track-ticket-form">
-                <div class="sp-form-group">
-                    <label>رقم التذكرة (Tracking Code) <span>*</span></label>
-                    <input type="text" id="track-code" class="sp-input" placeholder="مثال: TCK-XYZ123" required style="text-align: left; direction: ltr; font-weight: bold; font-family: monospace; font-size: 18px;">
-                </div>
+            <!-- Track Ticket -->
+            <div id="tab-track" class="ticket-tab-content">
+              
+              <!-- Saved Tickets Container -->
+              <div id="saved-tickets-container" style="margin-bottom: 25px; display: none;">
+                <h3 style="color: var(--accent); margin-bottom: 15px; font-size: 16px;">تذاكرك المحفوظة</h3>
+                <div id="saved-tickets-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+              </div>
 
-                <button type="submit" id="trackBtn" class="sp-btn sp-btn-primary">
-                    استعلام عن الحالة
-                    <div class="spinner" id="trackSpinner"></div>
+              <form id="track-ticket-form">
+                <div class="ticket-form-group">
+                  <label for="track-code">أو أدخل رقم التذكرة يدوياً (Tracking ID)</label>
+                  <input type="text" id="track-code" required placeholder="مثال: TCK-XXXXXX"
+                    style="text-transform: uppercase;">
+                </div>
+                <button type="submit" class="btn-submit-ticket" id="trackBtn">
+                  استعلام عن التذكرة
+                  <div class="spinner" id="trackSpinner"></div>
                 </button>
-            </form>
+                <div id="track-result" class="ticket-tracking-result"></div>
 
-            <div id="track-result" class="ticket-tracking-result"></div>
+                <div id="ticket-details-card" class="ticket-details-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong id="detail-code" style="color: var(--accent); font-size: 18px;"></strong>
+                    <span id="detail-status" class="status-badge"></span>
+                  </div>
+                  <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;"><strong>الاسم:</strong>
+                    <span id="detail-name"></span>
+                  </div>
+                  <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;"><strong>المشكلة:</strong>
+                    <span id="detail-issue"></span>
+                  </div>
 
-            <div id="ticket-details-card" class="sp-detail-card">
-                <div class="sp-detail-row">
-                    <span class="sp-label">رقم التذكرة المرجعي</span>
-                    <span class="sp-value code" id="detail-code">---</span>
+                  <div id="detail-reply-section" class="admin-reply-box" style="display: none;">
+                    <div style="font-weight: 700; color: var(--accent); margin-bottom: 8px;">📩 رد الدعم الفني:</div>
+                    <div id="detail-reply" style="color: #fff; line-height: 1.6; white-space: pre-wrap;"></div>
+                  </div>
                 </div>
-                <div class="sp-detail-row">
-                    <span class="sp-label">اسم العميل</span>
-                    <span class="sp-value" id="detail-name">---</span>
-                </div>
-                <div class="sp-detail-row">
-                    <span class="sp-label">نوع الطلب</span>
-                    <span class="sp-value" id="detail-issue">---</span>
-                </div>
-                <div class="sp-detail-row">
-                    <span class="sp-label">الحالة الحالية</span>
-                    <span id="detail-status" class="status-badge status-pending">---</span>
-                </div>
-
-                <div id="detail-reply-section" class="reply-box" style="display: none;">
-                    <h4>
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99A5.5 5.5 0 1012 1a5.5 5.5 0 000 11zM11 14h2v3h-2zm0-5h2v4h-2z"/></svg>
-                        الرد الرسمي من الدعم الفني:
-                    </h4>
-                    <div id="detail-reply" class="reply-content"></div>
-                </div>
+              </form>
             </div>
+          </div>
         </div>
+
+        <div class="content-box reveal">
+          <h2>📞 طرق التواصل</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;margin-top:15px;">
+            <div
+              style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.3);border-radius:12px;padding:20px;text-align:center;">
+              <div style="font-size:36px;margin-bottom:10px;">💬</div>
+              <strong>الدردشة المباشرة</strong>
+              <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">استجابة فورية في أقل من دقيقة</p>
+              <a href="https://spin-b.com/mwGY27?tag=d_207183m_665038c_cz_7KM6jg8k4YYCKuqWum5UTg" target="_blank"
+                class="btn-main"
+                style="display:inline-block;margin-top:12px;padding:8px 16px;background:var(--accent);color:#000;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none;">ابدأ
+                الدردشة</a>
+            </div>
+            <div
+              style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.3);border-radius:12px;padding:20px;text-align:center;">
+              <div style="font-size:36px;margin-bottom:10px;">📧</div>
+              <strong>البريد الإلكتروني</strong>
+              <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">رد خلال 24 ساعة عمل</p>
+              <span
+                style="display:inline-block;margin-top:12px;color:var(--accent);font-size:13px;">support@spinbetter.com</span>
+            </div>
+            <div
+              style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.3);border-radius:12px;padding:20px;text-align:center;">
+              <div style="font-size:36px;margin-bottom:10px;">📱</div>
+              <strong>تيليغرام</strong>
+              <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">قناة حصرية للمستخدمين العرب</p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="content-box reveal">
+          <h2>❓ الأسئلة الشائعة</h2>
+          <div class="faq-item"
+            style="margin-bottom:15px;padding:15px;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid var(--border);">
+            <h4 style="color:var(--accent);margin:0 0 8px;">كيف أعيد ضبط كلمة المرور؟</h4>
+            <p style="color:var(--text-muted);margin:0;">انتقل لصفحة تسجيل الدخول واضغط "نسيت كلمة المرور". ستصلك رسالة
+              استعادة على البريد أو الهاتف.</p>
+          </div>
+          <div class="faq-item"
+            style="margin-bottom:15px;padding:15px;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid var(--border);">
+            <h4 style="color:var(--accent);margin:0 0 8px;">لم يصلني بونص W300</h4>
+            <p style="color:var(--text-muted);margin:0;">تأكد أنك أدخلت الكود بشكل صحيح قبل التسجيل. تواصل مع الدعم إذا
+              لم يُضاف البونص خلال 30 دقيقة من الإيداع.</p>
+          </div>
+          <div class="faq-item"
+            style="margin-bottom:15px;padding:15px;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid var(--border);">
+            <h4 style="color:var(--accent);margin:0 0 8px;">تأخرت عملية السحب</h4>
+            <p style="color:var(--text-muted);margin:0;">معظم عمليات السحب تُعالَج خلال 24 ساعة. إذا تأخّر أكثر، تواصل
+              مع الدعم مع ذكر رقم المعاملة.</p>
+          </div>
+          <div class="faq-item"
+            style="padding:15px;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid var(--border);">
+            <h4 style="color:var(--accent);margin:0 0 8px;">كيف أتحقق من حسابي؟</h4>
+            <p style="color:var(--text-muted);margin:0;">انتقل لإعدادات الحساب وارفع صورة جواز السفر أو بطاقة الهوية.
+              عادةً ما يستغرق التحقق 24-48 ساعة.</p>
+          </div>
+        </div>
+
+        <div class="content-box reveal">
+          <h2>🕐 ساعات الدعم</h2>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <th style="padding:10px;text-align:right;border:1px solid var(--border);color:var(--accent);">القناة</th>
+              <th style="padding:10px;text-align:center;border:1px solid var(--border);color:var(--accent);">الإتاحة
+              </th>
+            </tr>
+            <tr>
+              <td style="padding:10px;border:1px solid var(--border);color:var(--text-muted);">الدردشة المباشرة</td>
+              <td style="padding:10px;text-align:center;border:1px solid var(--border);">24/7</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;border:1px solid var(--border);color:var(--text-muted);">البريد الإلكتروني</td>
+              <td style="padding:10px;text-align:center;border:1px solid var(--border);">24/7</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;border:1px solid var(--border);color:var(--text-muted);">تيليغرام</td>
+              <td style="padding:10px;text-align:center;border:1px solid var(--border);">24/7</td>
+            </tr>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- ===[ Premium Neon Footer ]=== -->
+  <footer class="premium-footer" role="contentinfo" aria-label="SpinBetter Footer">
+    <div class="pf-container">
+
+      <!-- Premium Seamless CTA -->
+      <div class="pf-huge-cta reveal">
+        <div class="pf-cta-badge">🔥 بونص ترحيبي حصري 200%</div>
+        <h3 class="pf-cta-heading">لا تضيع الفرصة، ضاعف إيداعك الأول!</h3>
+        <p class="pf-cta-sub">استخدم الكود <strong>W300</strong> عند إنشاء حسابك الآن واستمتع بتجربة الكازينو والمراهنات
+          الأقوى في مصر والوطن العربي.</p>
+        <a href="https://redirspinner.com/2N0q?p=%2Fregistration%2F" target="_blank" rel="noopener"
+          class="btn-glowing-massive">
+          استلم 200% بونص الان - سجل بكود W300
+        </a>
+      </div>
+
+      <!-- 4-Column Grid -->
+      <div class="pf-grid">
+        <div class="pf-col-brand">
+          <a href="../" class="pf-logo-wrap" aria-label="الرئيسية">
+            <img src="../imgi_411_spinbetter-new-logo.png" alt="SpinBetter" loading="lazy">
+          </a>
+          <p class="pf-about-text">
+            البوابة الرسمية الأولى للمراهنات الرياضية والكازينو الحي في الشرق الأوسط. الترفيه، الأمان، والمكافآت في منصة
+            واحدة.
+          </p>
+        </div>
+
+        <div class="pf-col-links">
+          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">روابط
+            سريعة<span class="pf-chevron">▼</span></h4>
+          <ul class="pf-nav-list">
+            <li><a href="../spinbetter-cookies/">سياسة الكوكيز</a></li>
+            <li><a href="../">الرئيسية</a></li>
+            <li><a href="../spinbetter-registration/">التسجيل</a></li>
+            <li><a href="../spinbetter-deposit/">الإيداع</a></li>
+            <li><a href="../spinbetter-withdrawal/">السحب</a></li>
+            <li><a href="../spinbetter-faq/">أسئلة شائعة</a></li>
+            <li><a href="../spinbetter-sitemap/" style="font-weight: bold; color: var(--accent);">خريطة الموقع</a></li>
+          </ul>
+        </div>
+
+        <div class="pf-col-links">
+          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">الألعاب
+            والمكافآت<span class="pf-chevron">▼</span></h4>
+          <ul class="pf-nav-list">
+            <li><a href="../spinbetter-casino/">الكازينو الحي</a></li>
+            <li><a href="../spinbetter-sports-betting/">المراهنات الرياضية</a></li>
+            <li><a href="../spinbetter-promo-code/">بروموكود W300</a></li>
+            <li><a href="../spinbetter-egypt/">بوابة مصر</a></li>
+            <li><a href="../spinbetter-apple-script/">سكربت التفاحه</a></li>
+            <li style="margin-top: 5px; font-weight: bold; color: var(--accent);">محتوى مصري 🇪🇬</li>
+            <li><a href="../spinbetter-egypt-guide/">الدليل الشامل للربح</a></li>
+            <li><a href="../spinbetter-vodafone-cash/">تعليمات انستا باي</a></li>
+            <li><a href="../spinbetter-apple-script-egypt/">شرح اسكريبت التفاحة</a></li>
+          </ul>
+        </div>
+
+        <div class="pf-col-links">
+          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">الدعم
+            وتطبيقاتنا<span class="pf-chevron">▼</span></h4>
+          <ul class="pf-nav-list">
+            <li><a href="../spinbetter-ios/">تطبيق iOS</a></li>
+            <li><a href="../spinbetter-pc/">تطبيق الكمبيوتر</a></li>
+            <li><a href="../spinbetter-support/">اتصل بنا</a></li>
+            <li><a href="../spinbetter-comprehensive/">دليل شامل</a></li>
+            <li><a href="../spinbetter-responsible-gambling/">اللعب بمسؤولية</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Payment Strip -->
+      <div class="pf-payment-strip">
+        <h4>طرق الدفع المدعومة في مصر 🇪🇬</h4>
+        <div class="pf-payment-logos">
+          <img src="../vodafone_cash_logo.png" alt="فودافون كاش" title="فودافون كاش" loading="lazy">
+          <img src="../instapay_logo.png" alt="إنستا باي" title="InstaPay" loading="lazy">
+          <img src="../we_pay_logo.png" alt="وي باي" title="WE Pay" loading="lazy">
+          <img src="../USDT-TRC20.png" alt="USDT TRC20" title="USDT" loading="lazy">
+        </div>
+      </div>
+
+      <!-- Bottom Legal -->
+      <div class="pf-legal">
+        <div class="pf-badges">
+          <span class="pf-badge"><span class="pf-badge-icon">🔞</span> 18+ بالغين فقط</span>
+          <span class="pf-badge"><span class="pf-badge-icon">🔒</span> SSL تشفير آمن</span>
+          <span class="pf-badge"><span class="pf-badge-icon">⚖️</span> عادل وموثوق</span>
+        </div>
+        <div class="pf-rg-warning">
+          المقامرة قد تسبب الإدمان والضيق المالي. يُرجى <a href="../spinbetter-responsible-gambling/">قراءة دليل التوعية
+            واللعب بمسؤولية</a>.
+        </div>
+        <p>
+          المقامرة قد تؤدي إلى الإدمان. يُرجى اللعب بمسؤولية. لا يُسمح للأشخاص دون السن القانوني بالمراهنة وفقاً لقوانين
+          الاختصاص المحلي.<br>
+          © 2026 SpinBetter Portal - جميع الحقوق محفوظة.
+        </p>
+      </div>
 
     </div>
-</div>
+  </footer>
+
+
+
+  <div class="floating-cta" id="stickyCta">
+    <a href="https://spin-b.com/mwGY27?tag=d_207183m_665038c_cz_7KM6jg8k4YYCKuqWum5UTg" target="_blank"
+      class="btn btn-app" style="margin:0;padding:16px;font-size:15px;">
+      تحميل SpinBetter - كود W300
+    </a>
+  </div>
+  <div class="toast" id="copyToast">
+    <div class="toast-title">تم نسخ الكود!</div>
+    <div class="toast-desc">استخدم W300 عند التسجيل للحصول على مكافأتك</div>
+  </div>
+  <script src="../assets/js/search_index.js"></script>
+  <script src="../assets/js/main.js?v=2"></script>
+
+  <!-- ===[ Global Search Modal ]=== -->
+  <div class="search-overlay" id="searchModal">
+    <div class="search-header">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+        </svg>
+        <input type="text" id="searchInput" placeholder="عن ماذا تبحث؟ (كازينو، مكافآت، طيارة...)"
+          oninput="handleSearch(event)">
+      </div>
+      <button class="close-search" onclick="closeSearch()">&times;</button>
+    </div>
+    <div class="search-results" id="searchResults">
+      <!-- injected via js -->
+    </div>
+  </div>
 
 </body>
+
 </html>

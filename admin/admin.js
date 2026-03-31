@@ -7,29 +7,8 @@ try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (e) {
     console.error("Supabase failed to load:", e);
-    setTimeout(() => showToast("Warning: Database library failed to load! Check AdBlocker.", 'warning'), 1000);
+    alert("Warning: Database library failed to load! If you are using an AdBlocker, please disable it and ensure you have internet connection.");
 }
-
-// Toast Notification System
-window.showToast = function(message, type = 'success') {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    const icon = type === 'error' ? '❌' : (type === 'warning' ? '⚠️' : '✅');
-    toast.innerHTML = `<span style="font-size:18px">${icon}</span> <span>${message}</span>`;
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.classList.add('fadeOut');
-        setTimeout(() => toast.remove(), 400);
-    }, 4000);
-};
 
 // DOM Elements
 const loginScreen = document.getElementById('login-screen');
@@ -92,7 +71,7 @@ window.handleLogin = async function() {
         if (error) throw error;
         
         if (!data.session) {
-            showToast("Logged in but no active session found. Confirm email.", 'warning');
+            alert("Logged in but no active session found. You may need to confirm your email.");
         }
         
         currentAdminSession = data.session || { user: data.user || {email: email} };
@@ -108,7 +87,7 @@ window.handleLogin = async function() {
         if(document.getElementById('loginSpinner')) document.getElementById('loginSpinner').style.display = 'none';
     }
     } catch (criticalErr) {
-        showToast("Unexpected processing error: " + criticalErr.message, 'error');
+        alert("Unexpected processing error: " + criticalErr.message);
     }
 };
 
@@ -137,10 +116,10 @@ function showDashboard() {
             userEmail = document.getElementById('admin-email').value;
         }
         
-        document.getElementById('admin-user-info').innerText = userEmail;
+        document.getElementById('admin-user-display').innerText = userEmail;
         loadTickets();
     } catch (e) {
-        showToast("Error loading dashboard: " + e.message, 'error');
+        alert("Error loading dashboard: " + e.message);
     }
 }
 
@@ -156,7 +135,7 @@ async function loadTickets() {
             .order('created_at', { ascending: false });
             
         if (error) {
-            showToast('Error loading tickets: ' + error.message, 'error');
+            alert('Error loading tickets: ' + error.message);
             throw error;
         }
         
@@ -305,49 +284,18 @@ document.getElementById('saveReplyBtn').addEventListener('click', async () => {
             
         if (error) throw error;
         
-        showToast('Ticket successfully updated and resolution saved!', 'success');
+        alert('Ticket successfully updated and resolution saved!');
         document.getElementById('ticket-modal').classList.remove('active');
         loadTickets(); // Refresh table
     } catch (err) {
-        showToast('Failed to save data: ' + err.message, 'error');
+        alert('Failed to save data: ' + err.message);
     } finally {
         btn.disabled = false;
         spinner.style.display = 'none';
     }
 });
 
-// Delete Ticket Logic
-const deleteBtn = document.getElementById('deleteTicketBtn');
-if(deleteBtn) {
-    deleteBtn.addEventListener('click', async () => {
-        if(!currentViewingTicket) return;
-        
-        const confirmDelete = confirm("Are you sure you want to PERMANENTLY delete this ticket?");
-        if (!confirmDelete) return;
-        
-        const originalText = deleteBtn.innerHTML;
-        deleteBtn.innerHTML = 'Deleting...';
-        deleteBtn.disabled = true;
-        
-        try {
-            const { error } = await supabaseClient
-                .from('support_tickets')
-                .delete()
-                .eq('id', currentViewingTicket.id);
-                
-            if (error) throw error;
-            
-            showToast('Ticket has been permanently deleted.', 'success');
-            document.getElementById('ticket-modal').classList.remove('active');
-            loadTickets();
-        } catch (err) {
-            showToast('Failed to delete: ' + err.message, 'error');
-        } finally {
-            deleteBtn.innerHTML = originalText;
-            deleteBtn.disabled = false;
-        }
-    });
-}
+// Delete Ticket feature disabled in new UI as requested to prioritize reply/resolve flows.
 
 // Initialize
 checkAuth();

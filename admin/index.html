@@ -199,25 +199,19 @@
                         <label>Post-action Ticket Status:</label>
                         <select id="modal-status-select">
                             <option value="قيد الانتظار">Pending (Awaiting Further Check)</option>
-                            <option value="جاري التحقيق">Under Investigation (In Progress)</option>
                             <option value="تم الرد">Resolved & Replied (Closed)</option>
-                            <option value="مرفوضة">Rejected (Spam / Invalid)</option>
-                            <option value="تصعيد للإدارة">Escalated to Management</option>
                         </select>
                     </div>
                 </div>
                 
             </div>
             
-            <div class="modal-footer" style="justify-content: space-between;">
-                <button class="btn-danger" id="deleteTicketBtn" style="width: auto; padding: 12px 20px; font-size: 14px;">🗑️ Delete Ticket</button>
-                <div style="display: flex; gap: 15px;">
-                    <button class="btn-secondary" id="closeModalBtnFooter" style="padding:12px 24px;">Cancel</button>
-                    <button class="btn-save" id="saveReplyBtn">
-                        Commit Resolution & Notify
-                        <div class="spinner" id="saveSpinner" style="display: none; border-left-color: #000; width:16px; height:16px; margin-left:8px; vertical-align:middle;"></div>
-                    </button>
-                </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeModalBtnFooter" style="padding:12px 24px;">Cancel</button>
+                <button class="btn-save" id="saveReplyBtn">
+                    Commit Resolution & Notify
+                    <div class="spinner" id="saveSpinner" style="display: none; border-left-color: #000; width:16px; height:16px; margin-left:8px; vertical-align:middle;"></div>
+                </button>
             </div>
         </div>
     </div>
