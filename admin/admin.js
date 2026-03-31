@@ -2,7 +2,13 @@
 const SUPABASE_URL = 'https://whwilmaizmfqgcgowrwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase;
+try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+    console.error("Supabase failed to load:", e);
+    alert("تنبيه: لم يتم تحميل مكتبة قاعدة البيانات! إذا كنت تستخدم إضافة لمنع الإعلانات (AdBlocker) يرجى إيقافها، وتأكد من اتصالك بالإنترنت.");
+}
 
 // DOM Elements
 const loginScreen = document.getElementById('login-screen');
@@ -18,24 +24,34 @@ let currentViewingTicket = null;
 
 // Auth Check on load
 async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-        currentAdminSession = session;
-        showDashboard();
-    } else {
+    if (!supabase) return;
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            currentAdminSession = session;
+            showDashboard();
+        } else {
+            showLogin();
+        }
+    } catch(err) {
         showLogin();
     }
 }
 
 // Login execution
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+window.handleLogin = async function() {
     const email = document.getElementById('admin-email').value;
     const password = document.getElementById('admin-password').value;
     const loginError = document.getElementById('login-error');
     const loginBtn = document.getElementById('loginBtn');
     const spinner = document.getElementById('loginSpinner');
     
+    if (!supabase) {
+        loginError.innerText = 'يوجد مانع إعلانات (AdBlocker) يوقف السكربت أو لا يوجد اتصال إنترنت. يرجى إيقافه وتحديث الصفحة.';
+        loginError.style.display = 'block';
+        return;
+    }
+
     loginBtn.disabled = true;
     spinner.style.display = 'block';
     loginError.style.display = 'none';
@@ -55,7 +71,7 @@ loginForm.addEventListener('submit', async (e) => {
         loginBtn.disabled = false;
         spinner.style.display = 'none';
     }
-});
+};
 
 // Logout
 logoutBtn.addEventListener('click', async () => {
