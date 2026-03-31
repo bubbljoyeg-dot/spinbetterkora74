@@ -1,19 +1,18 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="en" dir="ltr" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة القيادة | نظام تذاكر SpinBetter</title>
+    <title>Admin Dashboard | SpinBetter Support</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="admin.css">
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         window.onerror = function (msg, url, line) {
-            alert("خطأ برمجي في الصفحة!\nالرسالة: " + msg + "\nالسطر: " + line);
+            alert("System Error!\nMsg: " + msg + "\nLine: " + line);
         };
     </script>
 </head>
@@ -25,22 +24,22 @@
         <div class="login-card">
             <h2>
                 <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-                بوابة الإدارة المركزية
+                Central Admin Portal
             </h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px;">قم بتسجيل الدخول للوصول الآمن لنظام التذاكر</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px;">Securely log in to the ticketing system</p>
             
             <div id="login-form">
                 <div class="form-group">
-                    <label>البريد الإلكتروني المعتمد</label>
-                    <input type="email" id="admin-email" placeholder="admin@spinbetter.com">
+                    <label>Authorized Email Address</label>
+                    <input type="email" id="admin-email" placeholder="admin@domain.com">
                 </div>
                 <div class="form-group">
-                    <label>كلمة المرور المشفرة</label>
+                    <label>Encrypted Password</label>
                     <input type="password" id="admin-password" placeholder="••••••••">
                 </div>
                 <button type="button" class="btn-primary" id="loginBtn"
-                    onclick="if(window.handleLogin) window.handleLogin(); else alert('ملف السكربت لم يکتمل تحميله!');">
-                    دخول النظام
+                    onclick="if(window.handleLogin) window.handleLogin(); else alert('Core scripts failed to load!');">
+                    Access System
                     <div class="spinner" id="loginSpinner" style="display: none; border-left-color: #000;"></div>
                 </button>
                 <div id="login-error" class="error-msg"></div>
@@ -60,14 +59,13 @@
             <div class="sidebar-menu">
                 <a class="menu-item active">
                     <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-                    <span>لوحة القياس</span>
+                    <span>Dashboard</span>
                 </a>
-                <!-- Add more tabs here in the future if needed -->
             </div>
 
             <div class="sidebar-footer">
                 <div class="admin-info" id="admin-user-info">admin@domain.com</div>
-                <button class="btn-danger" id="logoutBtn">تسجيل الخروج</button>
+                <button class="btn-danger" id="logoutBtn">Logout</button>
             </div>
         </aside>
 
@@ -78,7 +76,7 @@
             <section class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-info">
-                        <h3>إجمالي التذاكر النشطة</h3>
+                        <h3>Total Active Tickets</h3>
                         <p id="total-count">0</p>
                     </div>
                     <div class="stat-icon icon-total">🎫</div>
@@ -86,7 +84,7 @@
                 
                 <div class="stat-card">
                     <div class="stat-info">
-                        <h3>تذاكر قيد الانتظار (تحت المراجعة)</h3>
+                        <h3>Pending Review</h3>
                         <p id="pending-count">0</p>
                     </div>
                     <div class="stat-icon icon-pending">⏳</div>
@@ -94,7 +92,7 @@
                 
                 <div class="stat-card">
                     <div class="stat-info">
-                        <h3>تذاكر تم الرد عليها وإغلاقها</h3>
+                        <h3>Resolved / Replied</h3>
                         <p id="resolved-count">0</p>
                     </div>
                     <div class="stat-icon icon-resolved">✅</div>
@@ -104,27 +102,29 @@
             <!-- Tickets Data Table -->
             <section class="table-section">
                 <div class="table-header">
-                    <h2>سجل تذاكر الدعم الفني الأخيرة</h2>
-                    <button class="btn-secondary" id="refreshBtn">🔄 تحديث القائمة</button>
+                    <h2>Recent Support Tickets</h2>
+                    <button class="btn-secondary" id="refreshBtn">
+                        <svg viewBox="0 0 24 24" style="width:16px; fill:currentColor;"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        Refresh List
+                    </button>
                 </div>
                 
                 <div class="table-responsive">
                     <table class="tickets-table">
                         <thead>
                             <tr>
-                                <th style="width: 15%">رقم التتبع (ID)</th>
-                                <th style="width: 20%">اسم العميل</th>
-                                <th style="width: 20%">نوع المشكلة</th>
-                                <th style="width: 15%">تاريخ ووقت الإنشاء</th>
-                                <th style="width: 15%">حالة التذكرة</th>
-                                <th style="width: 15%">إجراءات مسؤولة</th>
+                                <th style="width: 15%">Tracking ID</th>
+                                <th style="width: 20%">Customer Name</th>
+                                <th style="width: 20%">Issue Category</th>
+                                <th style="width: 15%">Creation Date</th>
+                                <th style="width: 15%">Status</th>
+                                <th style="width: 15%">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="tickets-tbody">
-                            <!-- Rows Injected by JS -->
                             <tr id="loading-row">
                                 <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
-                                    جاري سحب بيانات التذاكر من الخوادم...
+                                    Fetching ticket data securely from the database...
                                 </td>
                             </tr>
                         </tbody>
@@ -135,13 +135,13 @@
         </main>
     </div>
 
-    <!-- Ticket Read/Reply Modal (Premium) -->
+    <!-- Ticket Read/Reply Modal (Premium LTR) -->
     <div id="ticket-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>
                     <svg viewBox="0 0 24 24" style="width:24px;fill:var(--accent);"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l4 4 4-4h3c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/></svg>
-                    استعراض التذكرة التفصيلية
+                    Ticket Inspection & Resolution
                 </h2>
                 <button class="close-btn" id="closeModalBtn">&times;</button>
             </div>
@@ -151,48 +151,55 @@
                 <!-- Quick Info Ribbon -->
                 <div class="modal-info-grid">
                     <div class="info-item">
-                        <span class="label">كود التتبع للعميل</span>
+                        <span class="label">Tracking Code</span>
                         <span class="val" id="model-code" style="color: var(--accent); font-family: monospace;">---</span>
                     </div>
                     <div class="info-item">
-                        <span class="label">اسم العميل المُسجل</span>
+                        <span class="label">Customer Name</span>
                         <span class="val" id="model-name">---</span>
                     </div>
                     <div class="info-item">
-                        <span class="label">تصنيف المشكلة التقنية</span>
+                        <span class="label">Issue Category</span>
                         <span class="val" id="model-issue-type">---</span>
                     </div>
                     <div class="info-item">
-                        <span class="label">حالة التذكرة الآن</span>
+                        <span class="label">Current Status</span>
                         <span class="val" id="model-status">---</span>
                     </div>
                 </div>
                 
                 <!-- Description Section -->
                 <div class="modal-description">
-                    <span class="label">وصف المشكلة الكامل (نصياً من العميل):</span>
-                    <div class="desc-box" id="model-issue-desc">لا يوجد وصف...</div>
+                    <span class="label">Detailed Statement from Customer:</span>
+                    <div class="desc-box" id="model-issue-desc">No detailed breakdown provided.</div>
                 </div>
 
                 <!-- Attached Media (Image/Screenshot) -->
                 <div class="modal-image-col">
-                    <span class="label">المرفقات والصور الاستدلالية:</span>
+                    <span class="label">Customer Attachment (Screenshot/Proof):</span>
                     <div class="img-container" id="model-image">
                         <!-- Image injected via JS -->
-                        <div class="no-image">لم يقم العميل بإرفاق أي صور لهذه التذكرة.</div>
+                        <div class="no-image">No images or screenshots attached by the customer.</div>
                     </div>
                 </div>
 
                 <!-- Admin Action Area -->
                 <div class="modal-reply-col">
-                    <label>الرد الرسمي للإدارة وعلاج المشكلة (يظهر للعميل حصراً):</label>
-                    <textarea id="modal-admin-reply" placeholder="قم بصياغة الرد الشافي للعميل المشتكي هنا... سيتمكن من قراءته بمجرد الاستعلام في واجهة الدعم."></textarea>
+                    <label>Official Admin Resolution & Reply:</label>
+                    <textarea id="modal-admin-reply" placeholder="Provide a comprehensive and professional resolution for the customer. This will be publicly available in their tracking portal."></textarea>
                     
+                    <label for="admin-image-upload" class="admin-upload-area">
+                        <svg viewBox="0 0 24 24" style="width:24px; fill:currentColor; margin-bottom:5px;"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                        <span>Attach supplementary image for customer (Optional)</span>
+                        <input type="file" id="admin-image-upload" accept="image/png, image/jpeg, image/webp">
+                        <div class="upload-filename" id="admin-upload-filename"></div>
+                    </label>
+
                     <div class="status-select-wrapper">
-                        <label>تحديد مسار وحالة التذكرة (بعد الرد):</label>
+                        <label>Post-action Ticket Status:</label>
                         <select id="modal-status-select">
-                            <option value="قيد الانتظار">قيد الانتظار (لم يتم حلها بعد)</option>
-                            <option value="تم الرد">تم الرد وإغلاق الطلب (مُعالجة)</option>
+                            <option value="قيد الانتظار">Pending (Awaiting Further Check)</option>
+                            <option value="تم الرد">Resolved & Replied (Closed)</option>
                         </select>
                     </div>
                 </div>
@@ -200,10 +207,10 @@
             </div>
             
             <div class="modal-footer">
-                <button class="btn-secondary" id="closeModalBtnFooter" style="padding:12px 24px;">إلغاء وتجاهل</button>
+                <button class="btn-secondary" id="closeModalBtnFooter" style="padding:12px 24px;">Cancel</button>
                 <button class="btn-save" id="saveReplyBtn">
-                    حفظ القرار وإرسال الرد
-                    <div class="spinner" id="saveSpinner" style="display: none; border-left-color: #000; width:16px; height:16px; margin-right:8px; vertical-align:middle;"></div>
+                    Commit Resolution & Notify
+                    <div class="spinner" id="saveSpinner" style="display: none; border-left-color: #000; width:16px; height:16px; margin-left:8px; vertical-align:middle;"></div>
                 </button>
             </div>
         </div>
@@ -212,7 +219,7 @@
     <!-- Hidden Input for Delete Logic -->
     <input type="hidden" id="modal-ticket-id">
 
-    <script src="admin.js"></script>
+    <script src="admin.js?v=2024"></script>
 </body>
 
 </html>

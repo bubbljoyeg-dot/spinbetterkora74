@@ -1,7 +1,9 @@
 /* 
-   Premium Admin Dashboard UI 
+   Premium Admin Dashboard UI (English/LTR)
    Designed for SpinBetter Support System
 */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
     --bg-main: #020617;
@@ -15,7 +17,7 @@
     --danger: #ef4444;
     --success: #22c55e;
     --warning: #eab308;
-    --font-family: 'Tajawal', sans-serif;
+    --font-family: 'Inter', sans-serif;
 }
 
 * {
@@ -28,9 +30,8 @@ body {
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: var(--font-family);
-    direction: rtl;
+    direction: ltr;
     min-height: 100vh;
-    display: flex;
     overflow-x: hidden;
 }
 
@@ -45,11 +46,15 @@ body {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
-    display: flex;
+    display: none; /* Hidden by default unless .active */
     align-items: center;
     justify-content: center;
     z-index: 1000;
 }
+.login-screen.active {
+    display: flex;
+}
+
 .login-card {
     background: rgba(15, 23, 42, 0.6);
     backdrop-filter: blur(16px);
@@ -61,7 +66,13 @@ body {
     max-width: 400px;
     text-align: center;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.4s ease-out;
 }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .login-card h2 {
     color: var(--text-main);
     font-weight: 800;
@@ -75,13 +86,16 @@ body {
 .login-card h2 svg { fill: var(--accent); width: 28px; }
 .form-group {
     margin-bottom: 20px;
-    text-align: right;
+    text-align: left;
 }
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .form-group input {
     width: 100%;
@@ -130,22 +144,25 @@ body {
 
 /* --- Dashboard Layout --- */
 .dashboard-screen {
-    display: none;
+    display: none; /* Hidden by default unless .active */
     width: 100%;
     min-height: 100vh;
+}
+.dashboard-screen.active {
+    display: flex; /* THIS fixes the broken layout! */
 }
 
 /* Sidebar */
 .sidebar {
     width: 260px;
-    background: rgba(15, 23, 42, 0.4);
+    background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-left: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
     position: fixed;
-    right: 0; top: 0; bottom: 0;
+    left: 0; top: 0; bottom: 0;
     z-index: 100;
 }
 .sidebar-header {
@@ -174,12 +191,12 @@ body {
     font-weight: 600;
     transition: all 0.2s;
     cursor: pointer;
-    border-right: 3px solid transparent;
+    border-left: 3px solid transparent;
 }
 .menu-item:hover, .menu-item.active {
     background: var(--bg-glass-hover);
     color: var(--accent);
-    border-right-color: var(--accent);
+    border-left-color: var(--accent);
 }
 .menu-item svg { width: 22px; height: 22px; fill: currentColor; }
 
@@ -213,11 +230,12 @@ body {
 /* Main Content */
 .main-content {
     flex-grow: 1;
-    margin-right: 260px; /* offset for sidebar */
+    margin-left: 260px; /* offset for sidebar */
     padding: 30px 40px;
     display: flex;
     flex-direction: column;
     gap: 30px;
+    width: calc(100% - 260px);
 }
 
 /* Stats Cards */
@@ -240,7 +258,7 @@ body {
     transform: translateY(-5px);
     background: var(--bg-glass-hover);
 }
-.stat-info h3 { margin: 0; font-size: 14px; color: var(--text-muted); font-weight: 600; }
+.stat-info h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
 .stat-info p { margin: 10px 0 0; font-size: 32px; font-weight: 900; color: var(--text-main); }
 .stat-icon {
     width: 50px; height: 50px;
@@ -280,6 +298,9 @@ body {
     font-size: 13px;
     font-weight: 600;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 .btn-secondary:hover { background: rgba(255,255,255,0.1); }
 
@@ -287,14 +308,14 @@ body {
 .tickets-table {
     width: 100%;
     border-collapse: collapse;
-    text-align: right;
+    text-align: left;
 }
 .tickets-table th {
     padding: 16px 24px;
     background: rgba(0,0,0,0.2);
     color: var(--text-muted);
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -348,7 +369,7 @@ body {
     border: 1px solid var(--border-light);
     border-radius: 16px;
     width: 100%;
-    max-width: 800px;
+    max-width: 850px;
     max-height: 90vh;
     display: flex;
     flex-direction: column;
@@ -401,13 +422,13 @@ body {
     flex-direction: column;
     gap: 5px;
 }
-.info-item .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+.info-item .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
 .info-item .val { font-size: 15px; font-weight: 600; color: #fff; }
 
 .modal-description {
     grid-column: 1 / -1;
 }
-.modal-description .label { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px; display: block;}
+.modal-description .label { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 10px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
 .desc-box {
     background: rgba(255,255,255,0.02);
     padding: 20px;
@@ -422,7 +443,7 @@ body {
 .modal-image-col {
     grid-column: 1 / -1;
 }
-.modal-image-col .label { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: block; color: var(--text-muted); }
+.modal-image-col .label { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: block; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 .img-container {
     background: #020617;
     border-radius: 12px;
@@ -438,6 +459,7 @@ body {
 }
 .no-image { color: var(--text-muted); font-size: 14px; padding: 20px; }
 
+/* Admin Reply Section */
 .modal-reply-col {
     grid-column: 1 / -1;
     background: rgba(56, 189, 248, 0.05);
@@ -445,7 +467,7 @@ body {
     border-radius: 12px;
     border: 1px solid rgba(56, 189, 248, 0.2);
 }
-.modal-reply-col label { display: block; font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+.modal-reply-col label { display: block; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
 .modal-reply-col textarea {
     width: 100%;
     background: rgba(0,0,0,0.4);
@@ -459,10 +481,31 @@ body {
     resize: vertical;
     outline: none;
     transition: all 0.3s;
+    margin-bottom: 15px;
 }
 .modal-reply-col textarea:focus { border-color: var(--accent); }
 
-.status-select-wrapper { margin-top: 20px; }
+/* Custom File Upload for Admin */
+.admin-upload-area {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0,0,0,0.3);
+    border: 1px dashed var(--accent);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--accent);
+}
+.admin-upload-area:hover { background: rgba(56, 189, 248, 0.1); }
+.admin-upload-area input { display: none; }
+.upload-filename { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
 .status-select-wrapper select {
     width: 100%;
     padding: 14px;
@@ -496,6 +539,8 @@ body {
     font-size: 15px;
     cursor: pointer;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
 }
 .btn-save:hover { background: #7dd3fc; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(56,189,248,0.3); }
 
@@ -521,7 +566,7 @@ body {
     .admin-info { display: none; }
     .btn-danger { font-size: 0; padding: 10px; display: flex; justify-content: center; align-items: center; }
     .btn-danger::before { content: "🚪"; font-size: 16px; }
-    .main-content { margin-right: 80px; padding: 20px; }
+    .main-content { margin-left: 80px; padding: 20px; width: calc(100% - 80px); }
 }
 @media (max-width: 600px) {
     .stats-grid { grid-template-columns: 1fr; }

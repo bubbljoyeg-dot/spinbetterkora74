@@ -7,7 +7,7 @@ try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (e) {
     console.error("Supabase failed to load:", e);
-    alert("تنبيه: لم يتم تحميل مكتبة قاعدة البيانات! إذا كنت تستخدم إضافة لمنع الإعلانات (AdBlocker) يرجى إيقافها، وتأكد من اتصالك بالإنترنت.");
+    alert("Warning: Database library failed to load! If you are using an AdBlocker, please disable it and ensure you have internet connection.");
 }
 
 // DOM Elements
@@ -50,13 +50,13 @@ window.handleLogin = async function() {
         loginError.style.display = 'none';
         
         if (!email || !password) {
-            loginError.innerText = 'يرجى إدخال البريد الإلكتروني وكلمة المرور.';
+            loginError.innerText = 'Please enter both your email and password.';
             loginError.style.display = 'block';
             return;
         }
         
         if (!supabaseClient) {
-            loginError.innerText = 'يوجد مانع إعلانات (AdBlocker) يوقف السكربت أو لا يوجد اتصال إنترنت. يرجى إيقافه وتحديث الصفحة.';
+            loginError.innerText = 'Network error or AdBlocker preventing execution. Please disable and refresh.';
             loginError.style.display = 'block';
             return;
         }
@@ -71,7 +71,7 @@ window.handleLogin = async function() {
         if (error) throw error;
         
         if (!data.session) {
-            alert("تم تسجيل الدخول لكن لا توجد جلسة نشطة (Session). قد تحتاج لتأكيد إيميلك.");
+            alert("Logged in but no active session found. You may need to confirm your email.");
         }
         
         currentAdminSession = data.session || { user: data.user || {email: email} };
@@ -79,15 +79,15 @@ window.handleLogin = async function() {
     } catch (err) {
         console.error("Login Error:", err);
         loginError.innerText = (err.message === 'Invalid login credentials') 
-            ? 'خطأ: لم يتم العثور على هذا الحساب أو نسيان كلمة المرور.' 
-            : 'عذراً: ' + err.message;
+            ? 'Error: Account not found or incorrect credentials.' 
+            : 'Error: ' + err.message;
         loginError.style.display = 'block';
     } finally {
         if(document.getElementById('loginBtn')) document.getElementById('loginBtn').disabled = false;
         if(document.getElementById('loginSpinner')) document.getElementById('loginSpinner').style.display = 'none';
     }
     } catch (criticalErr) {
-        alert("حدث خطأ غير متوقع أثناء المعالجة: " + criticalErr.message);
+        alert("Unexpected processing error: " + criticalErr.message);
     }
 };
 
@@ -119,7 +119,7 @@ function showDashboard() {
         document.getElementById('admin-user-display').innerText = userEmail;
         loadTickets();
     } catch (e) {
-        alert("حدث خطأ أثناء فتح اللوحة: " + e.message);
+        alert("Error loading dashboard: " + e.message);
     }
 }
 
@@ -127,7 +127,7 @@ function showDashboard() {
 refreshBtn.addEventListener('click', loadTickets);
 
 async function loadTickets() {
-    ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center">🔄 جاري تحميل البيانات...</td></tr>`;
+    ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center">🔄 Loading data...</td></tr>`;
     try {
         const { data: tickets, error } = await supabaseClient
             .from('support_tickets')
@@ -135,7 +135,7 @@ async function loadTickets() {
             .order('created_at', { ascending: false });
             
         if (error) {
-            alert('خطأ في تحميل التذاكر: ' + error.message);
+            alert('Error loading tickets: ' + error.message);
             throw error;
         }
         
@@ -147,7 +147,7 @@ async function loadTickets() {
         // Render Table
         ticketsTbody.innerHTML = '';
         if (tickets.length === 0) {
-            ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--text-muted)">لا توجد تذاكر حالياً!</td></tr>`;
+            ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--text-muted)">No tickets found!</td></tr>`;
             return;
         }
         
@@ -170,7 +170,7 @@ async function loadTickets() {
                 <td>${ticket.issue_type}</td>
                 <td><span class="${badgeClass}">${ticket.status}</span></td>
                 <td>
-                    <button class="btn btn-secondary btn-sm review-btn">مراجعة ورد</button>
+                    <button class="btn btn-secondary btn-sm review-btn">Review</button>
                 </td>
             `;
             
@@ -180,7 +180,7 @@ async function loadTickets() {
         
     } catch (err) {
         console.error(err);
-        ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--danger)">فشل تحميل التذاكر!</td></tr>`;
+        ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--danger)">Failed to fetch tickets!</td></tr>`;
     }
 }
 
@@ -192,22 +192,38 @@ function openModal(ticket) {
     document.getElementById('model-code').innerText = ticket.tracking_code;
     document.getElementById('model-name').innerText = ticket.customer_name;
     document.getElementById('model-issue-type').innerText = ticket.issue_type;
-    document.getElementById('model-issue-desc').innerText = ticket.issue_description || 'العميل لم يكتب تفاصيل إضافية.';
+    document.getElementById('model-issue-desc').innerText = ticket.issue_description || 'No detailed description provided by the customer.';
     document.getElementById('model-status').innerText = ticket.status;
     
     // Image handling
     const imgContainer = document.getElementById('model-image');
     if (ticket.image_url) {
-        imgContainer.innerHTML = `<img src="${ticket.image_url}" alt="مرفق التذكرة">`;
+        imgContainer.innerHTML = `<img src="${ticket.image_url}" alt="Customer Attachment">`;
         imgContainer.style.display = 'block';
     } else {
-        imgContainer.innerHTML = '<div class="no-image">لم يقم العميل بإرفاق أي صور لهذه التذكرة.</div>';
+        imgContainer.innerHTML = '<div class="no-image">No attachment provided.</div>';
         imgContainer.style.display = 'block';
     }
+    
+    // Clear Admin Image Upload
+    const fileInput = document.getElementById('admin-image-upload');
+    const fileNameDisplay = document.getElementById('admin-upload-filename');
+    if(fileInput) fileInput.value = '';
+    if(fileNameDisplay) fileNameDisplay.innerText = '';
     
     // Setup Admin Inputs
     document.getElementById('modal-status-select').value = ticket.status;
     document.getElementById('modal-admin-reply').value = ticket.admin_reply || '';
+}
+
+// Listen to admin image selection
+const adminImageInput = document.getElementById('admin-image-upload');
+if(adminImageInput) {
+    adminImageInput.addEventListener('change', (e) => {
+        if(e.target.files && e.target.files[0]) {
+            document.getElementById('admin-upload-filename').innerText = "Selected: " + e.target.files[0].name;
+        }
+    });
 }
 
 // Close Modal
@@ -230,20 +246,49 @@ document.getElementById('saveReplyBtn').addEventListener('click', async () => {
     
     const newStatus = document.getElementById('modal-status-select').value;
     const newReply = document.getElementById('modal-admin-reply').value;
+    const adminUploadFile = document.getElementById('admin-image-upload').files[0];
     
     try {
+        let adminImgUrl = currentViewingTicket.admin_image_url; // Keep old if exists
+        
+        // Handle admin image upload if user selected one
+        if (adminUploadFile) {
+            const fileExt = adminUploadFile.name.split('.').pop();
+            const fileName = `admin_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `admin-replies/${fileName}`; 
+            
+            const { data: uploadData, error: uploadError } = await supabaseClient
+                .storage
+                .from('ticket-images')
+                .upload(filePath, adminUploadFile);
+                
+            if (uploadError) throw new Error("Failed to upload admin image: " + uploadError.message);
+            
+            const { data: publicUrlData } = supabaseClient.storage.from('ticket-images').getPublicUrl(filePath);
+            adminImgUrl = publicUrlData.publicUrl;
+        }
+
+        const updates = { 
+            status: newStatus, 
+            admin_reply: newReply
+        };
+        // Add admin_image_url only if we have one or if we're saving a new one
+        if (adminImgUrl !== undefined) {
+             updates.admin_image_url = adminImgUrl;
+        }
+        
         const { error } = await supabaseClient
             .from('support_tickets')
-            .update({ status: newStatus, admin_reply: newReply })
+            .update(updates)
             .eq('id', currentViewingTicket.id);
             
         if (error) throw error;
         
-        alert('تم حفظ التعديلات والرد بنجاح!');
+        alert('Ticket successfully updated and resolution saved!');
         document.getElementById('ticket-modal').classList.remove('active');
         loadTickets(); // Refresh table
     } catch (err) {
-        alert('فشل حفظ البيانات: ' + err.message);
+        alert('Failed to save data: ' + err.message);
     } finally {
         btn.disabled = false;
         spinner.style.display = 'none';

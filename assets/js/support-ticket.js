@@ -271,8 +271,37 @@ if (trackForm) {
                 }
                 
                 const replySection = document.getElementById('detail-reply-section');
+                const replyContent = document.getElementById('detail-reply');
+                replyContent.innerHTML = ''; // Clear previous content
+                
+                let hasReply = false;
+                
                 if (data.admin_reply && data.admin_reply.trim() !== '') {
-                    document.getElementById('detail-reply').innerText = data.admin_reply;
+                    const textDiv = document.createElement('div');
+                    textDiv.innerText = data.admin_reply;
+                    replyContent.appendChild(textDiv);
+                    hasReply = true;
+                }
+                
+                if (data.admin_image_url) {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.style.marginTop = '15px';
+                    imgDiv.style.textAlign = 'center';
+                    const img = document.createElement('img');
+                    img.src = data.admin_image_url;
+                    img.style.maxWidth = '100%';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '1px solid rgba(255,255,255,0.1)';
+                    const aLink = document.createElement('a');
+                    aLink.href = data.admin_image_url;
+                    aLink.target = '_blank';
+                    aLink.appendChild(img);
+                    imgDiv.appendChild(aLink);
+                    replyContent.appendChild(imgDiv);
+                    hasReply = true;
+                }
+                
+                if (hasReply) {
                     replySection.style.display = 'block';
                 } else {
                     replySection.style.display = 'none';
