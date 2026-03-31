@@ -78,22 +78,34 @@ if (createForm) {
         resultDiv.style.display = 'none';
         resultDiv.className = 'ticket-result';
         
+        if (!name || name.length < 2 || !issue || !message || message.length < 5) {
+            resultDiv.classList.add('error');
+            resultDiv.innerHTML = `❌ الرجاء إدخال اسمك الحقيقي، واختيار نوع المشكلة، وكتابة مسودة عن التفاصيل (5 أحرف على الأقل).`;
+            resultDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            spinner.style.display = 'none';
+            return;
+        }
+        
         try {
-            // Upload Image
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const filePath = `tickets/${fileName}`; // Save in "tickets" folder inside "ticket" bucket
-            
-            const { data: uploadData, error: uploadError } = await supabaseClient
-                .storage
-                .from('ticket')
-                .upload(filePath, file);
+            // Upload Image (Optional)
+            let imageUrl = null;
+            if (file) {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const filePath = `tickets/${fileName}`; 
                 
-            if (uploadError) throw uploadError;
-            
-            // Get public URL
-            const { data: publicUrlData } = supabaseClient.storage.from('ticket').getPublicUrl(filePath);
-            const imageUrl = publicUrlData.publicUrl;
+                const { data: uploadData, error: uploadError } = await supabaseClient
+                    .storage
+                    .from('ticket')
+                    .upload(filePath, file);
+                    
+                if (uploadError) throw uploadError;
+                
+                // Get public URL
+                const { data: publicUrlData } = supabaseClient.storage.from('ticket').getPublicUrl(filePath);
+                imageUrl = publicUrlData.publicUrl;
+            }
             
             // Generate tracking code
             const trackingCode = generateTrackingCode();
