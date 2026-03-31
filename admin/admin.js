@@ -65,7 +65,10 @@ window.handleLogin = async function() {
         currentAdminSession = data.session;
         showDashboard();
     } catch (err) {
-        loginError.innerText = 'البريد أو كلمة المرور غير صحيحة.';
+        console.error("Login Error:", err);
+        loginError.innerText = (err.message === 'Invalid login credentials') 
+            ? 'خطأ: لم يتم العثور على هذا الحساب أو نسيان كلمة المرور.' 
+            : 'عذراً: ' + err.message;
         loginError.style.display = 'block';
     } finally {
         loginBtn.disabled = false;
