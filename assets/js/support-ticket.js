@@ -130,7 +130,8 @@ if (createForm) {
         } catch (error) {
             console.error(error);
             resultDiv.classList.add('error');
-            resultDiv.innerHTML = `❌ حدث خطأ أثناء إرسال التذكرة. يرجى المحاولة مرة أخرى لاحقاً.`;
+            let errMsg = error.message || JSON.stringify(error);
+            resultDiv.innerHTML = `❌ فشل الإرسال! السبب من الداتا بيز:<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
             resultDiv.style.display = 'block';
         } finally {
             submitBtn.disabled = false;
@@ -202,7 +203,8 @@ if (trackForm) {
         } catch (error) {
             console.error(error);
             resultDiv.classList.add('error');
-            resultDiv.innerHTML = `❌ حدث خطأ بالاتصال. يرجى المحاولة مرة أخرى.`;
+            let errMsg = error.message || JSON.stringify(error);
+            resultDiv.innerHTML = `❌ حدث خطأ بالاتصال بالداتا بيز:<br><br><span style="color:#ffcc00; font-family:monospace; font-size:12px;">${errMsg}</span>`;
             resultDiv.style.display = 'block';
         } finally {
             trackBtn.disabled = false;
