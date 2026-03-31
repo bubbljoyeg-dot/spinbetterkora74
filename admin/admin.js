@@ -2,9 +2,9 @@
 const SUPABASE_URL = 'https://whwilmaizmfqgcgowrwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 
-let supabase;
+let supabaseClient;
 try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (e) {
     console.error("Supabase failed to load:", e);
     alert("تنبيه: لم يتم تحميل مكتبة قاعدة البيانات! إذا كنت تستخدم إضافة لمنع الإعلانات (AdBlocker) يرجى إيقافها، وتأكد من اتصالك بالإنترنت.");
@@ -24,9 +24,9 @@ let currentViewingTicket = null;
 
 // Auth Check on load
 async function checkAuth() {
-    if (!supabase) return;
+    if (!supabaseClient) return;
     try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
             currentAdminSession = session;
             showDashboard();
@@ -55,7 +55,7 @@ window.handleLogin = async function() {
             return;
         }
         
-        if (!supabase) {
+        if (!supabaseClient) {
             loginError.innerText = 'يوجد مانع إعلانات (AdBlocker) يوقف السكربت أو لا يوجد اتصال إنترنت. يرجى إيقافه وتحديث الصفحة.';
             loginError.style.display = 'block';
             return;
@@ -65,7 +65,7 @@ window.handleLogin = async function() {
         spinner.style.display = 'block';
     
     try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
             email, password
         });
         if (error) throw error;
@@ -89,7 +89,7 @@ window.handleLogin = async function() {
 
 // Logout
 logoutBtn.addEventListener('click', async () => {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
     currentAdminSession = null;
     showLogin();
 });
@@ -113,7 +113,7 @@ refreshBtn.addEventListener('click', loadTickets);
 async function loadTickets() {
     ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center">🔄 جاري تحميل البيانات...</td></tr>`;
     try {
-        const { data: tickets, error } = await supabase
+        const { data: tickets, error } = await supabaseClient
             .from('support_tickets')
             .select('*')
             .order('created_at', { ascending: false });
@@ -212,7 +212,7 @@ document.getElementById('modal-save-btn').addEventListener('click', async () => 
     const newReply = document.getElementById('modal-admin-reply').value;
     
     try {
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('support_tickets')
             .update({ status: newStatus, admin_reply: newReply })
             .eq('id', currentViewingTicket.id);
@@ -250,12 +250,12 @@ document.getElementById('modal-delete-btn').addEventListener('click', async () =
             const ticketsIndex = pathSegments.indexOf('tickets');
             if (ticketsIndex !== -1) {
                 const filePath = pathSegments.slice(ticketsIndex).join('/'); // outputs: tickets/xxx.jpg
-                await supabase.storage.from('ticket').remove([filePath]);
+                await supabaseClient.storage.from('ticket').remove([filePath]);
             }
         }
         
         // Delete from Database
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('support_tickets')
             .delete()
             .eq('id', currentViewingTicket.id);
