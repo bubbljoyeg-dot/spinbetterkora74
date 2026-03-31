@@ -140,9 +140,9 @@ async function loadTickets() {
         }
         
         // Update Stats
-        document.getElementById('stat-total').innerText = tickets.length;
-        document.getElementById('stat-pending').innerText = tickets.filter(t => t.status === 'قيد الانتظار').length;
-        document.getElementById('stat-replied').innerText = tickets.filter(t => t.status !== 'قيد الانتظار').length;
+        document.getElementById('total-count').innerText = tickets.length;
+        document.getElementById('pending-count').innerText = tickets.filter(t => t.status === 'قيد الانتظار').length;
+        document.getElementById('resolved-count').innerText = tickets.filter(t => t.status !== 'قيد الانتظار').length;
         
         // Render Table
         ticketsTbody.innerHTML = '';
@@ -189,24 +189,20 @@ function openModal(ticket) {
     currentViewingTicket = ticket;
     document.getElementById('ticket-modal').classList.add('active');
     
-    const d = new Date(ticket.created_at);
-    document.getElementById('modal-track-code').innerText = ticket.tracking_code;
-    document.getElementById('model-customer-name').innerText = ticket.customer_name;
-    document.getElementById('model-date').innerText = `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} - ${d.getHours()}:${d.getMinutes()}`;
+    document.getElementById('model-code').innerText = ticket.tracking_code;
+    document.getElementById('model-name').innerText = ticket.customer_name;
     document.getElementById('model-issue-type').innerText = ticket.issue_type;
     document.getElementById('model-issue-desc').innerText = ticket.issue_description || 'العميل لم يكتب تفاصيل إضافية.';
     document.getElementById('model-status').innerText = ticket.status;
     
-    // Setup Image
-    const imgEl = document.getElementById('modal-image');
-    const linkEl = document.getElementById('modal-image-link');
+    // Image handling
+    const imgContainer = document.getElementById('model-image');
     if (ticket.image_url) {
-        imgEl.src = ticket.image_url;
-        linkEl.href = ticket.image_url;
-        imgEl.style.display = 'block';
+        imgContainer.innerHTML = `<img src="${ticket.image_url}" alt="مرفق التذكرة">`;
+        imgContainer.style.display = 'block';
     } else {
-        imgEl.style.display = 'none';
-        linkEl.href = '#';
+        imgContainer.innerHTML = '<div class="no-image">لم يقم العميل بإرفاق أي صور لهذه التذكرة.</div>';
+        imgContainer.style.display = 'block';
     }
     
     // Setup Admin Inputs
@@ -215,17 +211,22 @@ function openModal(ticket) {
 }
 
 // Close Modal
-document.querySelector('.close-modal').addEventListener('click', () => {
+document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+document.getElementById('closeModalBtnFooter').addEventListener('click', closeModal);
+
+function closeModal() {
     document.getElementById('ticket-modal').classList.remove('active');
     currentViewingTicket = null;
-});
+}
 
 // Update Ticket (Reply / Save)
-document.getElementById('modal-save-btn').addEventListener('click', async () => {
+document.getElementById('saveReplyBtn').addEventListener('click', async () => {
     if (!currentViewingTicket) return;
-    const btn = document.getElementById('modal-save-btn');
-    btn.innerHTML = 'جاري الحفظ...';
+    const btn = document.getElementById('saveReplyBtn');
+    const spinner = document.getElementById('saveSpinner');
+    
     btn.disabled = true;
+    spinner.style.display = 'inline-block';
     
     const newStatus = document.getElementById('modal-status-select').value;
     const newReply = document.getElementById('modal-admin-reply').value;
@@ -244,53 +245,12 @@ document.getElementById('modal-save-btn').addEventListener('click', async () => 
     } catch (err) {
         alert('فشل حفظ البيانات: ' + err.message);
     } finally {
-        btn.innerHTML = '💾 حفظ التعديلات والرد';
         btn.disabled = false;
+        spinner.style.display = 'none';
     }
 });
 
-// Delete Ticket
-document.getElementById('modal-delete-btn').addEventListener('click', async () => {
-    if (!currentViewingTicket) return;
-    
-    const confirmAsk = confirm('هل أنت متأكد من مسح هذه التذكرة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.');
-    if (!confirmAsk) return;
-    
-    const btn = document.getElementById('modal-delete-btn');
-    btn.innerHTML = 'جاري المسح...';
-    btn.disabled = true;
-    
-    try {
-        // Attempt to extract image path to delete from storage
-        if (currentViewingTicket.image_url) {
-            const urlObj = new URL(currentViewingTicket.image_url);
-            const pathSegments = urlObj.pathname.split('/');
-            // public/ticket-images/tickets/xxx.jpg
-            const ticketsIndex = pathSegments.indexOf('tickets');
-            if (ticketsIndex !== -1) {
-                const filePath = pathSegments.slice(ticketsIndex).join('/'); // outputs: tickets/xxx.jpg
-                await supabaseClient.storage.from('ticket-images').remove([filePath]);
-            }
-        }
-        
-        // Delete from Database
-        const { error } = await supabaseClient
-            .from('support_tickets')
-            .delete()
-            .eq('id', currentViewingTicket.id);
-            
-        if (error) throw error;
-        
-        alert('تم مسح التذكرة بالكامل!');
-        document.getElementById('ticket-modal').classList.remove('active');
-        loadTickets(); // Refresh table
-    } catch (err) {
-        alert('فشل المسح: ' + err.message);
-    } finally {
-        btn.innerHTML = '🗑️ مسح التذكرة بالكامل';
-        btn.disabled = false;
-    }
-});
+// Delete Ticket feature disabled in new UI as requested to prioritize reply/resolve flows.
 
 // Initialize
 checkAuth();
