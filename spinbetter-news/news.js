@@ -105,17 +105,21 @@ function createCardElement(post) {
     const card = document.createElement('div');
     card.className = 'news-card fade-in';
     card.onclick = (e) => {
-        if (e.target.closest('.news-icon-btn') || e.target.closest('.news-card-cta-btn') || e.target.closest('.news-read-more')) return;
+        if (e.target.closest('.news-icon-btn') || e.target.closest('.news-card-cta-btn') || e.target.closest('.news-read-more') || e.target.closest('.card-share-wrapper')) return;
         openArticle(post);
     };
 
-    // Category label + class
-    let catName = 'أخبار', catClass = 'cat-news';
-    if (post.category === 'prediction') { catName = 'توقعات'; catClass = 'cat-prediction'; }
-    if (post.category === 'analysis')   { catName = 'تحليل';  catClass = 'cat-analysis'; }
+    // Category label + dot class
+    let catName = 'أخبار';
+    if (post.category === 'prediction') catName = 'توقعات';
+    if (post.category === 'analysis')   catName = 'تحليل';
 
-    // Cover image inside the code-editor-style box
-    const imgBoxInner = post.cover_image_url
+    const dotClass = post.category === 'prediction' ? 'dot-prediction'
+                   : post.category === 'analysis'   ? 'dot-analysis'
+                   : 'dot-news';
+
+    // Cover image content
+    const imgContent = post.cover_image_url
         ? `<img src="${post.cover_image_url}" loading="lazy" alt="${(post.title || '').replace(/"/g, '&quot;')}">`
         : `<div class="news-card-img-box-fallback"></div>`;
 
@@ -135,13 +139,16 @@ function createCardElement(post) {
             <span class="news-card-mac-dot mac-dot-green"></span>
             <span class="news-card-time-inline" id="time-${post.id}"></span>
         </div>
+        <div class="news-card-img-box">
+            ${imgContent}
+            <span class="news-cat-overlay-badge">
+                <span class="cat-badge-dot ${dotClass}"></span>
+                ${catName}
+            </span>
+        </div>
         <div class="news-card-body">
             <h3 class="news-card-title">${post.title || ''}</h3>
             <p class="news-card-excerpt">${excerptText}</p>
-            <div class="news-cat-tags-row">
-                <span class="news-cat-tag ${catClass}">${catName}</span>
-            </div>
-            <div class="news-card-img-box">${imgBoxInner}</div>
         </div>
         <div class="news-card-actions">
             <div class="news-card-actions-left">
@@ -152,9 +159,33 @@ function createCardElement(post) {
                 ${ctaHTML}
             </div>
             <div class="news-card-actions-right">
-                <button class="news-icon-btn" onclick="sharePost('${post.id}', event)" aria-label="مشاركة">
-                    <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                </button>
+                <div class="card-share-wrapper" id="csw-${post.id}">
+                    <button class="news-icon-btn" onclick="toggleCardShare('${post.id}', event)" aria-label="مشاركة">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                    </button>
+                    <div class="card-share-dropdown" id="csd-${post.id}">
+                        <div class="csd-option csd-copy" onclick="copyCardPostLink('${post.id}', event)">
+                            <div class="csd-icon csd-icon-copy"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+                            نسخ الرابط
+                        </div>
+                        <a class="csd-option csd-wa" href="#" id="csd-wa-${post.id}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                            <div class="csd-icon csd-icon-wa"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.52 1.33 5L2 22l5.13-1.31C8.56 21.55 10.23 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.72 0-3.34-.47-4.73-1.28l-.34-.2-3.04.78.81-2.95-.22-.35C3.47 15.26 3 13.69 3 12 3 7.03 7.03 3 12 3s9 4.03 9 9-4.03 9-9 9z"/></svg></div>
+                            واتساب
+                        </a>
+                        <a class="csd-option csd-tg" href="#" id="csd-tg-${post.id}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                            <div class="csd-icon csd-icon-tg"><svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></div>
+                            تيليجرام
+                        </a>
+                        <a class="csd-option csd-tw" href="#" id="csd-tw-${post.id}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                            <div class="csd-icon csd-icon-tw"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.627L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></div>
+                            تويتر
+                        </a>
+                        <a class="csd-option csd-fb" href="#" id="csd-fb-${post.id}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                            <div class="csd-icon csd-icon-fb"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+                            فيسبوك
+                        </a>
+                    </div>
+                </div>
                 <button class="news-icon-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}', event)" aria-label="إعجاب" id="like-btn-${post.id}">
                     <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     <span id="like-count-${post.id}">${post.likes || 0}</span>
@@ -176,25 +207,111 @@ function openArticle_byId(postId) {
     if (post) openArticle(post);
 }
 
-function sharePost(id, event) {
-    if(event) event.stopPropagation();
-    
-    const shareUrl = window.location.origin + window.location.pathname + '#post-' + id;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'مقال من SpinBetter',
-            url: shareUrl
-        }).catch((err) => {
-            console.log("Share failed", err);
-            // Fallback
-            navigator.clipboard.writeText(shareUrl);
-            showToast('تم نسخ الرابط ✓', 'success');
-        });
-    } else {
-        navigator.clipboard.writeText(shareUrl);
-        showToast('تم نسخ الرابط ✓', 'success');
+// Toggle per-card share dropdown
+function toggleCardShare(id, event) {
+    if (event) event.stopPropagation();
+    const post = allPosts.find(p => p.id === id);
+
+    // Close all other open card dropdowns first
+    document.querySelectorAll('.card-share-dropdown.open').forEach(el => {
+        if (el.id !== 'csd-' + id) el.classList.remove('open');
+    });
+
+    const dd = document.getElementById('csd-' + id);
+    if (!dd) return;
+
+    // Populate share links if opening
+    if (!dd.classList.contains('open') && post) {
+        const shareUrl = window.location.origin + window.location.pathname + '#post-' + id;
+        const text = encodeURIComponent((post.title || 'مقال من SpinBetter') + ' — ' + shareUrl);
+        const urlEnc = encodeURIComponent(shareUrl);
+        const waEl = document.getElementById('csd-wa-' + id);
+        const tgEl = document.getElementById('csd-tg-' + id);
+        const twEl = document.getElementById('csd-tw-' + id);
+        const fbEl = document.getElementById('csd-fb-' + id);
+        if (waEl) waEl.href = `https://wa.me/?text=${text}`;
+        if (tgEl) tgEl.href = `https://t.me/share/url?url=${urlEnc}&text=${encodeURIComponent(post.title || 'مقال من SpinBetter')}`;
+        if (twEl) twEl.href = `https://twitter.com/intent/tweet?text=${text}`;
+        if (fbEl) fbEl.href = `https://www.facebook.com/sharer/sharer.php?u=${urlEnc}`;
     }
+
+    dd.classList.toggle('open');
+}
+
+function copyCardPostLink(id, event) {
+    if (event) event.stopPropagation();
+    const shareUrl = window.location.origin + window.location.pathname + '#post-' + id;
+    navigator.clipboard.writeText(shareUrl)
+        .then(() => showToast('تم نسخ الرابط ✓'))
+        .catch(() => prompt('انسخ الرابط:', shareUrl));
+    const dd = document.getElementById('csd-' + id);
+    if (dd) dd.classList.remove('open');
+}
+
+
+function toggleShareDropdown(event) {
+    if (event) event.stopPropagation();
+    const dd = document.getElementById('share-dropdown');
+    dd.classList.toggle('open');
+}
+
+function copyArticleLink() {
+    const shareUrl = window.location.origin + window.location.pathname + '#post-' + (currentViewingPost?.id || '');
+    navigator.clipboard.writeText(shareUrl)
+        .then(() => showToast('تم نسخ الرابط ✓'))
+        .catch(() => { prompt('انسخ الرابط:', shareUrl); });
+    document.getElementById('share-dropdown').classList.remove('open');
+}
+
+function updateShareLinks(post) {
+    const shareUrl = window.location.origin + window.location.pathname + '#post-' + post.id;
+    const text = encodeURIComponent((post.title || 'مقال من SpinBetter') + ' — ' + shareUrl);
+    const urlEnc = encodeURIComponent(shareUrl);
+
+    const waEl = document.getElementById('share-wa-link');
+    const tgEl = document.getElementById('share-tg-link');
+    const twEl = document.getElementById('share-tw-link');
+    const fbEl = document.getElementById('share-fb-link');
+
+    if (waEl) waEl.href = `https://wa.me/?text=${text}`;
+    if (tgEl) tgEl.href = `https://t.me/share/url?url=${urlEnc}&text=${encodeURIComponent(post.title || 'مقال من SpinBetter')}`;
+    if (twEl) twEl.href = `https://twitter.com/intent/tweet?text=${text}`;
+    if (fbEl) fbEl.href = `https://www.facebook.com/sharer/sharer.php?u=${urlEnc}`;
+}
+
+// ─── Unified global click handler for all share dropdowns ───
+document.addEventListener('click', function(e) {
+    // Close article overlay share dropdown
+    const articleDd = document.getElementById('share-dropdown');
+    const articleWrapper = document.getElementById('share-wrapper');
+    if (articleDd && articleWrapper && !articleWrapper.contains(e.target)) {
+        articleDd.classList.remove('open');
+    }
+    // Close card share dropdowns
+    if (!e.target.closest('.card-share-wrapper')) {
+        document.querySelectorAll('.card-share-dropdown.open').forEach(el => el.classList.remove('open'));
+    }
+});
+
+// Reading progress bar
+function setupReadingProgress() {
+    const overlay = document.getElementById('article-view');
+    const bar = document.getElementById('readingProgress');
+    if (!overlay || !bar) return;
+    overlay.addEventListener('scroll', function() {
+        const scrollTop = overlay.scrollTop;
+        const total = overlay.scrollHeight - overlay.clientHeight;
+        const pct = total > 0 ? (scrollTop / total) * 100 : 0;
+        bar.style.width = pct + '%';
+    });
+}
+setupReadingProgress();
+
+function estimateReadTime(html) {
+    const text = html ? html.replace(/<[^>]+>/g, ' ') : '';
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    const mins = Math.max(1, Math.ceil(words / 200));
+    return `${mins} دقيقة قراءة`;
 }
 
 function renderGrid() {
@@ -223,11 +340,15 @@ function openArticle(post) {
     // Set URL Hash for sharing
     window.history.pushState(null, null, '#post-' + post.id);
 
-    // Title — use textContent (no SVG needed)
+    // Title
     document.getElementById('article-title').textContent = post.title || '';
 
-    // Date — must use innerHTML because formatTimeAgo returns SVG HTML
+    // Date
     document.getElementById('article-date').innerHTML = formatTimeAgo(post.created_at);
+
+    // Estimated read time
+    const rtEl = document.querySelector('#article-read-time span');
+    if (rtEl) rtEl.textContent = estimateReadTime(post.content);
 
     // Body content
     document.getElementById('article-body').innerHTML = post.content || '';
@@ -240,21 +361,33 @@ function openArticle(post) {
     if (isLiked) likeBtn.classList.add('liked');
     else likeBtn.classList.remove('liked');
 
-    // Category badge
-    const catBadge = document.getElementById('article-cat');
-    catBadge.className = 'cat-badge';
-    if (post.category === 'news') { catBadge.textContent = 'أخبار'; catBadge.classList.add('cat-news'); }
-    else if (post.category === 'prediction') { catBadge.textContent = 'توقعات'; catBadge.classList.add('cat-prediction'); }
-    else { catBadge.textContent = 'تحليل'; catBadge.classList.add('cat-analysis'); }
+    // Category badge (helper)
+    function buildCatBadge(catEl) {
+        if (!catEl) return;
+        catEl.className = 'cat-badge';
+        if (post.category === 'news')       { catEl.textContent = 'أخبار';   catEl.classList.add('cat-news'); }
+        else if (post.category === 'prediction') { catEl.textContent = 'توقعات'; catEl.classList.add('cat-prediction'); }
+        else                                { catEl.textContent = 'تحليل';  catEl.classList.add('cat-analysis'); }
+    }
+    buildCatBadge(document.getElementById('article-cat'));
+    buildCatBadge(document.getElementById('article-cat-hero'));
 
-    // Cover image
+    // Cover image (hero)
+    const heroWrap = document.getElementById('article-hero-wrap');
     const imgEl = document.getElementById('article-img');
+    const contentWrap = document.getElementById('article-content-wrap');
     if (post.cover_image_url) {
         imgEl.src = post.cover_image_url;
-        imgEl.style.display = 'block';
+        imgEl.alt = post.title || '';
+        heroWrap.style.display = 'block';
+        // Hide inline cat badge (shown in hero overlay instead)
+        document.getElementById('article-cat').style.display = 'none';
+        contentWrap.classList.add('has-hero');
     } else {
         imgEl.src = '';
-        imgEl.style.display = 'none';
+        heroWrap.style.display = 'none';
+        document.getElementById('article-cat').style.display = '';
+        contentWrap.classList.remove('has-hero');
     }
 
     // CTA Button
@@ -267,16 +400,23 @@ function openArticle(post) {
         ctaContainer.style.display = 'none';
     }
 
-    // Wire up the share button in the article drawer
+    // Wire up share links in dropdown
+    updateShareLinks(post);
+    // Also wire the card share button
     const shareBtn = document.getElementById('article-share-btn');
-    if (shareBtn) {
-        shareBtn.onclick = (e) => sharePost(post.id, e);
-    }
+    if (shareBtn) shareBtn.onclick = toggleShareDropdown;
 
-    // Open drawer: show then animate
+    // Reset share dropdown
+    const dd = document.getElementById('share-dropdown');
+    if (dd) dd.classList.remove('open');
+
+    // Open overlay
     const drawer = document.getElementById('article-view');
     drawer.style.display = 'block';
     drawer.scrollTop = 0;
+    // Reset progress bar
+    const bar = document.getElementById('readingProgress');
+    if (bar) bar.style.width = '0%';
 
     // Force a reflow so the transition fires
     void drawer.offsetWidth;
@@ -301,9 +441,13 @@ document.getElementById('article-view').addEventListener('click', function(e) {
 
 function closeArticle() {
     const drawer = document.getElementById('article-view');
-    drawer.style.transform = 'translateX(100%)';
     drawer.classList.remove('active');
     document.body.style.overflow = '';
+    const bar = document.getElementById('readingProgress');
+    if (bar) bar.style.width = '0%';
+    // Close share dropdown if open
+    const dd = document.getElementById('share-dropdown');
+    if (dd) dd.classList.remove('open');
     
     // Remove hash from URL when closing
     window.history.pushState(null, null, window.location.pathname);
@@ -311,7 +455,7 @@ function closeArticle() {
     // Wait for transition before hiding
     setTimeout(() => {
         drawer.style.display = 'none';
-    }, 300);
+    }, 350);
     
     currentViewingPost = null;
 }
