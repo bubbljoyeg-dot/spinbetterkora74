@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="dark">
 <head>
     <meta charset="UTF-8">
@@ -134,7 +134,10 @@
         </svg> سكربت التفاحه
       </a>
       
-      <div class="sb-section-label">للمصريين 🇪🇬</div>
+      
+      <a href="../spinbetter-news/" class="sb-link">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg> الأخبار والتحليلات
+      </a><div class="sb-section-label">للمصريين 🇪🇬</div>
       <a href="../spinbetter-egypt-guide/" class="sb-link">
         <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg> الدليل المصري
       </a>
@@ -194,9 +197,13 @@
       <nav class="header-nav" aria-label="التنقل الرئيسي">
         <a href="../">الرئيسية</a>
         <a href="../sports/">المباريات</a>
+        <a href="../spinbetter-news/" style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg-glass);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text-main);transition:0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:20px;">📰</span><span>الأخبار والتحليلات</span>
+        </a>
         <a href="../spinbetter-about/">من نحن</a>
         <a href="../spinbetter-support/">الدعم</a>
-      </nav>
+      
+        <a href="../spinbetter-news/">الأخبار والتحليلات</a></nav>
       <div class="hdr-actions">
         <button class="hdr-search-bar" onclick="openSearch()" aria-label="البحث في الموقع">
           <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -361,7 +368,8 @@
             <li><a href="../spinbetter-withdrawal/">السحب</a></li>
             <li><a href="../spinbetter-faq/">أسئلة شائعة</a></li>
             <li><a href="../spinbetter-sitemap/" style="font-weight: bold; color: var(--accent);">خريطة الموقع</a></li>
-          </ul>
+          
+            <li><a href="../spinbetter-news/">الأخبار والتحليلات</a></li></ul>
         </div>
 
         <div class="pf-col-links">
@@ -404,11 +412,46 @@
 
       <!-- Bottom Legal -->
       <div class="pf-legal">
-        <div class="pf-badges">
-          <span class="pf-badge"><span class="pf-badge-icon">🔞</span> 18+ بالغين فقط</span>
-          <span class="pf-badge"><span class="pf-badge-icon">🔒</span> SSL تشفير آمن</span>
-          <span class="pf-badge"><span class="pf-badge-icon">⚖️</span> عادل وموثوق</span>
+        <div class="pf-badges" style="margin-bottom: 20px;">
+          <div style="display: flex; gap: 30px; align-items: center; justify-content: center; flex-wrap: wrap;">
+            
+            <!-- RNG Certified -->
+            <div style="display: flex; align-items: center; gap: 8px; color: #009be3; font-weight: bold; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; text-align: right; line-height: 1.1;">
+              <div>RNG<br>CERTIFIED</div>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #009be3;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+            </div>
+
+            <!-- SECURE SSL -->
+            <div style="display: flex; align-items: center; gap: 8px; color: #2ecc71; font-weight: bold; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; text-align: right; line-height: 1.1;">
+              <div>SECURE<br>SSL</div>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#2ecc71" style="color: #2ecc71;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 14H9v-2h2v2zm0-4H9V7h2v4z" fill="#0b1b1a" /><path d="M12 3.19l7 3.11v4.7c0 4.67-3.13 8.89-7 10.02-3.87-1.13-7-5.35-7-10.02V6.3l7-3.11zm0-2.19L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 14h2v-2h-2v2zm0-4h2V7h-2v4z"/></svg>
+            </div>
+
+            <!-- 18+ -->
+            <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border: 2.5px solid #ff4d4d; border-radius: 50%; color: #ff4d4d; font-weight: bold; font-family: 'Inter', sans-serif; font-size: 15px;">
+              +18
+            </div>
+
+            <!-- BeGambleAware -->
+            <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.2;">
+              <div style="font-family: 'Inter', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.5px;">
+                <span style="color: #fff;">Be</span><span style="color: #f1c40f;">Gamble</span><span style="color: #fff;">Aware</span><span style="color: #bbb; font-weight: 400;">.org</span>
+              </div>
+              <div style="color: #bbb; font-size: 10px; font-family: 'Inter', sans-serif;">Helpline: 0808 8020 133</div>
+            </div>
+
+            <!-- Curacao eGaming -->
+            <div style="display: flex; align-items: center; gap: 10px;">
+               <div style="text-align: right; line-height: 1.1; font-family: 'Inter', sans-serif;">
+                 <div style="color: #f1c40f; font-size: 10px; font-weight: 800; letter-spacing: 0.5px;">LICENSED & REGULATED</div>
+                 <div style="color: #fff; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">CURACAO EGAMING</div>
+               </div>
+               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="#888"/></svg>
+            </div>
+            
+          </div>
         </div>
+
         <div class="pf-rg-warning">
           المقامرة قد تسبب الإدمان والضيق المالي. يُرجى <a href="../spinbetter-responsible-gambling/">قراءة دليل التوعية واللعب بمسؤولية</a>.
         </div>
@@ -451,3 +494,4 @@
 
 </body>
 </html>
+

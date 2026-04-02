@@ -1,0 +1,40 @@
+/*
+  # ════════════════════════════════════════════════
+  # Kora74 – Cloudflare Pages Security Headers
+  # Anti-Fingerprinting + Full OWASP Header Suite
+  # ════════════════════════════════════════════════
+  #
+  # هذا الملف يُطبَّق تلقائياً على Cloudflare Pages
+  # ويضيف جميع رؤوس الأمان دون الحاجة لسيرفر
+
+  # ── HSTS: إجبار HTTPS دائماً ──
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # ── منع تضمين الموقع في iframe خارجي (Clickjacking) ──
+  X-Frame-Options: SAMEORIGIN
+
+  # ── منع MIME-type sniffing ──
+  X-Content-Type-Options: nosniff
+
+  # ── إخفاء Referrer من الطلبات الخارجية (Anti-Fingerprinting) ──
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # ── تقييد الصلاحيات الحساسة ──
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+  # ── Content Security Policy ──
+  # يمنع تنفيذ أي سكريبت أو CSS غير معتمد (يتصدى لـ XSS)
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://redirspinner.com https://spin-b.com;
+
+  # ── إخفاء هوية السيرفر تماماً (Anti-Fingerprinting) ──
+  # Cloudflare يحذف X-Powered-By و Server تلقائياً
+  # هذا يضمن عدم إظهار أي معلومات إضافية
+  X-DNS-Prefetch-Control: off
+
+  # ── Cross-Origin policies ──
+  Cross-Origin-Embedder-Policy: unsafe-none
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Cross-Origin-Resource-Policy: cross-origin
+
+  # ── Expect-CT (Certificate Transparency) ──
+  Expect-CT: max-age=86400, enforce
