@@ -312,15 +312,47 @@ function createCardElement(post) {
     const shareUrl = location.origin + location.pathname + '#post-' + post.id;
     const waEl = card.querySelector(`#csd-wa-${post.id}`);
     const tgEl = card.querySelector(`#csd-tg-${post.id}`);
-    const shareTitle = post.title || 'SpinBetter';
-    const imgLine = post.cover_image_url ? `\n${post.cover_image_url}` : '';
-    const waMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للحصول على مكافأة 200%!\n\n${shareUrl}`;
-    const tgMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للمكافأة!`;
-    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
-    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(tgMsg)}`;
+    const { waTxt, tgTxt } = buildShareMsg(post, shareUrl);
+    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waTxt)}`;
+    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(tgTxt)}`;
 
     return card;
 }
+
+/* ── Share Message Builder ───────────────────────────────── */
+
+function buildShareMsg(post, shareUrl) {
+    const title   = post.title || 'SpinBetter';
+    const cat     = getCatInfo(post.category);
+    const excerpt = stripHtml(post.content || '').substring(0, 180).trim();
+    const imgUrl  = post.cover_image_url || '';
+
+    // Try to extract match details from content
+    let matchLine = '';
+    const matchDataMatch = (post.content || '').match(/\[MATCH_CARD:([A-Za-z0-9+/=]+)\]/);
+    if (matchDataMatch) {
+        try {
+            const data = JSON.parse(decodeURIComponent(escape(atob(matchDataMatch[1]))));
+            const score = (data.score || '').replace(/<[^>]*>/g, '').trim();
+            matchLine = `\n\n⚽ ${data.hName} ${score || 'vs'} ${data.aName}` +
+                        (data.lName ? ` | ${data.lName}` : '');
+        } catch (e) {}
+    }
+
+    // Build sections
+    const catLine     = `🏷 ${cat.name}`;
+    const titleLine   = `📰 ${title}`;
+    const excerptLine = excerpt ? `\n\n${excerpt}${excerpt.length >= 180 ? '...' : ''}` : '';
+    const imgSection  = imgUrl ? `\n\n🖼 ${imgUrl}` : '';
+    const promoLine   = `\n\n🔥 SpinBetter | الكود W300 → مكافأة 200% عند التسجيل!`;
+    const linkLine    = `\n\n🔗 ${shareUrl}`;
+
+    const waTxt = `${catLine}\n${titleLine}${matchLine}${excerptLine}${imgSection}${promoLine}${linkLine}`;
+    const tgTxt = `${catLine}\n${titleLine}${matchLine}${excerptLine}${imgSection}${promoLine}`;
+
+    return { waTxt, tgTxt };
+}
+
 
 /* ── Card Share ──────────────────────────────────────────── */
 
@@ -567,15 +599,11 @@ function toggleShareDropdown(event) {
 
 function updateShareLinks(post) {
     const shareUrl = location.origin + location.pathname + '#post-' + post.id;
-    const shareTitle = post.title || 'SpinBetter';
-    const urlEnc = encodeURIComponent(shareUrl);
-    const imgLine = post.cover_image_url ? `\n${post.cover_image_url}` : '';
-    const waMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للحصول على مكافأة 200%!\n\n${shareUrl}`;
-    const tgMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للمكافأة!`;
+    const { waTxt, tgTxt } = buildShareMsg(post, shareUrl);
     const waEl = document.getElementById('share-wa-link');
     const tgEl = document.getElementById('share-tg-link');
-    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
-    if (tgEl) tgEl.href = `https://t.me/share/url?url=${urlEnc}&text=${encodeURIComponent(tgMsg)}`;
+    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waTxt)}`;
+    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(tgTxt)}`;
 }
 
 function copyArticleLink() {
