@@ -73,7 +73,7 @@ function updateMetaTags(post) {
     set('og:title', post.title || '');
     set('og:description', stripHtml(post.content || ''));
     if (post.cover_image_url) set('og:image', post.cover_image_url);
-    set('og:url', location.origin + location.pathname + '#post-' + post.id);
+    set('og:url', location.origin + location.pathname + '?post=' + post.id);
 }
 
 function resetMetaTags() {
@@ -96,9 +96,12 @@ async function fetchInitialData() {
 
         renderGrid();
 
-        const hash = location.hash;
-        if (hash && hash.startsWith('#post-')) {
-            const p = allPosts.find(x => x.id === hash.replace('#post-', ''));
+        // Support both ?post=ID (SSR-friendly) and #post-ID (legacy hash)
+        const qPost = new URLSearchParams(location.search).get('post');
+        const hPost = location.hash.startsWith('#post-') ? location.hash.replace('#post-', '') : null;
+        const targetId = qPost || hPost;
+        if (targetId) {
+            const p = allPosts.find(x => x.id === targetId);
             if (p) setTimeout(() => openArticle(p), 150);
         }
     } catch (err) {
@@ -309,12 +312,12 @@ function createCardElement(post) {
     card.querySelector('.js-like-btn').addEventListener('click', e => toggleLike(post.id, e));
 
     // Share links
-    const shareUrl = location.origin + location.pathname + '#post-' + post.id;
+    const shareUrl = location.origin + location.pathname + '?post=' + post.id;
     const waEl = card.querySelector(`#csd-wa-${post.id}`);
     const tgEl = card.querySelector(`#csd-tg-${post.id}`);
-    const { waTxt, tgTxt } = buildShareMsg(post, shareUrl);
+    const { waTxt, tgTxt, ogUrl } = buildShareMsg(post, shareUrl);
     if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waTxt)}`;
-    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(tgTxt)}`;
+    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(ogUrl)}&text=${encodeURIComponent(tgTxt)}`;
 
     return card;
 }
@@ -322,10 +325,12 @@ function createCardElement(post) {
 /* ── Share Message Builder ───────────────────────────────── */
 
 function buildShareMsg(post, shareUrl) {
-    const title   = post.title || 'SpinBetter';
-    const cat     = getCatInfo(post.category);
+    const title = post.title || 'SpinBetter';
+    const cat = getCatInfo(post.category);
     const excerpt = stripHtml(post.content || '').substring(0, 180).trim();
-    const imgUrl  = post.cover_image_url || '';
+    const imgUrl = post.cover_image_url || '';
+    // Use ?post=ID so Cloudflare Function can serve OG tags
+    const ogUrl = location.origin + location.pathname + '?post=' + post.id;
 
     // Try to extract match details from content
     let matchLine = '';
@@ -335,22 +340,22 @@ function buildShareMsg(post, shareUrl) {
             const data = JSON.parse(decodeURIComponent(escape(atob(matchDataMatch[1]))));
             const score = (data.score || '').replace(/<[^>]*>/g, '').trim();
             matchLine = `\n\n⚽ ${data.hName} ${score || 'vs'} ${data.aName}` +
-                        (data.lName ? ` | ${data.lName}` : '');
-        } catch (e) {}
+                (data.lName ? ` | ${data.lName}` : '');
+        } catch (e) { }
     }
 
     // Build sections
-    const catLine     = `🏷 ${cat.name}`;
-    const titleLine   = `📰 ${title}`;
+    const catLine = `🏷 ${cat.name}`;
+    const titleLine = `📰 ${title}`;
     const excerptLine = excerpt ? `\n\n${excerpt}${excerpt.length >= 180 ? '...' : ''}` : '';
-    const imgSection  = imgUrl ? `\n\n🖼 ${imgUrl}` : '';
-    const promoLine   = `\n\n🔥 SpinBetter | الكود W300 → مكافأة 200% عند التسجيل!`;
-    const linkLine    = `\n\n🔗 ${shareUrl}`;
+    const imgSection = imgUrl ? `\n\n🖼 ${imgUrl}` : '';
+    const promoLine = `\n\n🔥 SpinBetter | الكود W300 → مكافأة 200% عند التسجيل!`;
+    const linkLine = `\n\n🔗 ${shareUrl}`;
 
-    const waTxt = `${catLine}\n${titleLine}${matchLine}${excerptLine}${imgSection}${promoLine}${linkLine}`;
+    const waTxt = `${catLine}\n${titleLine}${matchLine}${excerptLine}${imgSection}${promoLine}\n\n🔗 ${ogUrl}`;
     const tgTxt = `${catLine}\n${titleLine}${matchLine}${excerptLine}${imgSection}${promoLine}`;
 
-    return { waTxt, tgTxt };
+    return { waTxt, tgTxt, ogUrl };
 }
 
 
@@ -365,7 +370,7 @@ function toggleCardShare(id, event) {
 
 function copyCardPostLink(id, event) {
     if (event) event.stopPropagation();
-    const url = location.origin + location.pathname + '#post-' + id;
+    const url = location.origin + location.pathname + '?post=' + id;
     navigator.clipboard.writeText(url).then(() => showNewsToast('تم نسخ الرابط ✓')).catch(() => prompt('الرابط:', url));
     const dd = document.getElementById('csd-' + id);
     if (dd) dd.classList.remove('open');
@@ -436,7 +441,7 @@ function openArticle(post) {
         currentViewingPost = post;
         const isLiked = userLikedPosts.includes(post.id);
 
-        try { history.pushState(null, null, '#post-' + post.id); } catch (e) { }
+        try { history.pushState(null, null, '?post=' + post.id); } catch (e) { }
 
         try { updateMetaTags(post); } catch (e) { console.error("Meta tags error:", e); }
 
@@ -598,16 +603,16 @@ function toggleShareDropdown(event) {
 }
 
 function updateShareLinks(post) {
-    const shareUrl = location.origin + location.pathname + '#post-' + post.id;
-    const { waTxt, tgTxt } = buildShareMsg(post, shareUrl);
+    const shareUrl = location.origin + location.pathname + '?post=' + post.id;
+    const { waTxt, tgTxt, ogUrl } = buildShareMsg(post, shareUrl);
     const waEl = document.getElementById('share-wa-link');
     const tgEl = document.getElementById('share-tg-link');
     if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waTxt)}`;
-    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(tgTxt)}`;
+    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(ogUrl)}&text=${encodeURIComponent(tgTxt)}`;
 }
 
 function copyArticleLink() {
-    const url = location.origin + location.pathname + '#post-' + (currentViewingPost?.id || '');
+    const url = location.origin + location.pathname + '?post=' + (currentViewingPost?.id || '');
     navigator.clipboard.writeText(url).then(() => showNewsToast('تم نسخ الرابط ✓')).catch(() => prompt('الرابط:', url));
     document.getElementById('share-dropdown').classList.remove('open');
 }
