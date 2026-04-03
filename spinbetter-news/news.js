@@ -312,8 +312,12 @@ function createCardElement(post) {
     const shareUrl = location.origin + location.pathname + '#post-' + post.id;
     const waEl = card.querySelector(`#csd-wa-${post.id}`);
     const tgEl = card.querySelector(`#csd-tg-${post.id}`);
-    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent((post.title || 'SpinBetter') + ' — ' + shareUrl)}`;
-    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title || '')}`;
+    const shareTitle = post.title || 'SpinBetter';
+    const imgLine = post.cover_image_url ? `\n${post.cover_image_url}` : '';
+    const waMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للحصول على مكافأة 200%!\n\n${shareUrl}`;
+    const tgMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للمكافأة!`;
+    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(tgMsg)}`;
 
     return card;
 }
@@ -563,16 +567,15 @@ function toggleShareDropdown(event) {
 
 function updateShareLinks(post) {
     const shareUrl = location.origin + location.pathname + '#post-' + post.id;
-    const textEnc = encodeURIComponent((post.title || 'SpinBetter') + ' — ' + shareUrl);
+    const shareTitle = post.title || 'SpinBetter';
     const urlEnc = encodeURIComponent(shareUrl);
+    const imgLine = post.cover_image_url ? `\n${post.cover_image_url}` : '';
+    const waMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للحصول على مكافأة 200%!\n\n${shareUrl}`;
+    const tgMsg = `⚽ ${shareTitle}${imgLine}\n\n🔥 تابع آخر التحليلات والتوقعات على SpinBetter — استخدم كود W300 للمكافأة!`;
     const waEl = document.getElementById('share-wa-link');
     const tgEl = document.getElementById('share-tg-link');
-    const twEl = document.getElementById('share-tw-link');
-    const fbEl = document.getElementById('share-fb-link');
-    if (waEl) waEl.href = `https://wa.me/?text=${textEnc}`;
-    if (tgEl) tgEl.href = `https://t.me/share/url?url=${urlEnc}&text=${encodeURIComponent(post.title || '')}`;
-    if (twEl) twEl.href = `https://twitter.com/intent/tweet?text=${textEnc}`;
-    if (fbEl) fbEl.href = `https://www.facebook.com/sharer/sharer.php?u=${urlEnc}`;
+    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+    if (tgEl) tgEl.href = `https://t.me/share/url?url=${urlEnc}&text=${encodeURIComponent(tgMsg)}`;
 }
 
 function copyArticleLink() {
