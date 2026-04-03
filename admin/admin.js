@@ -556,11 +556,15 @@ function openPostModal(post = null) {
     const titleEle = document.getElementById('post-modal-title');
     const ctaTextInput = document.getElementById('post-cta-text');
     const ctaUrlInput = document.getElementById('post-cta-url');
+    const outcomeTextInput = document.getElementById('post-outcome-text');
 
     // Clear/Reset fields
     imgUpload.value = '';
     imgFilename.innerText = '';
     imgCurrent.innerHTML = '';
+    if (outcomeTextInput) outcomeTextInput.value = '';
+    const noneRadio = document.getElementById('outcome-none');
+    if (noneRadio) noneRadio.checked = true;
 
     if (post) {
         currentEditingPostId = post.id;
@@ -571,6 +575,12 @@ function openPostModal(post = null) {
         publishedCheck.checked = post.published;
         ctaTextInput.value = post.cta_text || '';
         ctaUrlInput.value = post.cta_url || '';
+        // Load outcome
+        if (outcomeTextInput) outcomeTextInput.value = post.outcome_text || '';
+        const colorVal = post.outcome_color || '';
+        const radioToCheck = document.querySelector(`input[name="outcome-color"][value="${colorVal}"]`);
+        if (radioToCheck) radioToCheck.checked = true;
+        else if (noneRadio) noneRadio.checked = true;
 
         if (post.cover_image_url) {
             imgCurrent.innerHTML = `<img src="${post.cover_image_url}" style="max-width: 200px; max-height: 120px; border-radius: 8px; border: 1px solid #333;" alt="Cover">`;
@@ -589,6 +599,15 @@ function openPostModal(post = null) {
         deleteBtn.style.display = 'none';
         deleteBtn.onclick = null;
     }
+
+    // Set today as default date for match picker
+    const datePicker = document.getElementById('match-date-picker');
+    if (datePicker && !datePicker.value) {
+        datePicker.value = new Date().toISOString().split('T')[0];
+    }
+    // Reset matches list
+    const matchesList = document.getElementById('matches-list-container');
+    if (matchesList) { matchesList.style.display = 'none'; matchesList.innerHTML = ''; }
 }
 
 function closePostModal() {
@@ -616,6 +635,10 @@ async function savePost() {
     const imageFile = document.getElementById('post-image-upload').files[0];
     const ctaText = document.getElementById('post-cta-text').value.trim();
     const ctaUrl = document.getElementById('post-cta-url').value.trim();
+    const outcomeTextEl = document.getElementById('post-outcome-text');
+    const outcomeText = outcomeTextEl ? outcomeTextEl.value.trim() : '';
+    const outcomeColorEl = document.querySelector('input[name="outcome-color"]:checked');
+    const outcomeColor = outcomeColorEl ? outcomeColorEl.value : '';
 
     if (!title || quillEditor.getText().trim() === '') {
         showToast('يرجى ملء العنوان والمحتوى!', 'warning');
@@ -653,7 +676,9 @@ async function savePost() {
             content,
             published,
             cta_text: ctaText || null,
-            cta_url: ctaUrl || null
+            cta_url: ctaUrl || null,
+            outcome_text: outcomeText || null,
+            outcome_color: outcomeColor || null
         };
 
         if (coverImageUrl) postData.cover_image_url = coverImageUrl;
@@ -704,4 +729,193 @@ async function deletePost(id) {
         console.error('Delete error:', err);
         showToast('حدث خطأ أثناء الحذف: ' + err.message, 'error');
     }
+}
+
+
+// ============================================================
+//  MATCH API INTEGRATION
+// ============================================================
+
+const FOOTBALL_API_KEY = '2760bea07fc1d80862f9e15bb7e0fa9f';
+const FOOTBALL_API_URL = 'https://v3.football.api-sports.io/fixtures';
+
+let _cachedMatches = [];  // all matches for the day
+let _allFetchedMatches = []; // master list for client-side filter
+
+/**
+ * Fetches fixtures from api-sports.io for the selected date.
+ * Runs ONCE from admin → the result is embedded as static HTML,
+ * so visitors never consume any API limits.
+ */
+async function fetchMatchesFromApi() {
+    const dateInput = document.getElementById('match-date-picker');
+    const searchInput = document.getElementById('match-team-search');
+    const btn = document.getElementById('btn-fetch-matches');
+    const container = document.getElementById('matches-list-container');
+
+    const date = dateInput?.value;
+    if (!date) { showToast('اختر تاريخاً أولاً', 'warning'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:15px;fill:currentColor;animation:spin 1s linear infinite"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.03 20 13.07 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg> جاري الجلب...`;
+    container.style.display = 'flex';
+    container.innerHTML = `<div class="matches-loading"><svg viewBox="0 0 24 24" style="width:32px;fill:#06b6d4;display:block;margin:0 auto 10px"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.03 20 13.07 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg> جاري جلب المباريات من API...</div>`;
+
+    try {
+        const url = `${FOOTBALL_API_URL}?date=${date}&timezone=Africa/Cairo`;
+        const resp = await fetch(url, {
+            method: 'GET',
+            headers: { 'x-apisports-key': FOOTBALL_API_KEY }
+        });
+
+        if (!resp.ok) throw new Error('فشل الاتصال بالـ API (كود: ' + resp.status + ')');
+
+        const json = await resp.json();
+        
+        let matches = json.response || [];
+        matches.sort((a,b) => new Date(a.fixture.date) - new Date(b.fixture.date));
+        _allFetchedMatches = matches;
+
+        if (!_allFetchedMatches.length) {
+            container.innerHTML = `<div class="matches-empty">⚽ لا توجد مباريات في هذا اليوم — جرب تاريخاً آخر</div>`;
+            return;
+        }
+
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        const filtered = q
+            ? _allFetchedMatches.filter(f =>
+                f.teams.home.name.toLowerCase().includes(q) ||
+                f.teams.away.name.toLowerCase().includes(q) ||
+                f.league.name.toLowerCase().includes(q)
+              )
+            : _allFetchedMatches;
+
+        renderMatchesList(filtered);
+
+        if (searchInput) {
+            searchInput.oninput = () => {
+                const q2 = searchInput.value.trim().toLowerCase();
+                const f2 = q2
+                    ? _allFetchedMatches.filter(f =>
+                        f.teams.home.name.toLowerCase().includes(q2) ||
+                        f.teams.away.name.toLowerCase().includes(q2) ||
+                        f.league.name.toLowerCase().includes(q2)
+                      )
+                    : _allFetchedMatches;
+                renderMatchesList(f2);
+            };
+        }
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="matches-empty">❌ ${err.message}</div>`;
+        showToast(err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:15px;fill:currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> جلب المباريات`;
+    }
+}
+
+function renderMatchesList(fixtures) {
+    const container = document.getElementById('matches-list-container');
+    if (!fixtures.length) {
+        container.innerHTML = `<div class="matches-empty">لم يتم العثور على مباريات تطابق البحث</div>`;
+        return;
+    }
+
+    container.innerHTML = fixtures.map(f => {
+        const status = f.fixture.status.short;
+        const isFinished = ['FT', 'AET', 'PEN'].includes(status);
+        const isLive = ['1H', '2H', 'HT', 'ET', 'BT', 'P'].includes(status);
+
+        let scoreDisplay, statusLabel, statusClass;
+        if (isFinished) {
+            scoreDisplay = `${f.goals.home ?? 0} - ${f.goals.away ?? 0}`;
+            statusLabel = 'انتهت';
+            statusClass = 'match-status-ft';
+        } else if (isLive) {
+            scoreDisplay = `${f.goals.home ?? 0} - ${f.goals.away ?? 0}`;
+            statusLabel = `🔴 ${f.fixture.status.elapsed}'`;
+            statusClass = 'match-status-live';
+        } else {
+            const d = new Date(f.fixture.date);
+            scoreDisplay = d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            statusLabel = f.league.name.substring(0, 18);
+            statusClass = '';
+        }
+
+        return `
+        <div class="match-item" onclick="insertMatchCard(${f.fixture.id})" title="انقر لإدراج بطاقة هذه المباراة">
+            <div class="match-item-team">
+                <img src="${f.teams.home.logo}" alt="${f.teams.home.name}" loading="lazy"
+                    onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2218%22 font-size=%2216%22>⚽</text></svg>'">
+                <div class="match-item-team-name">${f.teams.home.name}</div>
+            </div>
+            <div class="match-item-center">
+                <div class="match-item-score">${scoreDisplay}</div>
+                <div class="match-item-status ${statusClass}">${statusLabel}</div>
+                <div class="match-item-league">${f.league.country}</div>
+            </div>
+            <div class="match-item-team">
+                <img src="${f.teams.away.logo}" alt="${f.teams.away.name}" loading="lazy"
+                    onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2218%22 font-size=%2216%22>⚽</text></svg>'">
+                <div class="match-item-team-name">${f.teams.away.name}</div>
+            </div>
+        </div>`;
+    }).join('');
+
+    _cachedMatches = fixtures;
+}
+
+function insertMatchCard(fixtureId) {
+    if (!quillEditor) { showToast('افتح المحرر أولاً', 'warning'); return; }
+
+    const f = _cachedMatches.find(x => x.fixture.id === fixtureId);
+    if (!f) { showToast('بيانات المباراة غير موجودة', 'error'); return; }
+
+    const status = f.fixture.status.short;
+    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
+    const isLive    = ['1H', '2H', 'HT', 'ET', 'BT', 'P'].includes(status);
+
+    let scoreHTML, statusBadge;
+
+    if (isFinished) {
+        scoreHTML  = `${f.goals.home ?? 0} &nbsp;–&nbsp; ${f.goals.away ?? 0}`;
+        statusBadge = `<span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3);">FT ✓</span>`;
+    } else if (isLive) {
+        scoreHTML  = `${f.goals.home ?? 0} &nbsp;–&nbsp; ${f.goals.away ?? 0}`;
+        statusBadge = `<span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">🔴 LIVE ${f.fixture.status.elapsed}'</span>`;
+    } else {
+        const d = new Date(f.fixture.date);
+        const timeStr = d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = d.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
+        scoreHTML  = `<span style="font-size:20px;letter-spacing:1px;">${timeStr}</span>`;
+        statusBadge = `<span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);">${dateStr}</span>`;
+    }
+
+    const shortcodeObj = {
+        lName: f.league.name,
+        lCountry: f.league.country,
+        lLogo: f.league.logo,
+        hName: f.teams.home.name,
+        hLogo: f.teams.home.logo,
+        aName: f.teams.away.name,
+        aLogo: f.teams.away.logo,
+        score: scoreHTML,
+        badge: statusBadge,
+        venue: f.fixture.venue?.name || 'الملعب غير معروف'
+    };
+
+    const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(shortcodeObj))));
+    const shortcodeText = `[MATCH_CARD:${base64Data}]`;
+    
+    // We insert a placeholder quote for the admin to see visually
+    const blockquote = `<blockquote>⚽ <strong>مباراة مدرجة:</strong> ${f.teams.home.name} ضد ${f.teams.away.name} <br><br><span style="font-size:8px;color:rgba(255,255,255,0.1);word-break:break-all;">${shortcodeText}</span></blockquote><p><br></p>`;
+
+    const range = quillEditor.getSelection();
+    const index = range ? range.index : quillEditor.getLength();
+    quillEditor.clipboard.dangerouslyPasteHTML(index, blockquote);
+    quillEditor.setSelection(quillEditor.getLength(), 0);
+
+    showToast(`✅ تم إدراج مباراة ${f.teams.home.name} vs ${f.teams.away.name}`, 'success');
 }

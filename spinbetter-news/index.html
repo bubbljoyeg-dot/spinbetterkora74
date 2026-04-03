@@ -8,15 +8,26 @@
   <meta name="theme-color" content="#020617">
   <title>الأخبار والتحليلات | SpinBetter Portal ⚽</title>
   <link rel="canonical" href="https://kora74.online/spinbetter-news/">
-  <meta name="description" content="تابع أحدث أخبار وتوقعات وتحليلات المراهنات الرياضية والكازينو الحصرية على SpinBetter.">
+  <meta name="description"
+    content="تابع أحدث أخبار وتوقعات وتحليلات المراهنات الرياضية والكازينو الحصرية على SpinBetter.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;900&family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;900&family=Poppins:wght@400;500;600;700;900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
   <script src="../analytics_and_cookies.js" defer></script>
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="apple-touch-icon" href="../favicon.png">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"SpinBetter","operatingSystem":"ANDROID, WINDOWS, IOS","applicationCategory":"GameApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"15320"}}</script>
+  <!-- SQL TO RUN IN SUPABASE:
+    ALTER TABLE posts ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0;
+    CREATE OR REPLACE FUNCTION increment_views(post_id UUID)
+    RETURNS void AS $$
+      UPDATE posts SET views = COALESCE(views,0)+1 WHERE id=post_id;
+    $$ LANGUAGE sql;
+  -->
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"SpinBetter أخبار وتحليلات","url":"https://kora74.online/spinbetter-news/","description":"أحدث أخبار وتوقعات وتحليلات المراهنات الرياضية والكازينو","inLanguage":"ar","publisher":{"@type":"Organization","name":"SpinBetter","url":"https://kora74.online/"}}</script>
   <!-- Quill CSS for rich text rendering -->
   <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
   <!-- Supabase -->
@@ -28,13 +39,97 @@
     ============================================= */
     .news-hero {
       text-align: center;
-      padding: 60px 20px 40px;
-      background: radial-gradient(circle at center, rgba(0,155,227,0.1) 0%, transparent 60%);
-      border-radius: 12px;
-      margin-bottom: 30px;
+      padding: 56px 20px 44px;
+      position: relative;
+      margin-bottom: 36px;
+      overflow: hidden;
     }
-    .news-hero h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); color: #fff; margin-bottom: 10px; background: none; -webkit-text-fill-color: #fff; }
-    .news-hero p  { color: #94a3b8; font-size: 1.1rem; }
+
+    .news-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(14, 165, 233, 0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .news-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.35), transparent);
+    }
+
+    .news-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #06b6d4;
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 20px;
+      padding: 5px 14px;
+      margin-bottom: 18px;
+    }
+
+    .news-hero-eyebrow .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #06b6d4;
+      box-shadow: 0 0 6px #06b6d4;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(0.7);
+      }
+    }
+
+    .news-hero h1 {
+      font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+      font-weight: 900;
+      color: #f1f5f9;
+      margin-bottom: 12px;
+      line-height: 1.2;
+      background: none;
+      -webkit-text-fill-color: #f1f5f9;
+      letter-spacing: -0.5px;
+    }
+
+    .news-hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, #06b6d4, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .news-hero p {
+      color: #64748b;
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
 
     /* =============================================
        TAB BUTTONS — clean underline, no pill
@@ -47,9 +142,13 @@
       padding-bottom: 2px;
       margin-bottom: 40px;
       scrollbar-width: none;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
-    .news-tabs::-webkit-scrollbar { display: none; }
+
+    .news-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
     .news-tab {
       background: none;
       border: none;
@@ -68,9 +167,23 @@
       transition: color 0.2s, border-color 0.2s;
       outline: none;
     }
-    .news-tab svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
-    .news-tab:hover { color: #cbd5e1; }
-    .news-tab.active { color: #06b6d4; font-weight: 700; border-bottom: 3px solid #06b6d4; }
+
+    .news-tab svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    .news-tab:hover {
+      color: #cbd5e1;
+    }
+
+    .news-tab.active {
+      color: #06b6d4;
+      font-weight: 700;
+      border-bottom: 3px solid #06b6d4;
+    }
 
     /* =============================================
        NEWS GRID
@@ -81,127 +194,468 @@
       gap: 24px;
       margin-bottom: 60px;
     }
-    @media (max-width: 992px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px)  { .news-grid { grid-template-columns: 1fr; } }
+
+    @media (max-width: 992px) {
+      .news-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* =============================================
        CARD
     ============================================= */
+    /* ── Skeleton Loaders ── */
+    .news-card-skeleton {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .sk-img {
+      height: 180px;
+      background: linear-gradient(90deg, #1e293b 25%, #253347 50%, #1e293b 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    .sk-body {
+      padding: 14px 16px;
+    }
+
+    .sk-line {
+      height: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #1e293b 25%, #253347 50%, #1e293b 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    .sk-short {
+      width: 40%;
+    }
+
+    .sk-long {
+      width: 85%;
+    }
+
+    .sk-mid {
+      width: 65%;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
+    }
+
     .news-card {
-      background: #000;
-      border: 1px solid #0d1117;
-      border-radius: 10px;
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
       cursor: pointer;
-      overflow: visible;
+      overflow: hidden;
       position: relative;
     }
-    .news-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
-    /* Clip only the image and upper parts, not the actions */
-    .news-card-mac-header,
-    .news-card-img-box,
-    .news-card-body {
+
+    .news-card:hover {
+      transform: translateY(-5px);
+      border-color: #06b6d4;
+      box-shadow: 0 12px 32px rgba(6, 182, 212, 0.12);
+    }
+
+    /* Card meta row (time + read time) */
+    .news-card-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .news-card-readtime {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .news-card-views {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: #475569;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    .news-card-views svg {
+      opacity: 0.7;
+    }
+
+    /* ── Outcome Badge (Win/Loss) ────────────────── */
+    .outcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .outcome-badge.green {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.15);
+    }
+
+    .outcome-badge.red {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.15);
+    }
+
+    .outcome-badge .ob-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .outcome-badge.green .ob-dot {
+      background: #22c55e;
+    }
+
+    .outcome-badge.red .ob-dot {
+      background: #ef4444;
+    }
+
+    /* Outcome banner inside article overlay */
+    .article-outcome-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      direction: rtl;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      animation: bannerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+
+    @keyframes bannerPop {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .article-outcome-banner.green {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #4ade80;
+    }
+
+    .article-outcome-banner.red {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(220, 38, 38, 0.08));
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    .article-outcome-banner .aob-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .article-outcome-banner .aob-label {
+      font-size: 10px;
+      font-weight: 600;
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .article-outcome-banner .aob-text {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Related Posts */
+    #related-posts-section {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    #related-posts-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 16px;
+      background: none !important;
+      -webkit-text-fill-color: #f1f5f9 !important;
+    }
+
+    #related-posts-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media(max-width:600px) {
+      #related-posts-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .related-card-inner {
+      border-radius: 8px;
       overflow: hidden;
+      border: 1px solid #1e293b;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
     }
-    .news-card-mac-header { border-radius: 10px 10px 0 0; }
-    .news-card-mac-header {
-      display: flex; align-items: center; gap: 6px;
-      padding: 10px 14px;
-      border-bottom: 1px solid #0d1117;
+
+    .related-card-inner:hover {
+      transform: translateY(-3px);
+      border-color: #06b6d4;
     }
-    .news-card-mac-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .mac-dot-red    { background: #ff5f57; }
-    .mac-dot-yellow { background: #ffbd2e; }
-    .mac-dot-green  { background: #28c941; }
-    .news-card-time-inline { margin-right: auto; font-size: 11px; color: #475569; display: flex; align-items: center; }
+
     .news-card-img-box {
-      position: relative; height: 180px;
+      position: relative;
+      height: 180px;
       background: #0d1117;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
-    .news-card-img-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .news-card-img-box-fallback { width: 100%; height: 100%; background: linear-gradient(135deg, #0d1117 0%, #1e293b 100%); }
 
-    /* Category badge overlaid on image */
-    .news-cat-overlay-badge {
-      position: absolute; top: 10px; right: 10px;
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(0,0,0,0.62);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border-radius: 6px; padding: 4px 10px;
-      font-size: 12px; font-weight: 600; color: #f1f5f9;
-      z-index: 2; border: 1px solid rgba(255,255,255,0.08);
+    .news-card-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
-    .cat-badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .cat-badge-dot.dot-news       { background: #3b82f6; box-shadow: 0 0 6px #3b82f680; }
-    .cat-badge-dot.dot-prediction { background: #f59e0b; box-shadow: 0 0 6px #f59e0b80; }
-    .cat-badge-dot.dot-analysis   { background: #8b5cf6; box-shadow: 0 0 6px #8b5cf680; }
 
-    .news-card-body    { padding: 14px 16px 8px; }
-    .news-card-title   { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.45; }
-    .news-card-excerpt { font-size: 13px; color: #94a3b8; line-height: 1.55; }
+    .news-card-img-box-fallback {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0d1117 0%, #1e293b 100%);
+    }
+
+    /* Category badge overlaid on image — hidden, shown only for non-news */
+    .news-cat-overlay-badge {
+      display: none;
+    }
+
+    /* Category label under image inside body */
+    .news-card-cat-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    .news-card-cat-label.cat-news {
+      color: #3b82f6;
+    }
+
+    .news-card-cat-label.cat-prediction {
+      color: #f59e0b;
+    }
+
+    .news-card-cat-label.cat-analysis {
+      color: #8b5cf6;
+    }
+
+    .cat-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .cat-badge-dot.dot-news {
+      background: #3b82f6;
+      box-shadow: 0 0 6px #3b82f680;
+    }
+
+    .cat-badge-dot.dot-prediction {
+      background: #f59e0b;
+      box-shadow: 0 0 6px #f59e0b80;
+    }
+
+    .cat-badge-dot.dot-analysis {
+      background: #8b5cf6;
+      box-shadow: 0 0 6px #8b5cf680;
+    }
+
+    .news-card-body {
+      padding: 14px 16px 8px;
+    }
+
+    .news-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+
+    .news-card-excerpt {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.55;
+    }
 
     .news-card-actions {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 10px 14px 12px;
-      border-top: 1px solid #0d1117; margin-top: 10px; gap: 8px;
+      border-top: 1px solid #0d1117;
+      margin-top: 10px;
+      gap: 8px;
     }
-    .news-card-actions-left, .news-card-actions-right { display: flex; align-items: center; gap: 6px; }
+
+    .news-card-actions-left,
+    .news-card-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     .news-read-more {
-      background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);
-      color: #06b6d4; font-size: 12px; font-weight: 700;
-      font-family: 'Tajawal', sans-serif; padding: 5px 12px; border-radius: 6px;
-      cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.2s;
+      background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+      border: none;
+      color: #000;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: 'Tajawal', sans-serif;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 2px 10px rgba(6, 182, 212, 0.25);
     }
-    .news-read-more:hover { background: rgba(6,182,212,0.2); }
+
+    .news-read-more:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
 
     .news-card-cta-btn {
-      background: linear-gradient(135deg, #06b6d4, #0ea5e9); border: none;
-      color: #000; font-size: 12px; font-weight: 800;
-      font-family: 'Tajawal', sans-serif; padding: 5px 12px; border-radius: 6px;
-      cursor: pointer; transition: opacity 0.2s;
+      background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+      border: none;
+      color: #000;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: 'Tajawal', sans-serif;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity 0.2s;
     }
-    .news-card-cta-btn:hover { opacity: 0.85; }
+
+    .news-card-cta-btn:hover {
+      opacity: 0.85;
+    }
 
     .news-icon-btn {
-      background: none; border: none; color: #475569;
-      cursor: pointer; padding: 4px;
-      display: flex; align-items: center; gap: 4px;
-      font-size: 13px; font-family: 'Tajawal', sans-serif;
-      border-radius: 5px; transition: color 0.2s;
+      background: none;
+      border: none;
+      color: #475569;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-family: 'Tajawal', sans-serif;
+      border-radius: 5px;
+      transition: color 0.2s;
     }
-    .news-icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
-    .news-icon-btn:hover { color: #94a3b8; }
-    .news-icon-btn.liked { color: #ef4444; }
+
+    .news-icon-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .news-icon-btn:hover {
+      color: #94a3b8;
+    }
+
+    .news-icon-btn.liked {
+      color: #ef4444;
+    }
 
     /* ─── Card Share Dropdown ─── */
     .card-share-wrapper {
       position: relative;
     }
+
     .card-share-dropdown {
       position: absolute;
       bottom: calc(100% + 8px);
       left: 50%;
       transform: translateX(-50%) translateY(6px);
       background: #111827;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
       min-width: 170px;
       overflow: hidden;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
       opacity: 0;
       visibility: hidden;
       transition: all 0.2s ease;
       z-index: 500;
     }
+
     .card-share-dropdown.open {
       opacity: 1;
       visibility: visible;
       transform: translateX(-50%) translateY(0);
     }
+
     .csd-option {
       display: flex;
       align-items: center;
@@ -215,194 +669,620 @@
       text-decoration: none;
       white-space: nowrap;
     }
-    .csd-option:hover { background: rgba(255,255,255,0.06); color: #fff; }
-    .csd-icon {
-      width: 28px; height: 28px; border-radius: 7px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .csd-icon svg { width: 14px; height: 14px; fill: currentColor; }
-    .csd-icon-copy { background: rgba(6,182,212,0.15);  color: #06b6d4; }
-    .csd-icon-wa   { background: rgba(37,211,102,0.15); color: #25d366; }
-    .csd-icon-tg   { background: rgba(0,136,204,0.15); color: #0088cc; }
-    .csd-icon-tw   { background: rgba(29,155,240,0.15); color: #1d9bf0; }
-    .csd-icon-fb   { background: rgba(24,119,242,0.15); color: #1877f2; }
 
-    .fade-in { opacity: 0; transform: translateY(10px); animation: fadeUp 0.4s ease forwards; }
-    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+    .csd-option:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    .csd-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .csd-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .csd-icon-copy {
+      background: rgba(6, 182, 212, 0.15);
+      color: #06b6d4;
+    }
+
+    .csd-icon-wa {
+      background: rgba(37, 211, 102, 0.15);
+      color: #25d366;
+    }
+
+    .csd-icon-tg {
+      background: rgba(0, 136, 204, 0.15);
+      color: #0088cc;
+    }
+
+    .csd-icon-tw {
+      background: rgba(29, 155, 240, 0.15);
+      color: #1d9bf0;
+    }
+
+    .csd-icon-fb {
+      background: rgba(24, 119, 242, 0.15);
+      color: #1877f2;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.4s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
     /* =============================================
-       ARTICLE OVERLAY — Premium Magazine Style
+       ARTICLE OVERLAY — ESPN/BBC Sport Style
     ============================================= */
     .article-overlay {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: #020617; z-index: 10000;
-      overflow-y: auto; display: none;
+      position: fixed;
+      inset: 0;
+      background: #0a0e1a;
+      z-index: 10000;
+      overflow-y: auto;
+      display: none;
       scroll-behavior: smooth;
     }
-    .article-overlay.active { display: block; animation: slideIn 0.35s cubic-bezier(0.22,0.61,0.36,1); }
-    @keyframes slideIn { from { opacity:0; transform: translateX(60px); } to { opacity:1; transform: translateX(0); } }
 
-    /* Reading progress bar */
-    .reading-progress-bar {
-      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
-      background: linear-gradient(90deg, #06b6d4, #0ea5e9, #8b5cf6);
-      z-index: 10001; transition: width 0.1s linear;
-      box-shadow: 0 0 10px rgba(6,182,212,0.6);
-    }
-
-    /* Sticky article top bar */
-    .article-topbar {
-      position: sticky; top: 0; z-index: 999;
-      background: rgba(2,6,23,0.85);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      padding: 12px 20px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .btn-back {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-      color: #94a3b8; padding: 8px 16px; border-radius: 8px; cursor: pointer;
-      display: flex; align-items: center; gap: 8px;
-      font-weight: 600; font-family: 'Tajawal', sans-serif; font-size: 14px;
-      transition: all 0.2s;
-    }
-    .btn-back:hover { background: rgba(255,255,255,0.1); color: #fff; }
-    .article-topbar-logo { font-size: 16px; font-weight: 900; color: #fff; }
-    .article-topbar-logo span { color: #06b6d4; }
-
-    /* Hero image wrapper */
-    .article-hero {
-      position: relative; width: 100%; height: clamp(200px, 45vw, 480px);
-      overflow: hidden; background: #0d1117;
-    }
-    .article-hero img {
-      width: 100%; height: 100%; object-fit: cover;
+    .article-overlay.active {
       display: block;
+      animation: artFadeIn 0.3s ease;
     }
+
+    @keyframes artFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Progress bar */
+    .reading-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, #e31e24, #f43f5e, #e31e24);
+      background-size: 200% 100%;
+      animation: progressShimmer 2s linear infinite;
+      z-index: 10001;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px rgba(227,30,36,0.6);
+    }
+    @keyframes progressShimmer {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+
+    /* ── Top bar ── */
+    .article-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(10, 14, 26, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 0 14px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #94a3b8;
+      padding: 6px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      border-radius: 20px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-back:hover {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    .article-topbar-logo {
+      font-size: 17px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .article-topbar-logo span {
+      color: #e31e24;
+    }
+
+    .topbar-spacer { width: 80px; }
+
+    /* ── Hero ── */
+    .article-hero {
+      position: relative;
+      width: 100%;
+      height: clamp(200px, 46vw, 480px);
+      overflow: hidden;
+      background: #111827;
+    }
+
+    .article-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.8);
+    }
+
     .article-hero-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(2,6,23,1) 0%, rgba(2,6,23,0.4) 50%, transparent 100%);
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #0a0e1a 0%, rgba(10, 14, 26, 0.3) 50%, transparent 100%);
     }
+
     .article-hero-meta {
-      position: absolute; bottom: 24px; right: 0; left: 0;
-      padding: 0 clamp(20px, 5vw, 80px);
+      position: absolute;
+      bottom: 24px;
+      right: 0;
+      left: 0;
+      padding: 0 clamp(16px, 5vw, 60px);
     }
 
-    /* Content layout */
+    /* ── Content ── */
     .article-content-wrap {
-      max-width: 780px; margin: 0 auto;
-      padding: clamp(24px,4vw,48px) clamp(20px,5vw,40px) 80px;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 16px 16px 90px;
     }
-    .article-content-wrap.has-hero { padding-top: 32px; }
-    .article-no-hero .article-content-wrap { padding-top: clamp(24px,4vw,48px); }
 
-    /* Category badge */
+    .article-content-wrap.has-hero {
+      padding-top: 16px;
+    }
+
+    .article-no-hero .article-content-wrap {
+      padding-top: 16px;
+    }
+
+    /* ── Category badge ── */
     .cat-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
-      padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
       text-transform: uppercase;
     }
-    .cat-badge.cat-news       { background: rgba(59,130,246,0.15);  color:#60a5fa; border: 1px solid rgba(59,130,246,0.3); }
-    .cat-badge.cat-prediction { background: rgba(245,158,11,0.15);  color:#fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-    .cat-badge.cat-analysis   { background: rgba(139,92,246,0.15);  color:#a78bfa; border: 1px solid rgba(139,92,246,0.3); }
 
-    /* Article title */
+    .cat-badge.cat-news {
+      background: #e31e24;
+      color: #fff;
+    }
+
+    .cat-badge.cat-prediction {
+      background: #f59e0b;
+      color: #000;
+    }
+
+    .cat-badge.cat-analysis {
+      background: #3b82f6;
+      color: #fff;
+    }
+
+    /* ── Title ── */
     #article-title {
-      font-size: clamp(22px, 4vw, 36px); font-weight: 900;
-      color: #fff; line-height: 1.3; margin: 10px 0 14px;
-      background: none !important; -webkit-text-fill-color: #fff !important;
+      font-size: clamp(20px, 5vw, 28px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.3;
+      margin: 0 0 10px;
+      background: none !important;
+      -webkit-text-fill-color: #fff !important;
+      letter-spacing: -0.3px;
     }
 
-    /* Meta row */
+    /* ── Meta row ── */
     .article-meta-row {
-      display: flex; align-items: center; gap: 16px;
-      flex-wrap: wrap; padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      margin-bottom: 28px;
-    }
-    #article-date { color: #475569; font-size: 13px; display: flex; align-items: center; gap: 4px; }
-    .article-read-time { color: #475569; font-size: 13px; display: flex; align-items: center; gap: 4px; }
-
-    /* Article body */
-    #article-body {
-      color: #cbd5e1; line-height: 1.9; font-size: clamp(15px, 2.2vw, 17px);
-    }
-    #article-body h1, #article-body h2, #article-body h3 {
-      color: #f1f5f9; margin: 28px 0 12px; line-height: 1.35;
-      background: none !important; -webkit-text-fill-color: #f1f5f9 !important;
-    }
-    #article-body p { margin-bottom: 18px; }
-    #article-body img { width: 100%; border-radius: 12px; margin: 20px 0; }
-    #article-body a { color: #06b6d4; text-decoration: underline; }
-    #article-body blockquote {
-      border-right: 3px solid #06b6d4; padding: 12px 20px;
-      background: rgba(6,182,212,0.05); border-radius: 0 8px 8px 0;
-      color: #94a3b8; margin: 20px 0;
-    }
-    #article-body ul, #article-body ol { padding-right: 24px; margin-bottom: 18px; }
-    #article-body li { margin-bottom: 8px; }
-
-    /* Bottom action bar */
-    .article-actions-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-top: 36px; padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      gap: 12px;
       flex-wrap: wrap;
+      padding: 8px 0 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 16px;
     }
-    .article-like-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      color: #94a3b8; font-family: 'Tajawal', sans-serif; font-size: 14px;
-      padding: 10px 20px; border-radius: 10px; cursor: pointer;
-      display: flex; align-items: center; gap: 8px; transition: all 0.2s;
-    }
-    .article-like-btn svg { width: 18px; height: 18px; fill: currentColor; }
-    .article-like-btn:hover, .article-like-btn.liked { background: rgba(239,68,68,0.12); color: #ef4444; border-color: rgba(239,68,68,0.35); }
 
-    /* Share button + dropdown */
-    .share-wrapper { position: relative; }
+    #article-date,
+    .article-read-time {
+      color: #475569;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── Outcome banner ── */
+    .article-outcome-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      direction: rtl;
+    }
+
+    .article-outcome-banner.green {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.22);
+      color: #4ade80;
+    }
+
+    .article-outcome-banner.red {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.22);
+      color: #f87171;
+    }
+
+    .article-outcome-banner .aob-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .article-outcome-banner .aob-label {
+      font-size: 9px;
+      font-weight: 700;
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .article-outcome-banner .aob-text {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    /* ── Body ── */
+    #article-body {
+      color: #94a3b8;
+      line-height: 1.85;
+      font-size: clamp(14px, 2vw, 16px);
+    }
+
+    /* قمع الـ paragraphs الفارغة من Quill */
+    #article-body p:empty,
+    #article-body p > br:only-child {
+      margin: 0 !important;
+      line-height: 0 !important;
+      height: 0;
+      overflow: hidden;
+      display: block;
+    }
+
+    #article-body h1,
+    #article-body h2,
+    #article-body h3 {
+      color: #f1f5f9;
+      margin: 36px 0 14px;
+      line-height: 1.3;
+      background: none !important;
+      -webkit-text-fill-color: #f1f5f9 !important;
+      font-weight: 800;
+    }
+
+    #article-body h2 {
+      font-size: clamp(17px, 2.8vw, 22px);
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
+    }
+
+    #article-body h2::before {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: 0;
+      width: 40px;
+      height: 2px;
+      background: #e31e24;
+      border-radius: 2px;
+    }
+
+    #article-body h3 {
+      font-size: clamp(15px, 2.4vw, 18px);
+    }
+
+    #article-body p {
+      margin-bottom: 14px;
+    }
+
+    #article-body img {
+      width: 100%;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    #article-body a {
+      color: #e31e24;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(227, 30, 36, 0.3);
+    }
+
+    #article-body a:hover {
+      border-bottom-color: #e31e24;
+    }
+
+    #article-body blockquote {
+      border-right: 4px solid #e31e24;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 0 6px 6px 0;
+      color: #64748b;
+      margin: 20px 0;
+      font-style: italic;
+    }
+
+    #article-body ul,
+    #article-body ol {
+      padding-right: 22px;
+      margin-bottom: 18px;
+    }
+
+    #article-body li {
+      margin-bottom: 8px;
+    }
+
+    #article-body li::marker {
+      color: #e31e24;
+    }
+
+    /* ── Related posts ── */
+    #related-posts-section {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    #related-posts-section h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: #64748b;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: none !important;
+      -webkit-text-fill-color: #64748b !important;
+    }
+
+    #related-posts-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media(max-width:600px) {
+      #related-posts-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .related-card-inner {
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .related-card-inner:hover {
+      border-color: #e31e24;
+    }
+
+    /* ── Bottom action bar ── */
+    .article-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: sticky;
+      bottom: 0;
+      background: rgba(10,14,26,0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 10px 14px;
+      margin: 0 -16px;
+    }
+
+    .article-like-btn {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.18);
+      color: #64748b;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .article-like-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .article-like-btn:hover,
+    .article-like-btn.liked {
+      background: rgba(239,68,68,0.18);
+      color: #ef4444;
+      border-color: rgba(239,68,68,0.35);
+      box-shadow: 0 0 16px rgba(239,68,68,0.15);
+    }
+
+    .article-like-btn.liked svg {
+      transform: scale(1.3);
+    }
+
+    .share-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
     .article-share-btn {
-      background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2);
-      color: #06b6d4; font-family: 'Tajawal', sans-serif; font-size: 14px;
-      padding: 10px 20px; border-radius: 10px; cursor: pointer;
-      display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #94a3b8;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
     }
-    .article-share-btn svg { width: 18px; height: 18px; fill: currentColor; }
-    .article-share-btn:hover { background: rgba(6,182,212,0.15); }
+
+    .article-share-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+    }
+
+    .article-share-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    /* ── Share dropdown ── */
     .share-dropdown {
-      position: absolute; bottom: calc(100% + 10px); left: 0;
-      background: #111827; border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px; min-width: 200px; overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-      opacity: 0; visibility: hidden; transform: translateY(8px);
-      transition: all 0.2s ease; z-index: 100;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      min-width: 200px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(6px);
+      transition: all 0.18s ease;
+      z-index: 100;
     }
-    .share-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+
+    .share-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
     .share-option {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 16px; color: #cbd5e1; font-size: 14px;
-      font-family: 'Tajawal', sans-serif; cursor: pointer;
-      transition: background 0.15s; text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-family: 'Tajawal', sans-serif;
+      cursor: pointer;
+      transition: background 0.12s;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
-    .share-option:hover { background: rgba(255,255,255,0.06); color: #fff; }
-    .share-option-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .share-option-icon svg { width: 16px; height: 16px; fill: currentColor; }
-    .share-opt-copy .share-option-icon { background: rgba(6,182,212,0.15); color: #06b6d4; }
-    .share-opt-wa .share-option-icon { background: rgba(37,211,102,0.15); color: #25d366; }
-    .share-opt-tg .share-option-icon { background: rgba(0,136,204,0.15); color: #0088cc; }
-    .share-opt-tw .share-option-icon { background: rgba(29,155,240,0.15); color: #1d9bf0; }
-    .share-opt-fb .share-option-icon { background: rgba(24,119,242,0.15); color: #1877f2; }
+
+    .share-option:last-child {
+      border-bottom: none;
+    }
+
+    .share-option:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    .share-option-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
     .btn-glowing-massive {
-      display: inline-flex; align-items: center; justify-content: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 14px 32px;
       background: linear-gradient(135deg, #06b6d4, #0ea5e9);
-      color: #000; font-weight: 900; font-family: 'Tajawal', sans-serif; font-size: 16px;
-      border-radius: 12px; text-decoration: none;
-      box-shadow: 0 0 24px rgba(6,182,212,0.4); transition: transform 0.2s, box-shadow 0.2s;
+      color: #000;
+      font-weight: 900;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 0 24px rgba(6, 182, 212, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .btn-glowing-massive:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(6,182,212,0.55); }
+
+    .btn-glowing-massive:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(6, 182, 212, 0.55);
+    }
   </style>
 </head>
 
@@ -416,85 +1296,148 @@
     <div class="sb-head">
       <div class="sb-logo">Spin<span>Better</span></div>
       <button class="sb-close" onclick="closeSidebar()">
-        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+        </svg>
       </button>
     </div>
     <div class="sb-promo">
       <div class="sb-promo-label">بروموكود حصري</div>
       <div class="sb-promo-code">W300</div>
-      <button class="sb-promo-btn" onclick="window.open('https://redirspinner.com/2N0q?p=%2Fregistration%2F','_blank')">سجّل الآن</button>
+      <button class="sb-promo-btn"
+        onclick="window.open('https://redirspinner.com/2N0q?p=%2Fregistration%2F','_blank')">سجّل الآن</button>
     </div>
     <nav class="sb-nav">
       <div class="sb-section-label">الرئيسية</div>
       <a href="../" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> الرئيسية
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg> الرئيسية
       </a>
       <div class="sb-section-label">الحساب</div>
       <a href="../spinbetter-registration/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> التسجيل
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        </svg> التسجيل
       </a>
       <a href="../spinbetter-promo-code/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg> بروموكود W300
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" />
+        </svg> بروموكود W300
       </a>
       <a href="../spinbetter-deposit/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1H7.29c.13 2.18 1.75 3.4 3.71 3.81V21h3v-2.14c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.41z"/></svg> الإيداع
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1H7.29c.13 2.18 1.75 3.4 3.71 3.81V21h3v-2.14c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.41z" />
+        </svg> الإيداع
       </a>
       <a href="../spinbetter-withdrawal/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> السحب
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+        </svg> السحب
       </a>
       <a href="../spinbetter-support/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg> الدعم الفني
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+        </svg> الدعم الفني
       </a>
       <div class="sb-section-label">المحتوى</div>
       <a href="./" class="sb-link active">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg> الأخبار والتحليلات
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+        </svg> الأخبار والتحليلات
       </a>
       <a href="../spinbetter-sports-betting/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.53 0 10-4.48 10-10S17.53 2 12 2zM9.5 16.5v-9l7 4.5-7 4.5z"/></svg> المراهنات الرياضية
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.53 0 10-4.48 10-10S17.53 2 12 2zM9.5 16.5v-9l7 4.5-7 4.5z" />
+        </svg> المراهنات الرياضية
       </a>
       <a href="../spinbetter-casino/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg> الكازينو
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z" />
+        </svg> الكازينو
       </a>
       <a href="../spinbetter-egypt/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg> SpinBetter مصر
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+        </svg> SpinBetter مصر
       </a>
       <a href="../spinbetter-ios/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg> iOS / iPhone
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" />
+        </svg> iOS / iPhone
       </a>
       <a href="../spinbetter-pc/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z"/></svg> الكمبيوتر (PC)
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z" />
+        </svg> الكمبيوتر (PC)
       </a>
       <a href="../spinbetter-comprehensive/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg> الدليل الشامل
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" />
+        </svg> الدليل الشامل
       </a>
       <a href="../spinbetter-apple-script/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg> سكربت التفاحه
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+        </svg> سكربت التفاحه
       </a>
       <div class="sb-section-label">للمصريين 🇪🇬</div>
       <a href="../spinbetter-egypt-guide/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg> الدليل المصري
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+        </svg> الدليل المصري
       </a>
       <a href="../spinbetter-vodafone-cash/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1H7.29c.13 2.18 1.75 3.4 3.71 3.81V21h3v-2.14c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.41z"/></svg> سحب فودافون كاش
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1H7.29c.13 2.18 1.75 3.4 3.71 3.81V21h3v-2.14c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.41z" />
+        </svg> سحب فودافون كاش
       </a>
       <a href="../spinbetter-apple-script-egypt/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg> اسكريبت التفاحة
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+        </svg> اسكريبت التفاحة
       </a>
       <div class="sb-section-label">قانوني</div>
       <a href="../spinbetter-scam-awareness/" class="sb-link" style="color:#ffcc00;">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2L1 21h22M12 6l7.53 13H4.47M11 10v4h2v-4m-2 6v2h2v-2"></path></svg> أحذر المحتالين والنصب
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M12 2L1 21h22M12 6l7.53 13H4.47M11 10v4h2v-4m-2 6v2h2v-2"></path>
+        </svg> أحذر المحتالين والنصب
       </a>
       <a href="../spinbetter-about/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg> من نحن
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+        </svg> من نحن
       </a>
       <a href="../spinbetter-privacy/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg> سياسة الخصوصية
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+        </svg> سياسة الخصوصية
       </a>
       <a href="../spinbetter-cookies/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M21.93 12.35c-.15-.46-.62-.7-1.09-.56C19.84 12.1 18.73 11.6 18.73 10.53c0-.92.75-1.68 1.68-1.68.49 0 .95.21 1.27.57.32.36.85.4 1.21.09.36-.31.4-.85.09-1.2C22.11 7.47 21.09 7 20 7c-1.65 0-3 1.35-3 3 0 .85.35 1.63.91 2.19-.72.24-1.41.6-2 1.09C14.02 11.08 12.04 10 9.8 10c-2.79 0-5.11 1.81-5.84 4.36C2.77 14.63 2 15.71 2 17c0 1.93 1.57 3.5 3.5 3.5h13.5c1.93 0 3.5-1.57 3.5-3.5 0-1.93-1.57-3.5-3.5-3.5-.2 0-.39.02-.57.05z"/></svg> الكوكيز
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M21.93 12.35c-.15-.46-.62-.7-1.09-.56C19.84 12.1 18.73 11.6 18.73 10.53c0-.92.75-1.68 1.68-1.68.49 0 .95.21 1.27.57.32.36.85.4 1.21.09.36-.31.4-.85.09-1.2C22.11 7.47 21.09 7 20 7c-1.65 0-3 1.35-3 3 0 .85.35 1.63.91 2.19-.72.24-1.41.6-2 1.09C14.02 11.08 12.04 10 9.8 10c-2.79 0-5.11 1.81-5.84 4.36C2.77 14.63 2 15.71 2 17c0 1.93 1.57 3.5 3.5 3.5h13.5c1.93 0 3.5-1.57 3.5-3.5 0-1.93-1.57-3.5-3.5-3.5-.2 0-.39.02-.57.05z" />
+        </svg> الكوكيز
       </a>
       <a href="../spinbetter-faq/" class="sb-link">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg> أسئلة شائعة (FAQ)
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;flex-shrink:0">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+        </svg> أسئلة شائعة (FAQ)
       </a>
     </nav>
     <div class="sb-foot">
@@ -505,7 +1448,10 @@
   <!-- ===[ Top Marquee Bar ]=== -->
   <div class="top-bar" role="marquee" aria-label="عروض وأخبار">
     <div class="marquee-content" id="top-marquee">
-      🔥 استخدم كود W300 واحصل على مكافأة 200%! &nbsp; ✦ &nbsp; 💎 منصة SpinBetter الأولى في الوطن العربي. &nbsp; ✦ &nbsp; 🎰 أكثر من 7000 لعبة كازينو وماكينات سلوت بين يديك. &nbsp; ✦ &nbsp; ⚽ أفضل تغطية للمباريات العالمية والمحلية مع أعلى الاحتمالات. &nbsp; ✦ &nbsp; 🚀 طرق دفع وسحب متعددة وآمنة وبدون عمولات. &nbsp; ✦ &nbsp; 📊 دعم عربي مباشر على مدار 24 ساعة لخدمتك. &nbsp; ✦ &nbsp; 💰 التسجيل مجاني مع بونص ترحيبي ضخم عند أول إيداع!
+      🔥 استخدم كود W300 واحصل على مكافأة 200%! &nbsp; ✦ &nbsp; 💎 منصة SpinBetter الأولى في الوطن العربي. &nbsp; ✦
+      &nbsp; 🎰 أكثر من 7000 لعبة كازينو وماكينات سلوت بين يديك. &nbsp; ✦ &nbsp; ⚽ أفضل تغطية للمباريات العالمية
+      والمحلية مع أعلى الاحتمالات. &nbsp; ✦ &nbsp; 🚀 طرق دفع وسحب متعددة وآمنة وبدون عمولات. &nbsp; ✦ &nbsp; 📊 دعم
+      عربي مباشر على مدار 24 ساعة لخدمتك. &nbsp; ✦ &nbsp; 💰 التسجيل مجاني مع بونص ترحيبي ضخم عند أول إيداع!
     </div>
   </div>
 
@@ -513,7 +1459,7 @@
   <div class="app-header">
     <div class="header-inner">
       <a href="../" class="logo logo-img">
-        <img src="../imgi_411_spinbetter-new-logo.png" alt="SpinBetter" class="header-logo-img">
+        <img src="../logo-spinbetter-official.png" alt="SpinBetter" class="header-logo-img">
       </a>
       <nav class="header-nav" aria-label="التنقل الرئيسي">
         <a href="../">الرئيسية</a>
@@ -524,10 +1470,14 @@
       </nav>
       <div class="hdr-actions">
         <button class="hdr-search-bar" onclick="openSearch()" aria-label="البحث في الموقع">
-          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
           <span>عن ماذا تبحث...؟</span>
         </button>
-        <button class="hdr-burger" id="menuBtn" onclick="toggleSidebar()" aria-label="فتح القائمة" aria-expanded="false">
+        <button class="hdr-burger" id="menuBtn" onclick="toggleSidebar()" aria-label="فتح القائمة"
+          aria-expanded="false">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -539,26 +1489,40 @@
   <!-- ===[ Main Content ]=== -->
   <main class="container" style="padding-top: 30px;">
     <div class="news-hero">
-      <h1>أحدث المقالات والتحليلات</h1>
+      <div class="news-hero-eyebrow">
+        <span class="eyebrow-dot"></span>
+        محتوى حصري ومحدّث
+      </div>
+      <h1>أحدث المقالات <em>والتحليلات</em></h1>
       <p>تغطية شاملة لكل ما يخص المراهنات، أحدث التوقعات الرياضية والأخبار الحصرية.</p>
     </div>
 
     <!-- Filter Tabs -->
     <div class="news-tabs" id="news-tabs" role="tablist">
       <button class="news-tab active" data-filter="all" role="tab" aria-selected="true">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
+        </svg>
         الكل
       </button>
       <button class="news-tab" data-filter="news" role="tab" aria-selected="false">
-        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zm-9-1h2v-4h4v-2h-4V9h-2v2H7v2h4z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zm-9-1h2v-4h4v-2h-4V9h-2v2H7v2h4z" />
+        </svg>
         أخبار
       </button>
       <button class="news-tab" data-filter="prediction" role="tab" aria-selected="false">
-        <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z" />
+        </svg>
         توقعات
       </button>
       <button class="news-tab" data-filter="analysis" role="tab" aria-selected="false">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
+        </svg>
         تحليل
       </button>
     </div>
@@ -574,7 +1538,9 @@
     <!-- Sticky top bar -->
     <div class="article-topbar">
       <button class="btn-back" onclick="closeArticle()">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg>
         رجوع
       </button>
       <div class="article-topbar-logo">Spin<span>Better</span></div>
@@ -596,51 +1562,91 @@
       <h1 id="article-title"></h1>
       <div class="article-meta-row">
         <div id="article-date"></div>
+        <div id="article-views" style="color: #475569; font-size: 13px; display: flex; align-items: center; gap: 4px;">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;">
+            <path
+              d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+          </svg>
+          <span id="article-views-val"></span> مشاهدة
+        </div>
         <div class="article-read-time" id="article-read-time">
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;">
+            <path
+              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+          </svg>
           <span></span>
         </div>
       </div>
       <div id="article-cta-container" style="display:none; margin-bottom:28px;"></div>
       <div id="article-body" class="ql-editor" style="padding:0;"></div>
+
+      <!-- Related Posts -->
+      <div id="related-posts-section" style="display:none;">
+        <h3>مقالات ذات صلة</h3>
+        <div id="related-posts-list"></div>
+      </div>
+
       <div class="article-actions-row">
         <button class="article-like-btn" id="article-like-btn" onclick="toggleLikeFromArticle()">
-          <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
           إعجاب <span id="article-like-count">0</span>
         </button>
         <div class="share-wrapper" id="share-wrapper">
           <button class="article-share-btn" id="article-share-btn" onclick="toggleShareDropdown(event)">
-            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" />
+            </svg>
             مشاركة
           </button>
           <div class="share-dropdown" id="share-dropdown">
             <div class="share-option share-opt-copy" onclick="copyArticleLink()">
               <div class="share-option-icon">
-                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                </svg>
               </div>
               نسخ الرابط
             </div>
             <a class="share-option share-opt-wa" id="share-wa-link" href="#" target="_blank" rel="noopener">
               <div class="share-option-icon">
-                <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.52 1.33 5L2 22l5.13-1.31C8.56 21.55 10.23 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.72 0-3.34-.47-4.73-1.28l-.34-.2-3.04.78.81-2.95-.22-.35C3.47 15.26 3 13.69 3 12 3 7.03 7.03 3 12 3s9 4.03 9 9-4.03 9-9 9z"/></svg>
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.52 1.33 5L2 22l5.13-1.31C8.56 21.55 10.23 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.72 0-3.34-.47-4.73-1.28l-.34-.2-3.04.78.81-2.95-.22-.35C3.47 15.26 3 13.69 3 12 3 7.03 7.03 3 12 3s9 4.03 9 9-4.03 9-9 9z" />
+                </svg>
               </div>
               واتساب
             </a>
             <a class="share-option share-opt-tg" id="share-tg-link" href="#" target="_blank" rel="noopener">
               <div class="share-option-icon">
-                <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                </svg>
               </div>
               تيليجرام
             </a>
             <a class="share-option share-opt-tw" id="share-tw-link" href="#" target="_blank" rel="noopener">
               <div class="share-option-icon">
-                <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.627L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.627L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
+                </svg>
               </div>
               تويتر / X
             </a>
             <a class="share-option share-opt-fb" id="share-fb-link" href="#" target="_blank" rel="noopener">
               <div class="share-option-icon">
-                <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
               </div>
               فيسبوك
             </a>
@@ -658,8 +1664,10 @@
       <div class="pf-huge-cta reveal">
         <div class="pf-cta-badge">🔥 بونص ترحيبي حصري 200%</div>
         <h3 class="pf-cta-heading">لا تضيع الفرصة، ضاعف إيداعك الأول!</h3>
-        <p class="pf-cta-sub">استخدم الكود <strong>W300</strong> عند إنشاء حسابك الآن واستمتع بتجربة الكازينو والمراهنات الأقوى في مصر والوطن العربي.</p>
-        <a href="https://redirspinner.com/2N0q?p=%2Fregistration%2F" target="_blank" rel="noopener" class="btn-glowing-massive">
+        <p class="pf-cta-sub">استخدم الكود <strong>W300</strong> عند إنشاء حسابك الآن واستمتع بتجربة الكازينو والمراهنات
+          الأقوى في مصر والوطن العربي.</p>
+        <a href="https://redirspinner.com/2N0q?p=%2Fregistration%2F" target="_blank" rel="noopener"
+          class="btn-glowing-massive">
           استلم 200% بونص الان - سجل بكود W300
         </a>
       </div>
@@ -668,13 +1676,15 @@
       <div class="pf-grid">
         <div class="pf-col-brand">
           <a href="../" class="pf-logo-wrap" aria-label="الرئيسية">
-            <img src="../imgi_411_spinbetter-new-logo.png" alt="SpinBetter" loading="lazy">
+            <img src="../logo-spinbetter-official.png" alt="SpinBetter" loading="lazy">
           </a>
-          <p class="pf-about-text">البوابة الرسمية الأولى للمراهنات الرياضية والكازينو الحي في الشرق الأوسط. الترفيه، الأمان، والمكافآت في منصة واحدة.</p>
+          <p class="pf-about-text">البوابة الرسمية الأولى للمراهنات الرياضية والكازينو الحي في الشرق الأوسط. الترفيه،
+            الأمان، والمكافآت في منصة واحدة.</p>
         </div>
 
         <div class="pf-col-links">
-          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">روابط سريعة<span class="pf-chevron">▼</span></h4>
+          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">روابط
+            سريعة<span class="pf-chevron">▼</span></h4>
           <ul class="pf-nav-list">
             <li><a href="../spinbetter-cookies/">سياسة الكوكيز</a></li>
             <li><a href="../">الرئيسية</a></li>
@@ -682,13 +1692,15 @@
             <li><a href="../spinbetter-deposit/">الإيداع</a></li>
             <li><a href="../spinbetter-withdrawal/">السحب</a></li>
             <li><a href="../spinbetter-faq/">أسئلة شائعة</a></li>
-            <li><a href="../spinbetter-scam-awareness/" style="color:#ff4d4d;font-weight:bold;">توعية ضد المحتالين ⚠️</a></li>
+            <li><a href="../spinbetter-scam-awareness/" style="color:#ff4d4d;font-weight:bold;">توعية ضد المحتالين
+                ⚠️</a></li>
             <li><a href="../spinbetter-sitemap/" style="font-weight:bold;color:var(--accent);">خريطة الموقع</a></li>
           </ul>
         </div>
 
         <div class="pf-col-links">
-          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">الألعاب والمكافآت<span class="pf-chevron">▼</span></h4>
+          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">الألعاب
+            والمكافآت<span class="pf-chevron">▼</span></h4>
           <ul class="pf-nav-list">
             <li><a href="../spinbetter-casino/">الكازينو الحي</a></li>
             <li><a href="../spinbetter-sports-betting/">المراهنات الرياضية</a></li>
@@ -703,7 +1715,8 @@
         </div>
 
         <div class="pf-col-links">
-          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">الدعم وتطبيقاتنا<span class="pf-chevron">▼</span></h4>
+          <h4 class="pf-col-title pf-accordion-title" onclick="this.parentElement.classList.toggle('active')">الدعم
+            وتطبيقاتنا<span class="pf-chevron">▼</span></h4>
           <ul class="pf-nav-list">
             <li><a href="../spinbetter-ios/">تطبيق iOS</a></li>
             <li><a href="../spinbetter-pc/">تطبيق الكمبيوتر</a></li>
@@ -718,9 +1731,9 @@
       <div class="pf-payment-strip">
         <h4>طرق الدفع المدعومة 💳</h4>
         <div class="pf-payment-logos">
-          <img src="../vodafone_cash_logo.png" alt="فودافون كاش" loading="lazy">
-          <img src="../instapay_logo.png" alt="إنستا باي" loading="lazy">
-          <img src="../we_pay_logo.png" alt="وي باي" loading="lazy">
+          <img src="../سحب-فودافون-كاش-سبين-بيتر.png" alt="فودافون كاش" loading="lazy">
+          <img src="../سحب-انستاباي-سبين-بيتر.png" alt="إنستا باي" loading="lazy">
+          <img src="../we-pay-spinbetter.png" alt="وي باي" loading="lazy">
           <img src="../USDT-TRC20.png" alt="USDT TRC20" loading="lazy">
         </div>
       </div>
@@ -729,19 +1742,30 @@
       <div class="pf-legal">
         <div class="pf-badges" style="margin-bottom:20px;">
           <div style="display:flex;gap:30px;align-items:center;justify-content:center;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:8px;color:#009be3;font-weight:bold;font-size:11px;text-transform:uppercase;line-height:1.1;">
+            <div
+              style="display:flex;align-items:center;gap:8px;color:#009be3;font-weight:bold;font-size:11px;text-transform:uppercase;line-height:1.1;">
               <div>18+<br>بالغين فقط</div>
-              <div style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:2.5px solid #ff4d4d;border-radius:50%;color:#ff4d4d;font-weight:bold;font-size:15px;">+18</div>
+              <div
+                style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:2.5px solid #ff4d4d;border-radius:50%;color:#ff4d4d;font-weight:bold;font-size:15px;">
+                +18</div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;color:#2ecc71;font-weight:bold;font-size:11px;text-transform:uppercase;line-height:1.1;">
+            <div
+              style="display:flex;align-items:center;gap:8px;color:#2ecc71;font-weight:bold;font-size:11px;text-transform:uppercase;line-height:1.1;">
               <div>SECURE<br>SSL</div>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#2ecc71"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 14H9v-2h2v2zm0-4H9V7h2v4z" fill="#0b1b1a"/><path d="M12 3.19l7 3.11v4.7c0 4.67-3.13 8.89-7 10.02-3.87-1.13-7-5.35-7-10.02V6.3l7-3.11zm0-2.19L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 14h2v-2h-2v2zm0-4h2V7h-2v4z"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#2ecc71">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 14H9v-2h2v2zm0-4H9V7h2v4z"
+                  fill="#0b1b1a" />
+                <path
+                  d="M12 3.19l7 3.11v4.7c0 4.67-3.13 8.89-7 10.02-3.87-1.13-7-5.35-7-10.02V6.3l7-3.11zm0-2.19L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 14h2v-2h-2v2zm0-4h2V7h-2v4z" />
+              </svg>
             </div>
             <div style="display:flex;align-items:center;gap:4px;color:#009be3;font-weight:bold;font-size:11px;">
               <div>RNG<br>CERTIFIED</div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:center;line-height:1.2;">
-              <div style="font-size:17px;font-weight:800;"><span style="color:#fff;">Be</span><span style="color:#f1c40f;">Gamble</span><span style="color:#fff;">Aware</span><span style="color:#bbb;font-weight:400;">.org</span></div>
+              <div style="font-size:17px;font-weight:800;"><span style="color:#fff;">Be</span><span
+                  style="color:#f1c40f;">Gamble</span><span style="color:#fff;">Aware</span><span
+                  style="color:#bbb;font-weight:400;">.org</span></div>
               <div style="color:#bbb;font-size:10px;">Helpline: 0808 8020 133</div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
@@ -753,10 +1777,12 @@
           </div>
         </div>
         <div class="pf-rg-warning">
-          المقامرة قد تسبب الإدمان والضيق المالي. يُرجى <a href="../spinbetter-responsible-gambling/">قراءة دليل التوعية واللعب بمسؤولية</a>.
+          المقامرة قد تسبب الإدمان والضيق المالي. يُرجى <a href="../spinbetter-responsible-gambling/">قراءة دليل التوعية
+            واللعب بمسؤولية</a>.
         </div>
         <p>
-          المقامرة قد تؤدي إلى الإدمان. يُرجى اللعب بمسؤولية. لا يُسمح للأشخاص دون السن القانوني بالمراهنة وفقاً لقوانين الاختصاص المحلي.<br>
+          المقامرة قد تؤدي إلى الإدمان. يُرجى اللعب بمسؤولية. لا يُسمح للأشخاص دون السن القانوني بالمراهنة وفقاً لقوانين
+          الاختصاص المحلي.<br>
           © 2026 SpinBetter Portal - جميع الحقوق محفوظة.
         </p>
       </div>
@@ -766,7 +1792,8 @@
 
   <!-- ===[ Floating CTA ]=== -->
   <div class="floating-cta" id="stickyCta">
-    <a href="https://spin-b.com/mwGY27?tag=d_207183m_665038c_cz_7KM6jg8k4YYCKuqWum5UTg" target="_blank" class="btn btn-app" style="margin:0;padding:16px;font-size:15px;">
+    <a href="https://spin-b.com/mwGY27?tag=d_207183m_665038c_cz_7KM6jg8k4YYCKuqWum5UTg" target="_blank"
+      class="btn btn-app" style="margin:0;padding:16px;font-size:15px;">
       📲 تحميل SpinBetter — كود W300
     </a>
   </div>
@@ -781,8 +1808,12 @@
   <div class="search-overlay" id="searchModal">
     <div class="search-header">
       <div class="search-input-wrap">
-        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" id="searchInput" placeholder="عن ماذا تبحث؟ (كازينو، مكافآت، طيارة...)" oninput="handleSearch(event)">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+        </svg>
+        <input type="text" id="searchInput" placeholder="عن ماذا تبحث؟ (كازينو، مكافآت، طيارة...)"
+          oninput="handleSearch(event)">
       </div>
       <button class="close-search" onclick="closeSearch()">&times;</button>
     </div>
@@ -795,4 +1826,5 @@
   <script src="./news.js"></script>
 
 </body>
+
 </html>
