@@ -2220,15 +2220,14 @@ h1 {
     font-size: 13.5px;
     line-height: 1.75;
     position: relative;
-    z-index: 1;
 }
-
 
 /* ─── Global Search UI ─── */
 .hdr-actions {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
 }
 
 
@@ -2380,6 +2379,7 @@ h1 {
     padding: 8px 14px;
     color: var(--text-dim);
     flex: 1;
+    min-width: 0;
     max-width: 300px;
     cursor: text;
     transition: 0.3s;

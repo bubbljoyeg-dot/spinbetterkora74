@@ -210,8 +210,8 @@ document.addEventListener('click', function(e) {
 /* ─── Notification Bell System ─── */
 document.addEventListener('DOMContentLoaded', () => {
     // Inject News Icon for mobile
-    const hdrActions = document.querySelector('.hdr-actions');
-    if (hdrActions && !document.getElementById('mobileNewsBtn')) {
+    const appHeader = document.querySelector('.app-header');
+    if (appHeader && !document.getElementById('mobileNewsBtn')) {
         const pathPrefix = window.location.pathname.includes('/spinbetter-') || window.location.pathname.includes('/sports/') ? '../' : './';
         const newsBtn = document.createElement('a');
         newsBtn.id = 'mobileNewsBtn';
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <svg viewBox="0 -0.33 20.754 20.754" style="width:24px; height:24px;" xmlns="http://www.w3.org/2000/svg"><g transform="translate(-1.623 -1.913)"><circle cx="12" cy="12" r="8.5" fill="#ffffff" /><path fill="#2ca9bc" d="M14.33,3.31,12,5,9.67,3.31a8.91,8.91,0,0,1,4.66,0ZM4.46,7.1A9,9,0,0,0,3,11.53L5.34,9.84ZM8,17.89l-.07-.23H5A8.92,8.92,0,0,0,8.78,20.4ZM12,8,8.5,10.67,9.84,15h4.32l1.34-4.33Zm4.11,9.66-.07.23-.82,2.51A8.92,8.92,0,0,0,19,17.66ZM19.54,7.11l-.88,2.73L21,11.53a8.93,8.93,0,0,0-1.46-4.42Z"/><path d="M9.67,3.31,12,5l2.33-1.69M3.02,11.53,5.34,9.84,4.46,7.1M18,18l-1.92-.04-.73,2.38M6,18l1.92-.04.73,2.38M19.55,7.1l-.89,2.74,2.32,1.69M12,8V5M8.41,10.65,5.34,9.84M9.84,15,7.89,18m6.27-3,1.95,3m-.61-7.33,3.16-.83M12,8,8.5,10.67,9.84,15h4.32l1.34-4.33Zm0-5a9,9,0,1,0,9,9A9,9,0,0,0,12,3Z" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></g></svg>
             <span class="bell-badge" id="newsBadge" style="display:none; position:absolute; top:-2px; left:-2px; background:#ef4444; color:#fff; border-radius:50%; width:16px; height:16px; font-size:10px; font-weight:bold; align-items:center; justify-content:center;"></span>
         `;
-        newsBtn.style.cssText = 'position: relative; display: flex; align-items: center; justify-content: center; background: none; border: none; padding: 0 8px; cursor: pointer; text-decoration: none;';
+        newsBtn.style.cssText = 'position: absolute; top: var(--header-h, 56px); right: 20px; display: flex; align-items: center; justify-content: center; background: rgba(2, 6, 23, 0.98); border: 1px solid rgba(56, 189, 248, 0.12); border-top: none; border-radius: 0 0 10px 10px; padding: 6px 14px; cursor: pointer; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
         
         if (!document.getElementById('mobileNewsStyles')) {
             const style = document.createElement('style');
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.head.appendChild(style);
         }
         
-        hdrActions.insertBefore(newsBtn, hdrActions.firstChild);
+        appHeader.appendChild(newsBtn);
     }
 
     const logo = document.querySelector('.logo');
