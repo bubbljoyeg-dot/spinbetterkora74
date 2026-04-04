@@ -57,8 +57,47 @@ function stripHtml(html) {
 
 function getCatInfo(category) {
     if (category === 'prediction') return { name: 'توقعات', dot: 'dot-prediction', badge: 'cat-prediction' };
-    if (category === 'analysis') return { name: 'تحليل', dot: 'dot-analysis', badge: 'cat-analysis' };
+    if (category === 'analysis') return { name: 'قسايم اليوم', dot: 'dot-analysis', badge: 'cat-analysis' };
     return { name: 'أخبار', dot: 'dot-news', badge: 'cat-news' };
+}
+
+/* ── Fake Stats (Seeded Random + Time Growth) ───────────────────── */
+
+function seededRnd(seed) {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) {
+        h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+    }
+    return (h >>> 0) / 4294967296;
+}
+
+function fmtNum(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return n.toString();
+}
+
+function getFakeStats(post) {
+    const id = String(post.id);
+    const ageH = (Date.now() - new Date(post.created_at).getTime()) / 3600000;
+    const grow = Math.min(ageH / 24, 20); // cap growth at 20 ‘days’ worth
+
+    const rv = seededRnd(id + 'v');
+    const rs = seededRnd(id + 's');
+    const rl = seededRnd(id + 'l');
+
+    // Base: 8K–26K views, grows ~2.5K/day, then adds real server views
+    const fakeViews  = Math.floor(8000  + rv * 18000 + grow * 2500) + (post.views  || 0);
+    // Base: 300–1500 shares, grows ~60/day
+    const fakeShares = Math.floor(300   + rs * 1200  + grow * 60);
+    // Base: 120–600 likes, grows ~25/day, then adds real server likes
+    const fakeLikes  = Math.floor(120   + rl * 480   + grow * 25)  + (post.likes  || 0);
+
+    return {
+        views:  fakeViews,
+        shares: fakeShares,
+        likes:  fakeLikes
+    };
 }
 
 /* ── OG Meta Tags ────────────────────────────────────────── */
@@ -141,7 +180,7 @@ function setupTabs() {
 function getEmptyStateMessage(filter) {
     const messages = {
         prediction: { icon: '🎯', title: 'لا توجد توقعات حالياً', sub: 'لم يتم نشر أي توقعات بعد. تابعنا قريباً!' },
-        analysis: { icon: '📊', title: 'لا توجد تحليلات حالياً', sub: 'لم يتم نشر أي تحليلات بعد. تابعنا قريباً!' },
+        analysis: { icon: '🏷️', title: 'لا توجد قسايم اليوم', sub: 'لم يتم نشر أي قسايم بعد. تابعنا قريباً!' },
         news: { icon: '📰', title: 'لا توجد أخبار حالياً', sub: 'لم يتم نشر أي أخبار بعد. تابعنا قريباً!' },
         all: { icon: '📭', title: 'لا توجد مقالات بعد', sub: 'لم يتم نشر أي محتوى حتى الآن.' }
     };
@@ -202,7 +241,7 @@ function createCardElement(post) {
     const mins = estimateReadTime(post.content);
     const excerpt = stripHtml(post.content);
 
-    let imgHTML = `<div class="news-card-img-fallback"></div>`;
+    let imgHTML = `<div style="width:100%;min-height:130px;background:linear-gradient(135deg, #0d1117 0%, #1e293b 100%);border-radius:0.5rem;"></div>`;
 
     if (post.cover_image_url) {
         imgHTML = `<img src="${post.cover_image_url}" loading="lazy" alt="${(post.title || '').replace(/"/g, '&quot;')}">`;
@@ -214,7 +253,7 @@ function createCardElement(post) {
                 const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext y='18' font-size='16'%3E⚽%3C/text%3E%3C/svg%3E`;
                 const cleanScore = (data.score || '').replace(/<[^>]*>/g, '').trim();
                 imgHTML = `
-                <div style="width:100%;height:100%;background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(14,165,233,0.08),rgba(139,92,246,0.12));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px;font-family:'Tajawal',sans-serif;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div style="width:100%;min-height:140px;background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(14,165,233,0.08),rgba(139,92,246,0.12));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px;font-family:'Tajawal',sans-serif;border-radius:0.5rem;">
                     <div style="font-size:10px;font-weight:700;color:#06b6d4;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${data.lName}</div>
                     <div style="display:flex;align-items:center;gap:18px;width:100%;justify-content:center;">
                         <img src="${data.hLogo}" alt="" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.15));" onerror="this.src='${fallbackSvg}'">
@@ -227,54 +266,72 @@ function createCardElement(post) {
     }
 
     const ctaHTML = (post.cta_text && post.cta_url)
-        ? `<a class="news-card-cta-btn" href="${post.cta_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${post.cta_text}</a>`
+        ? `<a class="mc-cta" href="${post.cta_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${post.cta_text}</a>`
         : '';
 
-    const outcomeSVG = post.outcome_text && post.outcome_color
-        ? (post.outcome_color === 'green'
-            ? `<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#22c55e;flex-shrink:0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`
-            : `<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#ef4444;flex-shrink:0;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>`)
-        : '';
+    function buildOutcomeHTML(text, color) {
+        if (!text) return '';
+        const isGreen   = color === 'green';
+        const isRed     = color === 'red';
+        const cssClass  = isGreen ? 'green' : isRed ? 'red' : 'pending';
+        const label     = isGreen ? 'نجح' : isRed ? 'فشل' : 'معلق';
+        const shortText = text.length > 60 ? text.substring(0, 60) + '...' : text;
+        const iconSVG   = isGreen
+            ? `<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;flex-shrink:0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`
+            : isRed
+            ? `<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;flex-shrink:0;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>`
+            : `<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;flex-shrink:0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
+        return `<div class="mc-outcome ${cssClass}">
+            ${iconSVG}
+            <div class="mc-outcome-text-wrap">
+                <span class="mc-outcome-label">${label}</span>
+                <span class="mc-outcome-value">${shortText}</span>
+            </div>
+        </div>`;
+    }
+    const outcomeHTML = buildOutcomeHTML(post.outcome_text, post.outcome_color);
 
     const card = document.createElement('div');
     card.className = 'news-card fade-in';
 
-    const viewsFormatted = post.views >= 1000
-        ? (post.views / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
-        : (post.views || 0).toString();
+    const stats          = getFakeStats(post);
+    const viewsFormatted = fmtNum(stats.views);
+    const sharesFormatted = fmtNum(stats.shares);
+    const likesFormatted  = fmtNum(stats.likes);
+
+    const exactDate = new Date(post.created_at);
+    const exactDateStr = `${exactDate.getDate()}/${exactDate.getMonth()+1}/${exactDate.getFullYear()}`;
 
     card.innerHTML = `
-        <div class="news-card-img-box">
+        <div class="mc-cat-row">
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; line-height: 1;">
+                <span id="ntime-${post.id}" class="mc-time"></span>
+                <span class="mc-date-exact" style="font-size: 10.5px; color: #475569; font-weight: 700; letter-spacing: 0.5px; font-family: 'Inter', sans-serif;">${exactDateStr}</span>
+            </div>
+            <div class="mc-cat-label ${cat.badge}">
+                <span class="mc-cat-dot"></span>${cat.name}
+            </div>
+        </div>
+        <div class="mc-img">
             ${imgHTML}
         </div>
-        <div class="news-card-body">
-            <div class="news-card-cat-label ${cat.badge}">
-                <span class="cat-badge-dot ${cat.dot}"></span>${cat.name}
-            </div>
-            <div class="news-card-meta-row">
-                <span id="ntime-${post.id}"></span>
-                <span class="news-card-readtime">
-                    <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:currentColor;"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                    ${mins} د
-                </span>
-            </div>
-            <h3 class="news-card-title">${post.title || ''}</h3>
-            <p class="news-card-excerpt">${excerpt}</p>
-            ${post.outcome_text && post.outcome_color ? `
-            <div style="display:flex;align-items:center;gap:5px;margin-top:7px;">
-                ${outcomeSVG}
-                <strong style="font-size:12px;font-weight:800;color:${post.outcome_color === 'green' ? '#22c55e' : '#ef4444'};font-family:'Tajawal',sans-serif;">${post.outcome_text.length > 50 ? post.outcome_text.substring(0, 50) + '...' : post.outcome_text}</strong>
-            </div>` : ''}
+        <div class="mc-body">
+            <h3 class="mc-title">${post.title || ''}</h3>
+            <p class="mc-excerpt">${excerpt}</p>
+            ${outcomeHTML}
         </div>
-        <div class="news-card-actions">
-            <div class="news-card-actions-left">
-                <button class="news-read-more js-read-more">اقرأ المزيد <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor;transform:scaleX(-1);"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button>
-                ${ctaHTML}
-            </div>
-            <div class="news-card-actions-right">
+        ${ctaHTML}
+        <div class="mc-footer">
+            <button class="mc-readmore js-read-more">اقرأ المزيد</button>
+            <div class="mc-actions">
+                <div class="mc-action">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    ${viewsFormatted}
+                </div>
                 <div class="card-share-wrapper" id="csw-${post.id}">
-                    <button class="news-icon-btn js-card-share" aria-label="مشاركة">
+                    <button class="mc-action js-card-share" aria-label="مشاركة">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                        ${sharesFormatted}
                     </button>
                     <div class="card-share-dropdown" id="csd-${post.id}">
                         <div class="csd-option csd-copy js-card-copy">
@@ -291,20 +348,19 @@ function createCardElement(post) {
                         </a>
                     </div>
                 </div>
-                <button class="news-icon-btn js-like-btn ${isLiked ? 'liked' : ''}" id="like-btn-${post.id}" aria-label="إعجاب">
+                <button class="mc-action js-like-btn ${isLiked ? 'liked' : ''}" id="like-btn-${post.id}" aria-label="إعجاب">
                     <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    <span id="like-count-${post.id}">${post.likes || 0}</span>
+                    <span id="like-count-${post.id}">${likesFormatted}</span>
                 </button>
             </div>
         </div>`;
-
     // Set time via innerHTML (critical — NOT textContent)
     card.querySelector(`#ntime-${post.id}`).innerHTML = formatTimeAgo(post.created_at);
 
     // Events
     card.querySelector('.js-read-more').addEventListener('click', e => { e.stopPropagation(); openArticle(post); });
     card.addEventListener('click', e => {
-        if (e.target.closest('.news-icon-btn,.news-card-cta-btn,.card-share-wrapper')) return;
+        if (e.target.closest('.mc-action,.mc-cta,.card-share-wrapper,.csd-option')) return;
         openArticle(post);
     });
     card.querySelector('.js-card-share').addEventListener('click', e => toggleCardShare(post.id, e));
@@ -455,7 +511,10 @@ function openArticle(post) {
         if (rtEl) rtEl.textContent = estimateReadTime(post.content) + ' دقائق قراءة';
 
         const viewsEl = document.getElementById('article-views-val');
-        if (viewsEl) viewsEl.textContent = post.views || 0;
+        if (viewsEl) {
+            const s = getFakeStats(post);
+            viewsEl.textContent = fmtNum(s.views);
+        }
 
         const bodyEl = document.getElementById('article-body');
         if (bodyEl) bodyEl.innerHTML = replaceMatchCards(post.content || '');

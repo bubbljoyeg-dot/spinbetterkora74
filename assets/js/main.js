@@ -209,6 +209,30 @@ document.addEventListener('click', function(e) {
 
 /* ─── Notification Bell System ─── */
 document.addEventListener('DOMContentLoaded', () => {
+    // Inject News Icon for mobile
+    const hdrActions = document.querySelector('.hdr-actions');
+    if (hdrActions && !document.getElementById('mobileNewsBtn')) {
+        const pathPrefix = window.location.pathname.includes('/spinbetter-') || window.location.pathname.includes('/sports/') ? '../' : './';
+        const newsBtn = document.createElement('a');
+        newsBtn.id = 'mobileNewsBtn';
+        newsBtn.href = pathPrefix + 'spinbetter-news/';
+        newsBtn.title = "الأخبار والتحليلات";
+        newsBtn.innerHTML = `
+            <svg viewBox="0 -0.33 20.754 20.754" style="width:24px; height:24px;" xmlns="http://www.w3.org/2000/svg"><g transform="translate(-1.623 -1.913)"><circle cx="12" cy="12" r="8.5" fill="#ffffff" /><path fill="#2ca9bc" d="M14.33,3.31,12,5,9.67,3.31a8.91,8.91,0,0,1,4.66,0ZM4.46,7.1A9,9,0,0,0,3,11.53L5.34,9.84ZM8,17.89l-.07-.23H5A8.92,8.92,0,0,0,8.78,20.4ZM12,8,8.5,10.67,9.84,15h4.32l1.34-4.33Zm4.11,9.66-.07.23-.82,2.51A8.92,8.92,0,0,0,19,17.66ZM19.54,7.11l-.88,2.73L21,11.53a8.93,8.93,0,0,0-1.46-4.42Z"/><path d="M9.67,3.31,12,5l2.33-1.69M3.02,11.53,5.34,9.84,4.46,7.1M18,18l-1.92-.04-.73,2.38M6,18l1.92-.04.73,2.38M19.55,7.1l-.89,2.74,2.32,1.69M12,8V5M8.41,10.65,5.34,9.84M9.84,15,7.89,18m6.27-3,1.95,3m-.61-7.33,3.16-.83M12,8,8.5,10.67,9.84,15h4.32l1.34-4.33Zm0-5a9,9,0,1,0,9,9A9,9,0,0,0,12,3Z" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></g></svg>
+            <span class="bell-badge" id="newsBadge" style="display:none; position:absolute; top:-2px; left:-2px; background:#ef4444; color:#fff; border-radius:50%; width:16px; height:16px; font-size:10px; font-weight:bold; align-items:center; justify-content:center;"></span>
+        `;
+        newsBtn.style.cssText = 'position: relative; display: flex; align-items: center; justify-content: center; background: none; border: none; padding: 0 8px; cursor: pointer; text-decoration: none;';
+        
+        if (!document.getElementById('mobileNewsStyles')) {
+            const style = document.createElement('style');
+            style.id = 'mobileNewsStyles';
+            style.innerHTML = `@media(min-width: 769px) { #mobileNewsBtn { display: none !important; } } #mobileNewsBtn:hover svg { fill: var(--accent) !important; transition: 0.3s; }`;
+            document.head.appendChild(style);
+        }
+        
+        hdrActions.insertBefore(newsBtn, hdrActions.firstChild);
+    }
+
     const logo = document.querySelector('.logo');
     if (logo && !document.getElementById('notifBell')) {
         const bellWrapper = document.createElement('div');
@@ -233,6 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const notifList = document.getElementById('notifList');
         const notifEmpty = document.getElementById('notifEmpty');
         
+        const SUPABASE_URL = 'https://whwilmaizmfqgcgowrwf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
+
         const pushMessages = [
             { title: "أهلاً بك في SpinBetter! 🎉", text: "نسعد بتواجدك في موقعنا. يمكنك الآن تصفح جميع مقالاتنا بكل سهولة، وشاركنا رأيك حول خدمات المنصة." },
             { title: "بونص ترحيبي بانتظارك 🎁", text: "استخدم الرمز الترويجي W300 الآن واستمتع بمكافأة 200% على إيداعك الأول." },
@@ -243,44 +270,85 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "أعلى احتمالات المراهنة 📈", text: "نحن نضمن توفير أفضل الاحتمالات وأعلى العوائد في سوق المراهنات الرياضية العربية." },
             { title: "كاش باك لكبار الشخصيات 💎", text: "ارتقِ في برنامج الـ VIP الخاص بنا واستمتع باسترداد نقدي كبير ومستمر يومياً." }
         ];
-        
+
         // ── Persistent State Logic ──
         let state = {
             unreadCount: 0,
             msgIndex: 0,
-            history: [] // stores { index, timeStr }
+            history: [], // stores { title, text, timeStr, isLivePost, url }
+            lastPostId: null,
+            lastSeenNewsId: null
         };
 
+        const topNewsBtn = document.getElementById('mobileNewsBtn');
+        if (topNewsBtn) {
+            topNewsBtn.addEventListener('click', () => {
+                if (state.lastPostId) {
+                    state.lastSeenNewsId = state.lastPostId;
+                    try { sessionStorage.setItem('sb_notifs_v2', JSON.stringify(state)); } catch(e){}
+                }
+            });
+        }
+
         try {
-            const saved = sessionStorage.getItem('sb_notifs');
+            const saved = sessionStorage.getItem('sb_notifs_v2');
             if (saved) state = JSON.parse(saved);
         } catch(e) {}
 
         function saveState() {
-            sessionStorage.setItem('sb_notifs', JSON.stringify(state));
+            sessionStorage.setItem('sb_notifs_v2', JSON.stringify(state));
         }
 
-        // Render previous notifications on load
         if (state.history.length > 0 && notifEmpty) {
             notifEmpty.style.display = 'none';
         }
         
+        function renderSingleNotifItem(msg, isHistoryLoad = true) {
+            let innerHTML = '';
+            let styleAttr = isHistoryLoad ? 'style="animation:none;"' : '';
+            if (msg.isLivePost && msg.url) {
+                const pathPrefix = window.location.pathname.includes('/spinbetter-') || window.location.pathname.includes('/sports/') ? '../' : './';
+                innerHTML = `
+                    <div class="notif-item live-post" ${styleAttr}>
+                        <div class="n-title" style="color:var(--accent); font-weight:bold;">${msg.title} 🚨</div>
+                        <div style="font-size: 11.5px; opacity:0.8; margin-top:2px;">${msg.text}</div>
+                        <div style="margin-top: 5px;">
+                            <a href="${pathPrefix}${msg.url}" style="color:var(--accent); font-size:11px; text-decoration:underline;">اقرأ المزيد...</a>
+                        </div>
+                        <div class="n-time">${msg.timeStr}</div>
+                    </div>
+                `;
+            } else {
+                innerHTML = `
+                    <div class="notif-item" ${styleAttr}>
+                        <div class="n-title">${msg.title}</div>
+                        <div style="font-size: 11.5px; opacity:0.8; margin-top:2px;">${msg.text}</div>
+                        <div class="n-time">${msg.timeStr}</div>
+                    </div>
+                `;
+            }
+            notifList.insertAdjacentHTML('afterbegin', innerHTML);
+        }
+
         state.history.forEach(item => {
-            const msg = pushMessages[item.index];
-            if (!msg) return;
-            const notifHTML = `
-                <div class="notif-item" style="animation:none;">
-                    <div class="n-title">${msg.title}</div>
-                    <div style="font-size: 11.5px; opacity:0.8; margin-top:2px;">${msg.text}</div>
-                    <div class="n-time">${item.timeStr}</div>
-                </div>
-            `;
-            notifList.insertAdjacentHTML('afterbegin', notifHTML);
+            renderSingleNotifItem(item, true);
         });
 
         if (state.unreadCount > 0) {
             bellBadge.style.display = 'flex';
             bellBadge.textContent = state.unreadCount;
+        }
+
+        function incrementUnread() {
+            if (!notifDropdown.classList.contains('active')) {
+                state.unreadCount++;
+                bellBadge.style.display = 'flex';
+                bellBadge.textContent = state.unreadCount;
+                notifBell.classList.remove('shake');
+                void notifBell.offsetWidth; // trigger reflow
+                notifBell.classList.add('shake');
+            }
+            saveState();
         }
 
         notifBell.addEventListener('click', (e) => {
@@ -302,53 +370,88 @@ document.addEventListener('DOMContentLoaded', () => {
                 notifDropdown.classList.remove('active');
             }
         });
+
+        async function fetchLatestPost() {
+            try {
+                const res = await fetch(
+                    `${SUPABASE_URL}/rest/v1/posts?published=eq.true&select=id,title,content&order=created_at.desc&limit=1`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    const post = data[0];
+                    if (state.lastPostId !== post.id) {
+                        const rawContent = (post.content || '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').trim();
+                        const snippet = rawContent.substring(0, 60) + (rawContent.length > 60 ? '...' : '');
+                        
+                        const now = new Date();
+                        const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+                        const notifData = {
+                            isLivePost: true,
+                            title: "حصري: " + post.title,
+                            text: snippet,
+                            url: `spinbetter-news/?post=${post.id}`,
+                            timeStr: timeStr
+                        };
+
+                        state.lastPostId = post.id;
+                        state.history.push(notifData);
+                        
+                        if (notifEmpty) notifEmpty.style.display = 'none';
+                        renderSingleNotifItem(notifData, false);
+                        incrementUnread();
+                    }
+
+                    if (window.location.pathname.includes('/spinbetter-news')) {
+                        if (state.lastSeenNewsId !== post.id) {
+                            state.lastSeenNewsId = post.id;
+                            try { sessionStorage.setItem('sb_notifs_v2', JSON.stringify(state)); } catch(e){}
+                        }
+                    } else if (state.lastSeenNewsId !== post.id) {
+                        const nBadge = document.getElementById('newsBadge');
+                        if (nBadge) {
+                            nBadge.style.display = 'flex';
+                            nBadge.textContent = '1';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Live notification fetch failed:", error);
+            }
+        }
         
         function triggerNextNotif() {
-            if (state.msgIndex >= pushMessages.length) {
-                return; // Stop when out of messages
-            }
-            
-            const msgIdx = state.msgIndex;
-            const msg = pushMessages[msgIdx];
+            if (state.msgIndex >= pushMessages.length) return;
+            const pm = pushMessages[state.msgIndex];
             const now = new Date();
             const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
             
-            const notifHTML = `
-                <div class="notif-item">
-                    <div class="n-title">${msg.title}</div>
-                    <div style="font-size: 11.5px; opacity:0.8; margin-top:2px;">${msg.text}</div>
-                    <div class="n-time">${timeStr}</div>
-                </div>
-            `;
+            const notifItem = {
+                title: pm.title,
+                text: pm.text,
+                timeStr: timeStr
+            };
             
-            if (notifEmpty) {
-                notifEmpty.style.display = 'none';
-            }
-            
-            notifList.insertAdjacentHTML('afterbegin', notifHTML);
-            
-            state.history.push({ index: msgIdx, timeStr: timeStr });
+            if (notifEmpty) notifEmpty.style.display = 'none';
+            state.history.push(notifItem);
             state.msgIndex++;
-            
-            if (!notifDropdown.classList.contains('active')) {
-                state.unreadCount++;
-                bellBadge.style.display = 'flex';
-                bellBadge.textContent = state.unreadCount;
-                
-                notifBell.classList.remove('shake');
-                void notifBell.offsetWidth; // trigger reflow to restart css animation
-                notifBell.classList.add('shake');
-            }
-            
-            saveState(); // Update session storage
+            renderSingleNotifItem(notifItem, false);
+            incrementUnread();
         }
 
-        // Only push immediately if it's the very first time the user visits the site
         if (state.msgIndex === 0) {
             setTimeout(triggerNextNotif, 500);
         }
-
-        // Push subsequent notifications every 10 seconds
-        setInterval(triggerNextNotif, 10000);
+        
+        setInterval(triggerNextNotif, 25000); // 25 seconds for static
+        
+        fetchLatestPost();
+        setInterval(fetchLatestPost, 15000); // 15 seconds to poll live posts
     }
 });
