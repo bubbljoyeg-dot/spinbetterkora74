@@ -149,6 +149,7 @@ a {
 .logo,
 .logo-img {
     text-decoration: none;
+    flex-shrink: 0;
 }
 
 .header-logo-img {
@@ -156,6 +157,7 @@ a {
     width: auto;
     display: block;
     filter: drop-shadow(0 0 8px var(--accent-glow));
+    object-fit: contain;
 }
 
 .header-nav {
