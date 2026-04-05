@@ -133,12 +133,26 @@ async function fetchInitialData() {
             .from('post_likes').select('post_id').eq('user_fingerprint', userFingerprint);
         if (likesData) userLikedPosts = likesData.map(l => l.post_id);
 
-        renderGrid();
-
         // Support both ?post=ID (SSR-friendly) and #post-ID (legacy hash)
         const qPost = new URLSearchParams(location.search).get('post');
         const hPost = location.hash.startsWith('#post-') ? location.hash.replace('#post-', '') : null;
         const targetId = qPost || hPost;
+        const qTab = new URLSearchParams(location.search).get('tab');
+
+        if (qTab && ['all', 'news', 'analysis'].includes(qTab)) {
+            currentFilter = qTab;
+            document.querySelectorAll('.news-tab').forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+                if (t.dataset.filter === currentFilter) {
+                    t.classList.add('active');
+                    t.setAttribute('aria-selected', 'true');
+                }
+            });
+        }
+
+        renderGrid();
+
         if (targetId) {
             const p = allPosts.find(x => x.id === targetId);
             if (p) setTimeout(() => openArticle(p), 150);
@@ -170,6 +184,15 @@ function setupTabs() {
             document.querySelectorAll('.news-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
             tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
             currentFilter = tab.dataset.filter;
+            
+            const url = new URL(window.location);
+            if (currentFilter === 'all') {
+                url.searchParams.delete('tab');
+            } else {
+                url.searchParams.set('tab', currentFilter);
+            }
+            window.history.replaceState({}, '', url);
+
             renderGrid();
         });
     });
