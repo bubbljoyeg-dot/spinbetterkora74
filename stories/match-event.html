@@ -2,42 +2,241 @@
 <html amp lang="ar">
   <head>
     <meta charset="utf-8">
-    <title>نابولي vs ميلان - Kora74</title>
+    <title>نابولي vs ميلان - قمة إيطالية | Kora74</title>
     <link rel="canonical" href="https://kora74.online/stories/match-event.html">
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
     <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
     <script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async custom-element="amp-story" src="https://cdn.ampproject.org/v0/amp-story-1.0.js"></script>
     <style amp-custom>
+      @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+      
       amp-story { font-family: 'Tajawal', sans-serif; }
-      .text-bg { background-color: rgba(0,0,0,0.7); color: #fff; padding: 15px; border-radius: 10px; text-align: center; direction: rtl;}
-      .highlight { color: #ffe600; font-weight: bold; font-size: 22px; }
-      .btn { display: inline-block; background-color: #e63946; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 15px;}
+      
+      /* Page 1 */
+      .headline {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        padding: 20px;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+        text-align: center;
+        direction: rtl;
+      }
+      .headline h1 {
+        color: #fff;
+        font-size: 28px;
+        font-weight: 900;
+        line-height: 1.4;
+        margin: 0;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      }
+      .badge {
+        display: inline-block;
+        background: #e63946;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+      }
+
+      /* Page 2 */
+      .details-overlay {
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 60%, transparent);
+        padding: 30px 20px;
+        direction: rtl;
+        text-align: right;
+      }
+      .league-tag {
+        display: inline-block;
+        background: #0066cc;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 4px;
+        margin-bottom: 12px;
+      }
+      .details-overlay h2 {
+        color: #fff;
+        font-size: 24px;
+        font-weight: 900;
+        margin: 0 0 10px 0;
+        line-height: 1.4;
+      }
+      .details-overlay p {
+        color: #ccc;
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 0 0 20px 0;
+      }
+      .stats-row {
+        display: flex;
+        justify-content: space-around;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+      }
+      .stat {
+        text-align: center;
+        color: #fff;
+      }
+      .stat-num {
+        font-size: 22px;
+        font-weight: 900;
+        color: #ffe600;
+        display: block;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: #aaa;
+      }
+      .read-more {
+        display: block;
+        background: #e63946;
+        color: #fff;
+        text-align: center;
+        padding: 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      /* Page 3 */
+      .analysis-box {
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 70%, transparent);
+        padding: 30px 20px;
+        direction: rtl;
+        text-align: right;
+      }
+      .analysis-box h2 {
+        color: #ffe600;
+        font-size: 22px;
+        font-weight: 900;
+        margin: 0 0 15px 0;
+      }
+      .analysis-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 10px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        background: #e63946;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+      }
+      .analysis-item p {
+        color: #ddd;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+      }
+      .site-btn {
+        display: block;
+        background: linear-gradient(135deg, #e63946, #c1121f);
+        color: #fff;
+        text-align: center;
+        padding: 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 20px;
+        box-shadow: 0 4px 15px rgba(230,57,70,0.4);
+      }
     </style>
   </head>
   <body>
     <amp-story 
       standalone 
-      title="نابولي vs ميلان"
+      title="نابولي vs ميلان - قمة إيطالية"
       publisher="Kora74"
       publisher-logo-src="https://kora74.online/favicon.png"
       poster-portrait-src="https://kora74.online/stories/NASDQ.jpg">
 
+      <!-- الصفحة الأولى: الصورة الرئيسية -->
       <amp-story-page id="page1">
         <amp-story-grid-layer template="fill">
-          <amp-img src="https://kora74.online/stories/NASDQ.jpg" width="720" height="1280" layout="responsive"></amp-img>
+          <amp-img 
+            src="https://kora74.online/stories/NASDQ.jpg" 
+            width="720" height="1280" 
+            layout="responsive">
+          </amp-img>
+        </amp-story-grid-layer>
+        <amp-story-grid-layer template="fill">
+          <div class="headline">
+            <div class="badge">🔴 الدوري الإيطالي</div>
+            <h1>قمة إيطالية من العيار الثقيل<br>نابولي في اختبار صعب أمام ميلان</h1>
+          </div>
         </amp-story-grid-layer>
       </amp-story-page>
 
+      <!-- الصفحة الثانية: تفاصيل المباراة -->
       <amp-story-page id="page2">
         <amp-story-grid-layer template="fill">
-          <amp-img src="https://kora74.online/stories/NASDQ.jpg" width="720" height="1280" layout="responsive"></amp-img>
+          <amp-img 
+            src="https://kora74.online/stories/NASDQ.jpg" 
+            width="720" height="1280" 
+            layout="responsive">
+          </amp-img>
         </amp-story-grid-layer>
-        <amp-story-grid-layer template="vertical" align-content="center">
-          <div class="text-bg">
-            <h2>تابع كل أحداث كرة القدم</h2>
-            <p class="highlight">النتائج • التحليلات • الأخبار العاجلة</p>
-            <a href="https://kora74.online/" class="btn">زور Kora74 الآن</a>
+        <amp-story-grid-layer template="vertical" align-content="end">
+          <div class="details-overlay">
+            <span class="league-tag">Serie A 🇮🇹</span>
+            <h2>أبرز ما يُميّز هذه المواجهة</h2>
+            <p>مباراة تجمع بين فريقين يتنافسان على صدارة الدوري الإيطالي في موسم مثير.</p>
+            <div class="stats-row">
+              <div class="stat">
+                <span class="stat-num">3</span>
+                <span class="stat-label">انتصارات نابولي</span>
+              </div>
+              <div class="stat">
+                <span class="stat-num">VS</span>
+                <span class="stat-label">مواجهة مباشرة</span>
+              </div>
+              <div class="stat">
+                <span class="stat-num">2</span>
+                <span class="stat-label">انتصارات ميلان</span>
+              </div>
+            </div>
+            <a href="https://kora74.online/" class="read-more">اقرأ التفاصيل الكاملة ←</a>
+          </div>
+        </amp-story-grid-layer>
+      </amp-story-page>
+
+      <!-- الصفحة الثالثة: تحليل -->
+      <amp-story-page id="page3">
+        <amp-story-grid-layer template="fill">
+          <amp-img 
+            src="https://kora74.online/stories/NASDQ.jpg" 
+            width="720" height="1280" 
+            layout="responsive">
+          </amp-img>
+        </amp-story-grid-layer>
+        <amp-story-grid-layer template="vertical" align-content="end">
+          <div class="analysis-box">
+            <h2>⚡ أبرز نقاط المباراة</h2>
+            <div class="analysis-item">
+              <div class="dot"></div>
+              <p>نابولي يدخل المباراة بأفضل هجوم في الدوري هذا الموسم</p>
+            </div>
+            <div class="analysis-item">
+              <div class="dot"></div>
+              <p>ميلان يعتمد على دفاع صلب وهجمات مرتدة سريعة</p>
+            </div>
+            <div class="analysis-item">
+              <div class="dot"></div>
+              <p>المباراة تُحدد ملامح الصراع على لقب الدوري الإيطالي</p>
+            </div>
+            <a href="https://kora74.online/" class="site-btn">🏆 تابع كورة74 لكل الأخبار</a>
           </div>
         </amp-story-grid-layer>
       </amp-story-page>
