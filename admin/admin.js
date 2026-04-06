@@ -730,10 +730,10 @@ async function savePost() {
                         ctx.fillStyle = '#ffffff';
                         ctx.fillText(' - كوره 74 الاخباريه', textX, textY);
                         
-                        // Export back to File object
+                        // Export back to Blob object
                         canvas.toBlob((blob) => {
                             if (blob) {
-                                resolve(new File([blob], fileName, { type: imageFile.type || 'image/jpeg' }));
+                                resolve(blob);
                             } else {
                                 resolve(imageFile); // Fallback
                             }
@@ -744,13 +744,17 @@ async function savePost() {
                 });
             } catch (err) {
                 console.warn("Watermark failed, uploading original.", err);
+                fileToUpload = imageFile;
             }
             // --- END WATERMARK SCRIPT ---
 
             const { data: uploadData, error: uploadError } = await supabaseClient
                 .storage
                 .from('post-images')
-                .upload(filePath, fileToUpload);
+                .upload(filePath, fileToUpload, {
+                    contentType: imageFile.type || 'image/jpeg',
+                    upsert: false
+                });
 
             if (uploadError) throw new Error("فشل رفع الصورة: " + uploadError.message);
 
