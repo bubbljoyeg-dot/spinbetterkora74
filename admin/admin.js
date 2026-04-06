@@ -685,10 +685,72 @@ async function savePost() {
             const fileName = `${slug}-${Math.random().toString(36).substring(7)}.${fileExt}`;
             const filePath = `covers/${fileName}`;
 
+            // --- WATERMARK SCRIPT ---
+            let fileToUpload = imageFile;
+            try {
+                fileToUpload = await new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Draw Original Image
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        // Set Watermark Styles
+                        ctx.globalAlpha = 0.8;
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                        ctx.shadowBlur = Math.max(4, canvas.width * 0.005);
+                        ctx.shadowOffsetX = 2;
+                        ctx.shadowOffsetY = 2;
+                        
+                        // Responsive Font Size (about 4% of image height, min 16px)
+                        const fontSize = Math.max(16, Math.floor(canvas.height * 0.04));
+                        ctx.font = `bold ${fontSize}px Arial`;
+                        ctx.textBaseline = 'bottom';
+                        
+                        // Starting positions (Bottom-Left)
+                        let textX = Math.max(10, canvas.width * 0.02);
+                        const textY = canvas.height - Math.max(10, canvas.height * 0.02);
+                        const space = fontSize * 0.25; // gap between words
+                        
+                        // Draw "KORA" (White)
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillText('KORA', textX, textY);
+                        textX += ctx.measureText('KORA').width + space;
+                        
+                        // Draw "74" (Red)
+                        ctx.fillStyle = '#ff1a1a';
+                        ctx.fillText('74', textX, textY);
+                        textX += ctx.measureText('74').width + space;
+                        
+                        // Draw " - كوره 74 الاخباريه" (White)
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillText(' - كوره 74 الاخباريه', textX, textY);
+                        
+                        // Export back to File object
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                resolve(new File([blob], fileName, { type: imageFile.type || 'image/jpeg' }));
+                            } else {
+                                resolve(imageFile); // Fallback
+                            }
+                        }, imageFile.type || 'image/jpeg', 0.92);
+                    };
+                    img.onerror = () => resolve(imageFile); // Fallback on error
+                    img.src = URL.createObjectURL(imageFile);
+                });
+            } catch (err) {
+                console.warn("Watermark failed, uploading original.", err);
+            }
+            // --- END WATERMARK SCRIPT ---
+
             const { data: uploadData, error: uploadError } = await supabaseClient
                 .storage
                 .from('post-images')
-                .upload(filePath, imageFile);
+                .upload(filePath, fileToUpload);
 
             if (uploadError) throw new Error("فشل رفع الصورة: " + uploadError.message);
 
