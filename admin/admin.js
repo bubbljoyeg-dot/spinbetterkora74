@@ -733,7 +733,14 @@ async function savePost() {
                         // Export back to Blob object
                         canvas.toBlob((blob) => {
                             if (blob) {
-                                resolve(blob);
+                                try {
+                                    // Try constructing a File (required by some Supabase versions)
+                                    const watermarkedFile = new File([blob], fileName, { type: imageFile.type || 'image/jpeg' });
+                                    resolve(watermarkedFile);
+                                } catch (fileErr) {
+                                    // Fallback to pure blob if browser doesn't support File constructor
+                                    resolve(blob);
+                                }
                             } else {
                                 resolve(imageFile); // Fallback
                             }
@@ -747,6 +754,8 @@ async function savePost() {
                 fileToUpload = imageFile;
             }
             // --- END WATERMARK SCRIPT ---
+
+            alert('تمت معالجة الصورة بنجاح وتسميتها: ' + fileName);
 
             const { data: uploadData, error: uploadError } = await supabaseClient
                 .storage
