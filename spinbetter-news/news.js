@@ -539,13 +539,28 @@ function updateMetaTags(post) {
         if (!el) { el = document.createElement('meta'); el.setAttribute('name', name); document.head.appendChild(el); }
         el.setAttribute('content', val);
     };
+    // Ensure Absolute URL for image
+    let absoluteImageUrl = '';
+    if (post.cover_image_url) {
+        try {
+            absoluteImageUrl = new URL(post.cover_image_url, location.origin).href;
+        } catch (e) {
+            absoluteImageUrl = post.cover_image_url;
+        }
+    }
+
+    // 2. Open Graph tags
     set('og:title', post.title || '');
     set('og:description', stripHtml(post.content || ''));
     set('og:url', location.origin + location.pathname + '?post=' + post.id);
     set('og:type', 'article');
-    if (post.cover_image_url) set('og:image', post.cover_image_url);
+    if (absoluteImageUrl) {
+        set('og:image', absoluteImageUrl);
+        set('og:image:alt', post.title || '');
+    }
     setName('description', stripHtml(post.content || ''));
 
+    // 1. JSON-LD Schema (BlogPosting)
     let ldEl = document.getElementById('ld-article');
     if (!ldEl) {
         ldEl = document.createElement('script');
@@ -555,13 +570,17 @@ function updateMetaTags(post) {
     }
     ldEl.textContent = JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "NewsArticle",
+        "@type": "BlogPosting",
         "headline": post.title || '',
         "description": stripHtml(post.content || ''),
         "datePublished": post.created_at,
         "dateModified": post.updated_at || post.created_at,
-        "image": post.cover_image_url || '',
+        "image": absoluteImageUrl || '',
         "url": location.origin + location.pathname + '?post=' + post.id,
+        "author": {
+            "@type": "Organization",
+            "name": "SpinBetter Portal"
+        },
         "publisher": {
             "@type": "Organization",
             "name": "SpinBetter",
