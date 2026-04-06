@@ -656,7 +656,33 @@ async function savePost() {
         // Handle new image upload
         if (imageFile) {
             const fileExt = imageFile.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            let slug = title;
+            
+            try {
+                // Call public translate API to convert Arabic title to English
+                const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q=${encodeURIComponent(title)}`;
+                const res = await fetch(translateUrl);
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json && json[0] && json[0][0] && json[0][0][0]) {
+                        slug = json[0][0][0];
+                    }
+                }
+            } catch (e) {
+                console.warn("Translation failed, using original title", e);
+            }
+
+            // Slugify: lowercase, replace non-alphanumeric with dashes, trim
+            slug = slug.toLowerCase().trim()
+                .replace(/['"]/g, '') // remove quotes completely
+                .replace(/[^a-z0-9\u0600-\u06FF]+/g, '-') // replace spaces/symbols with dashes
+                .replace(/(^-|-$)/g, ''); // trim dashes from start and end
+                
+            if (!slug) slug = 'post';
+
+            // Example output: liverpool-match-goals-today.jpg (or liverpool-match-goals-today-x8vf.jpg for uniqueness)
+            // Appended a short random hash to prevent conflicts if uploading same named article twice
+            const fileName = `${slug}-${Math.random().toString(36).substring(7)}.${fileExt}`;
             const filePath = `covers/${fileName}`;
 
             const { data: uploadData, error: uploadError } = await supabaseClient
