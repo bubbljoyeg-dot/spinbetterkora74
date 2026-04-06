@@ -1,10 +1,23 @@
 const SUPABASE_URL = 'https://whwilmaizmfqgcgowrwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 
+function safeDecodeB64(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+/* ── Constants ───────────────────────────────────────────── */
+const PAGE_SIZE = 9;
+
+/* ── State ───────────────────────────────────────────────── */
 let allPosts = [];
+let filteredPosts = [];
 let currentFilter = 'all';
+let currentSearch = '';
+let currentPage = 1;
 let userFingerprint = localStorage.getItem('newsUserFingerprint');
 let userLikedPosts = [];
 let currentViewingPost = null;
@@ -14,32 +27,363 @@ if (!userFingerprint) {
     localStorage.setItem('newsUserFingerprint', userFingerprint);
 }
 
+/* ── Init ────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     fetchInitialData();
     setupTabs();
     setupRealtime();
     setupReadingProgress();
+    injectNewsSearchBar();
 });
 
-/* ── Helpers ─────────────────────────────────────────────── */
+/* ── SVG Icons Library ───────────────────────────────────── */
+// Centralized, semantically correct SVG icons for the news portal
 
+const ICONS = {
+    // 🔍 Search — magnifying glass, standard and universally understood
+    search: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // ✕ Clear/Close — simple X for clearing search or closing overlay
+    close: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // 🕐 Time/Clock — used next to "published X minutes ago"
+    clock: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M12 7v5l3.5 3.5" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // 📅 Calendar — used next to exact publish date
+    calendar: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor"
+              stroke-width="1.8" fill="none"/>
+        <path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // ❤️ Like/Heart — for liking news articles
+    heart: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // 👁️ Views — eye icon for view count on news articles
+    eye: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+              stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
+    </svg>`,
+
+    // 🔗 Share — branching nodes, represents sharing/spreading news
+    share: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // 📋 Copy Link — two overlapping documents
+    copy: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor"
+              stroke-width="1.8" fill="none"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // ✅ Success/Prediction Won — checkmark in circle
+    checkCircle: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // ❌ Failure/Prediction Lost — X in circle
+    xCircle: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // ⏳ Pending — hourglass, represents awaited outcome
+    hourglass: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 2h14M5 22h14M6 2v6l4 4-4 4v6M18 2v6l-4 4 4 4v6"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // 📰 Newspaper — the hero "latest news" badge icon
+    newspaper: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4-4V6"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M10 7h8M10 11h8M10 15h5" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" fill="none"/>
+        <rect x="10" y="2" width="0" height="0" fill="none"/>
+    </svg>`,
+
+    // 🏆 Trophy — for trending/popular articles sidebar
+    trophy: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 21h8M12 17v4M17 3h3v4a5 5 0 0 1-3.5 4.75M7 3H4v4a5 5 0 0 0 3.5 4.75"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M7 3h10v7a5 5 0 0 1-10 0V3z" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // ⚽ Football/Soccer — used in match cards, football news
+    football: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M12 2c0 0-2 3-2 6s2 4 2 4 2-1 2-4-2-6-2-6z"
+              stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+        <path d="M2.5 9.5l3.5 2M18 11.5l3.5-2M5 18l3-2M16 16l3 2M9 20l1-3M14 17l1 3"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // ← Previous page arrow
+    arrowLeft: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // → Next page arrow
+    arrowRight: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // 📖 Read More — open book, represents reading an article
+    book: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // 🔔 Breaking News notification bell
+    bell: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // 🌐 Live/Realtime — broadcast signal waves
+    broadcast: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        <path d="M4.93 4.93a10 10 0 0 0 0 14.14M19.07 4.93a10 10 0 0 1 0 14.14"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M7.76 7.76a6 6 0 0 0 0 8.48M16.24 7.76a6 6 0 0 1 0 8.48"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // 📊 Analysis/Statistics — bar chart for analysis posts
+    barChart: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" fill="none"/>
+    </svg>`,
+
+    // 🎯 Prediction — target/bullseye for prediction posts
+    target: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+    </svg>`,
+
+    // 🖼️ Image placeholder — photo frame with mountain silhouette
+    imagePlaceholder: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor"
+              stroke-width="1.5" fill="none"/>
+        <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // ↗️ External CTA arrow (used in match card "details" button)
+    chevronLeft: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // 🔴 Live dot (CSS animated, but SVG version for static use)
+    liveCircle: `<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="5" cy="5" r="4" fill="currentColor"/>
+    </svg>`,
+
+    // WhatsApp brand icon
+    whatsapp: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
+        <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.52 1.33 5L2 22l5.13-1.31C8.56 21.55 10.23 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.72 0-3.34-.47-4.73-1.28l-.34-.2-3.04.78.81-2.95-.22-.35C3.47 15.26 3 13.69 3 12 3 7.03 7.03 3 12 3s9 4.03 9 9-4.03 9-9 9z" fill="currentColor"/>
+    </svg>`,
+
+    // Telegram brand icon
+    telegram: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" fill="currentColor"/>
+    </svg>`,
+
+    // 🛡️ Shield — for security/verification badges
+    shield: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2l7 4v6c0 4.5-3.5 7.5-7 8.5-3.5-1-7-4-7-8.5V6l7-4z"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" fill="none"/>
+        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // 🎬 Play button — for video/carousel content in hero
+    play: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M10 8l6 4-6 4V8z" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+
+    // 📡 News ticker satellite/antenna
+    antenna: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 22v-8M4.93 10.93a10 10 0 0 0 14.14 0"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M7.76 7.76a6 6 0 0 0 8.48 8.48"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <circle cx="12" cy="5" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
+    </svg>`,
+
+    // 🏟️ Stadium — match venue
+    stadium: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 18c0-5 2-10 9-10s9 5 9 10" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M1 18h22M6 18v2m5-2v2m5-2v2"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M8 8c0-2 1.5-4 4-4s4 2 4 4"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </svg>`,
+};
+
+// Helper: inject SVG with size and color
+function icon(name, size = 16, color = 'currentColor') {
+    const svg = ICONS[name];
+    if (!svg) return '';
+    return svg
+        .replace('<svg ', `<svg width="${size}" height="${size}" style="color:${color};flex-shrink:0;" `)
+        .replace('fill="currentColor"', `fill="${color}"`)
+        .replace(/stroke="currentColor"/g, `stroke="${color}"`);
+}
+
+/* ── Search Bar Injection ────────────────────────────────── */
+function injectNewsSearchBar() {
+    const tabsEl = document.getElementById('news-tabs');
+    if (!tabsEl) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'news-search-wrap';
+    wrap.style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin-bottom: 28px;
+        transition: border-color 0.2s;
+    `;
+
+    // Search icon: magnifying glass — semantically correct for search
+    wrap.innerHTML = `
+        <span style="width:18px;height:18px;color:#475569;flex-shrink:0;display:flex;align-items:center;">
+            ${icon('search', 18, '#475569')}
+        </span>
+        <input
+            id="news-search-input"
+            type="text"
+            placeholder="ابحث في الأخبار والتحليلات..."
+            autocomplete="off"
+            style="
+                flex:1;
+                background:transparent;
+                border:none;
+                outline:none;
+                color:#e2e8f0;
+                font-family:'Tajawal',sans-serif;
+                font-size:14px;
+                direction:rtl;
+            "
+        >
+        <button id="news-search-clear" onclick="clearNewsSearch()" style="
+            display:none;
+            background:rgba(255,255,255,0.08);
+            border:none;
+            border-radius:6px;
+            color:#94a3b8;
+            width:24px;height:24px;
+            cursor:pointer;
+            padding:0;
+            align-items:center;
+            justify-content:center;
+            flex-shrink:0;
+        ">
+            ${icon('close', 14, '#94a3b8')}
+        </button>
+    `;
+
+    tabsEl.insertAdjacentElement('afterend', wrap);
+
+    const input = document.getElementById('news-search-input');
+    const clearBtn = document.getElementById('news-search-clear');
+
+    wrap.addEventListener('focusin', () => {
+        wrap.style.borderColor = 'rgba(6,182,212,0.4)';
+    });
+    wrap.addEventListener('focusout', () => {
+        wrap.style.borderColor = 'rgba(255,255,255,0.08)';
+    });
+
+    let searchDebounceTimeout;
+    input.addEventListener('input', () => {
+        currentSearch = input.value.trim();
+        clearBtn.style.display = currentSearch ? 'flex' : 'none';
+
+        clearTimeout(searchDebounceTimeout);
+        searchDebounceTimeout = setTimeout(() => {
+            currentPage = 1;
+            applyFiltersAndRender();
+        }, 300);
+    });
+}
+
+function clearNewsSearch() {
+    const input = document.getElementById('news-search-input');
+    const clearBtn = document.getElementById('news-search-clear');
+    if (input) input.value = '';
+    if (clearBtn) clearBtn.style.display = 'none';
+    currentSearch = '';
+    currentPage = 1;
+    applyFiltersAndRender();
+}
+
+/* ── Helpers ─────────────────────────────────────────────── */
 function formatTimeAgo(dateString) {
     const date = new Date(dateString);
     const seconds = Math.round((Date.now() - date) / 1000);
     const minutes = Math.round(seconds / 60);
     const hours = Math.round(minutes / 60);
     const days = Math.round(hours / 24);
-    const clockSVG = `<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor;flex-shrink:0;"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`;
+
+    const clockSVG = icon('clock', 12, 'currentColor');
+    
     let label;
     if (seconds < 60) label = 'منذ لحظات';
     else if (minutes < 60) label = `منذ ${minutes} دقيقة`;
     else if (hours < 24) label = `منذ ${hours} ساعة`;
     else if (days < 30) label = `منذ ${days} يوم`;
     else {
-        const d = date.getDate(), m = date.getMonth() + 1, y = date.getFullYear();
-        label = `${d}/${m}/${y}`;
+        label = new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
     }
-    return `<span style="display:inline-flex;align-items:center;gap:4px;color:#64748b;font-size:12px;">${clockSVG}${label}</span>`;
+
+    return `<span style="display:inline-flex;align-items:center;gap:4px;color:#64748b;font-size:11px;white-space:nowrap;">${clockSVG} ${label}</span>`;
 }
 
 function estimateReadTime(html) {
@@ -61,13 +405,106 @@ function getCatInfo(category) {
     return { name: 'أخبار', dot: 'dot-news', badge: 'cat-news' };
 }
 
-/* ── Fake Stats (Seeded Random + Time Growth) ───────────────────── */
+/* ── Fallback & Image Extraction ────────────────────────────── */
+window.getFallbackImgHTML = function () {
+    // Newspaper/article placeholder: represents missing article cover image
+    // Uses newspaper + subtle gradient — visually communicates "news content"
+    return `
+    <div style="
+        width:100%;min-height:160px;
+        background:linear-gradient(135deg,#0d1117 0%,#1a2235 50%,#0d1520 100%);
+        border-radius:0.5rem;
+        display:flex;flex-direction:column;
+        align-items:center;justify-content:center;
+        gap:10px;
+        height:100%;
+    ">
+        <svg viewBox="0 0 24 24" width="44" height="44" style="opacity:0.18;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Newspaper icon: correct placeholder for a news article with missing image -->
+            <rect x="2" y="3" width="20" height="18" rx="2"
+                  stroke="#06b6d4" stroke-width="1.5" fill="none"/>
+            <path d="M6 7h12M6 11h12M6 15h7"
+                  stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <rect x="2" y="3" width="5" height="5" rx="1"
+                  stroke="#475569" stroke-width="1.2" fill="rgba(6,182,212,0.08)"/>
+        </svg>
+        <svg viewBox="0 0 64 20" width="64" height="20" style="opacity:0.1;" xmlns="http://www.w3.org/2000/svg">
+            <text x="0" y="15" font-family="monospace" font-size="9" fill="#06b6d4"
+                  letter-spacing="2">KORA74 NEWS</text>
+        </svg>
+    </div>`;
+};
 
+function getMatchOrFallback(post, mode = 'card') {
+    if (post.cover_image_url) {
+        const fall = btoa(encodeURIComponent(window.getFallbackImgHTML ? window.getFallbackImgHTML() : ''));
+        if (mode === 'hero') {
+            return `<img src="${post.cover_image_url}" class="p-hero-bg" style="object-fit:cover; width:100%; height:100%; position:absolute; inset:0; transition: transform 10s ease, opacity 0.8s ease;" onerror="this.outerHTML=decodeURIComponent(atob('${fall}'))">`;
+        } else if (mode === 'sidebar') {
+            return `<img src="${post.cover_image_url}" loading="lazy" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.outerHTML=decodeURIComponent(atob('${fall}'))">`;
+        } else {
+            return `<img src="${post.cover_image_url}" loading="lazy" alt="" onerror="this.onerror=null; this.parentElement.innerHTML=window.getFallbackImgHTML()">`;
+        }
+    }
+
+    const matchMatch = (post.content || '').match(/\[MATCH_CARD:([A-Za-z0-9+/=]+)\]/);
+    if (matchMatch) {
+        try {
+            const data = JSON.parse(safeDecodeB64(matchMatch[1]));
+            const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23334155' stroke-width='1.5' fill='none'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' font-size='12' fill='%23475569'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E`;
+            const cleanScore = (data.score || '').replace(/<[^>]*>/g, '').trim() || 'VS';
+
+            if (mode === 'hero') {
+                return `
+                <div class="p-hero-bg" style="width:100%;height:100%;position:absolute;inset:0;background:linear-gradient(135deg,rgba(6,182,212,0.15),rgba(15,23,42,0.8),rgba(227,30,36,0.15));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px;font-family:'Tajawal',sans-serif;transition: transform 10s ease;">
+                    <div style="font-size:16px;font-weight:800;color:#06b6d4;margin-bottom:25px;text-transform:uppercase;letter-spacing:1px;background:rgba(0,0,0,0.6);padding:6px 20px;border-radius:20px;border:1px solid rgba(6,182,212,0.3);">${data.lName}</div>
+                    <div style="display:flex;align-items:center;gap:40px;width:100%;justify-content:center;">
+                        <img src="${data.hLogo}" alt="" style="width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 0 15px rgba(255,255,255,0.2));" onerror="this.src='${fallbackSvg}'">
+                        <div style="font-size:54px;font-weight:900;color:#fff;font-family:'Inter',sans-serif;letter-spacing:2px;white-space:nowrap;background:rgba(0,0,0,0.6);padding:10px 24px;border-radius:16px;border:2px solid rgba(255,255,255,0.1);">${cleanScore}</div>
+                        <img src="${data.aLogo}" alt="" style="width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 0 15px rgba(255,255,255,0.2));" onerror="this.src='${fallbackSvg}'">
+                    </div>
+                </div>`;
+            } else if (mode === 'sidebar') {
+                return `
+                <div style="width:100%;height:140px;background:linear-gradient(135deg,rgba(2,6,23,0.8),rgba(15,23,42,0.9));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;font-family:'Tajawal',sans-serif;border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:10px;font-weight:800;color:#06b6d4;margin-bottom:10px;text-transform:uppercase;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${data.lName}</div>
+                    <div style="display:flex;align-items:center;gap:16px;width:100%;justify-content:center;">
+                        <img src="${data.hLogo}" alt="" style="width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(255,255,255,0.1));" onerror="this.src='${fallbackSvg}'">
+                        <div style="font-size:20px;font-weight:900;color:#fff;font-family:'Inter',sans-serif;letter-spacing:1px;white-space:nowrap;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);">${cleanScore}</div>
+                        <img src="${data.aLogo}" alt="" style="width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(255,255,255,0.1));" onerror="this.src='${fallbackSvg}'">
+                    </div>
+                </div>`;
+            } else {
+                return `
+                <div style="width:100%;min-height:140px;background: url('../backgroundmatches-kora74.jpg') center/cover no-repeat; display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;font-family:'Tajawal',sans-serif;height:100%;position:relative;">
+                    <div style="position:absolute;inset:0;background:rgba(2,6,23,0.7);"></div>
+                    <div style="font-size:11px;font-weight:800;color:#06b6d4;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:2;">${data.lName}</div>
+                    <div style="display:flex;align-items:center;gap:12px;width:100%;justify-content:center;position:relative;z-index:2;">
+                        <img src="${data.hLogo}" alt="" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(255,255,255,0.15));" onerror="this.src='${fallbackSvg}'">
+                        <div style="font-size:24px;font-weight:900;color:#fff;font-family:'Inter',sans-serif;letter-spacing:1px;white-space:nowrap;background:rgba(0,0,0,0.6);padding:4px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);">${cleanScore}</div>
+                        <img src="${data.aLogo}" alt="" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(255,255,255,0.15));" onerror="this.src='${fallbackSvg}'">
+                    </div>
+                </div>`;
+            }
+        } catch (e) {
+            // fallthrough to fallback
+        }
+    }
+
+    const fall = window.getFallbackImgHTML ? window.getFallbackImgHTML() : '';
+    if (mode === 'hero') {
+        return `<div class="p-hero-bg" style="width:100%; height:100%; position:absolute; inset:0; transition: transform 10s ease, opacity 0.8s ease;">${fall}</div>`;
+    } else if (mode === 'sidebar') {
+        return `<div style="width:100%;height:140px;overflow:hidden;">${fall}</div>`;
+    } else {
+        return fall;
+    }
+}
+
+/* ── Fake Stats ──────────────────────────────────────────── */
 function seededRnd(seed) {
     let h = 0;
-    for (let i = 0; i < seed.length; i++) {
-        h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
-    }
+    for (let i = 0; i < seed.length; i++) h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
     return (h >>> 0) / 4294967296;
 }
 
@@ -80,28 +517,16 @@ function fmtNum(n) {
 function getFakeStats(post) {
     const id = String(post.id);
     const ageH = (Date.now() - new Date(post.created_at).getTime()) / 3600000;
-    const grow = Math.min(ageH / 24, 20); // cap growth at 20 ‘days’ worth
-
-    const rv = seededRnd(id + 'v');
-    const rs = seededRnd(id + 's');
-    const rl = seededRnd(id + 'l');
-
-    // Base: 8K–26K views, grows ~2.5K/day, then adds real server views
-    const fakeViews  = Math.floor(8000  + rv * 18000 + grow * 2500) + (post.views  || 0);
-    // Base: 300–1500 shares, grows ~60/day
-    const fakeShares = Math.floor(300   + rs * 1200  + grow * 60);
-    // Base: 120–600 likes, grows ~25/day, then adds real server likes
-    const fakeLikes  = Math.floor(120   + rl * 480   + grow * 25)  + (post.likes  || 0);
-
+    const grow = Math.min(ageH / 24, 20);
+    const rv = seededRnd(id + 'v'), rs = seededRnd(id + 's'), rl = seededRnd(id + 'l');
     return {
-        views:  fakeViews,
-        shares: fakeShares,
-        likes:  fakeLikes
+        views: Math.floor(8000 + rv * 18000 + grow * 2500) + (post.views || 0),
+        shares: Math.floor(300 + rs * 1200 + grow * 60),
+        likes: Math.floor(120 + rl * 480 + grow * 25) + (post.likes || 0),
     };
 }
 
 /* ── OG Meta Tags ────────────────────────────────────────── */
-
 function updateMetaTags(post) {
     document.title = (post.title || '') + ' | SpinBetter';
     const set = (prop, val) => {
@@ -109,18 +534,49 @@ function updateMetaTags(post) {
         if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
         el.setAttribute('content', val);
     };
+    const setName = (name, val) => {
+        let el = document.querySelector(`meta[name="${name}"]`);
+        if (!el) { el = document.createElement('meta'); el.setAttribute('name', name); document.head.appendChild(el); }
+        el.setAttribute('content', val);
+    };
     set('og:title', post.title || '');
     set('og:description', stripHtml(post.content || ''));
-    if (post.cover_image_url) set('og:image', post.cover_image_url);
     set('og:url', location.origin + location.pathname + '?post=' + post.id);
+    set('og:type', 'article');
+    if (post.cover_image_url) set('og:image', post.cover_image_url);
+    setName('description', stripHtml(post.content || ''));
+
+    let ldEl = document.getElementById('ld-article');
+    if (!ldEl) {
+        ldEl = document.createElement('script');
+        ldEl.type = 'application/ld+json';
+        ldEl.id = 'ld-article';
+        document.head.appendChild(ldEl);
+    }
+    ldEl.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": post.title || '',
+        "description": stripHtml(post.content || ''),
+        "datePublished": post.created_at,
+        "dateModified": post.updated_at || post.created_at,
+        "image": post.cover_image_url || '',
+        "url": location.origin + location.pathname + '?post=' + post.id,
+        "publisher": {
+            "@type": "Organization",
+            "name": "SpinBetter",
+            "url": location.origin
+        }
+    });
 }
 
 function resetMetaTags() {
     document.title = 'الأخبار والتحليلات | SpinBetter Portal';
+    const ldEl = document.getElementById('ld-article');
+    if (ldEl) ldEl.remove();
 }
 
 /* ── Data ────────────────────────────────────────────────── */
-
 async function fetchInitialData() {
     showSkeletons();
     try {
@@ -133,7 +589,6 @@ async function fetchInitialData() {
             .from('post_likes').select('post_id').eq('user_fingerprint', userFingerprint);
         if (likesData) userLikedPosts = likesData.map(l => l.post_id);
 
-        // Support both ?post=ID (SSR-friendly) and #post-ID (legacy hash)
         const qPost = new URLSearchParams(location.search).get('post');
         const hPost = location.hash.startsWith('#post-') ? location.hash.replace('#post-', '') : null;
         const targetId = qPost || hPost;
@@ -151,7 +606,13 @@ async function fetchInitialData() {
             });
         }
 
-        renderGrid();
+        updateNewsTicker();
+        updateTrendingSidebar();
+        initHeroCarousel();
+        loadSidebarMatches();
+        updateImportantTopicsSidebar();
+        initSearchPlaceholderAnim();
+        applyFiltersAndRender();
 
         if (targetId) {
             const p = allPosts.find(x => x.id === targetId);
@@ -160,7 +621,7 @@ async function fetchInitialData() {
     } catch (err) {
         console.error(err);
         document.getElementById('news-grid').innerHTML =
-            '<div style="color:#ef4444;text-align:center;grid-column:1/-1;padding:60px;">فشل في تحميل المقالات. يرجى تحديث الصفحة.</div>';
+            `<div style="color:#ef4444;text-align:center;grid-column:1/-1;padding:60px;font-family:'Tajawal',sans-serif;">فشل في تحميل المقالات. يرجى تحديث الصفحة.</div>`;
     }
 }
 
@@ -177,30 +638,367 @@ function showSkeletons() {
 }
 
 /* ── Tabs ────────────────────────────────────────────────── */
-
 function setupTabs() {
     document.querySelectorAll('.news-tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            document.querySelectorAll('.news-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-            tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
+            document.querySelectorAll('.news-tab').forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
             currentFilter = tab.dataset.filter;
-            
+            currentPage = 1;
+
             const url = new URL(window.location);
-            if (currentFilter === 'all') {
-                url.searchParams.delete('tab');
-            } else {
-                url.searchParams.set('tab', currentFilter);
-            }
+            if (currentFilter === 'all') url.searchParams.delete('tab');
+            else url.searchParams.set('tab', currentFilter);
             window.history.replaceState({}, '', url);
 
-            renderGrid();
+            applyFiltersAndRender();
         });
     });
 }
 
-/* ── Grid ────────────────────────────────────────────────── */
+/* ── Filter + Search + Render ────────────────────────────── */
+function applyFiltersAndRender() {
+    filteredPosts = allPosts.filter(p => {
+        const matchCat = currentFilter === 'all' || p.category === currentFilter;
+        const searchQuery = currentSearch.toLowerCase();
+        const matchSearch = !searchQuery || [p.title, p.content].some(f =>
+            (f || '').toLowerCase().includes(searchQuery)
+        );
+        return matchCat && matchSearch;
+    });
 
-function getEmptyStateMessage(filter) {
+    renderGrid();
+    renderPagination();
+}
+
+/* ── News Ticker ─────────────────────────────────────────── */
+function updateNewsTicker() {
+    const wrap = document.getElementById('news-ticker-wrap');
+    const track = document.getElementById('ticker-track');
+    if (!wrap || !track) return;
+
+    const staticItems = [
+        { title: '🔥 بونص ترحيبي 200% — استخدم كود W300 الآن!', url: '../spinbetter-promo-code/' },
+        { title: '⚽ أفضل احتمالات الدوري الإنجليزي على SpinBetter اليوم', url: '../spinbetter-sports-betting/' },
+        { title: '🏆 دوري أبطال أوروبا — راهن على أقوى المباريات', url: '../spinbetter-sports-betting/' },
+        { title: '🎰 أكثر من 7,000 لعبة كازينو ومراهنات مباشرة', url: '../spinbetter-casino/' },
+        { title: '💸 الإيداع والسحب بفودافون كاش وانستاباي بدون عمولات', url: '../spinbetter-deposit/' },
+        { title: '🏆 بطولات يومية وجوائز نقدية فورية لكل اللاعبين', url: '../spinbetter-registration/' },
+        { title: '📱 حمّل تطبيق SpinBetter على iOS وأجهزة الأندرويد', url: '../spinbetter-ios/' },
+        { title: '🎯 توقعات MisterMedia لأهم مباريات الجولة القادمة', url: './' },
+        { title: '🛡️ لعب آمن ومرخص — Curacao eGaming License', url: '../spinbetter-about/' },
+        { title: '📊 SpinBetter — أعلى نسبة ربح في المراهنات الرياضية', url: '../spinbetter-sports-betting/' },
+        { title: '🥇 الدوري المصري — الأهلي والزمالك — تابع التغطية الحصرية', url: './' },
+        { title: '⚽ كرة القدم الأوروبية مباشرة — أهداف وحوادث لحظة بلحظة', url: './' },
+        { title: '🎁 مكافآت Cashback أسبوعية حتى 15% على كل خسائرك', url: '../spinbetter-promo-code/' },
+        { title: '📣 اشترك في النشرة البريدية — احصل على تحليلات حصرية', url: '../spinbetter-registration/' },
+        { title: '🔔 تنبيهات فورية لأهم نتائج وأخبار الملاعب', url: './' },
+        { title: '💰 أسرع عمليات سحب في المنطقة — خلال 5 دقائق فقط!', url: '../spinbetter-deposit/' },
+        { title: '🏟️ دوري السيريا آ — مباريات اليوم وأفضل الاحتمالات', url: '../spinbetter-sports-betting/' },
+        { title: '🇩🇪 البوندسليغا الألماني — بايرن ميونيخ في الصدارة', url: '../spinbetter-sports-betting/' },
+        { title: '🇪🇸 لالیگا — ريال مدريد وبرشلونة — كلاسيكو بلا حدود', url: '../spinbetter-sports-betting/' },
+        { title: '🎲 لعبة الحظ اليومية — ادخل واربح مع SpinBetter', url: '../spinbetter-casino/' },
+        { title: '🗓️ جدول المباريات الكامل لهذا الأسبوع على Kora74', url: './' },
+    ];
+
+    const dynamicItems = allPosts.slice(0, 12).map(p => ({
+        isPost: true,
+        id: p.id,
+        title: `📰 ${p.title || stripHtml(p.content).substring(0, 70) + '...'}`,
+        url: `${location.pathname}?post=${p.id}`,
+    }));
+
+    const interleaved = [];
+    const maxLen = Math.max(dynamicItems.length, staticItems.length);
+    for (let i = 0; i < maxLen; i++) {
+        if (i < dynamicItems.length) interleaved.push(dynamicItems[i]);
+        if (i < staticItems.length) interleaved.push(staticItems[i]);
+    }
+
+    const fullInterleaved = [];
+    for (let k = 0; k < 10; k++) {
+        fullInterleaved.push(...interleaved);
+    }
+
+    const sep = '<span class="ticker-sep"></span>';
+
+    const makeHTML = (items) => items.map(item => {
+        if (item.isPost) {
+            return `<a href="${item.url}" class="ticker-item" onclick="event.preventDefault(); openArticle(allPosts.find(x => x.id === '${item.id}'));">${item.title}</a>${sep}`;
+        }
+        return `<a href="${item.url}" class="ticker-item">${item.title}</a>${sep}`;
+    }).join('');
+
+    const html = makeHTML(fullInterleaved);
+    track.innerHTML = html + html;
+
+    wrap.style.display = 'flex';
+}
+
+function toEngDigits(str) {
+    if (!str) return str;
+    return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+}
+
+function loadSidebarMatches() {
+    const matchesContainer = document.getElementById('sidebar-matches-container');
+    if (!matchesContainer) return;
+
+    const analysisPosts = allPosts.filter(p => p.category === 'analysis').slice(0, 5);
+
+    if (!analysisPosts.length) {
+        // Football/play icon for empty match state — relevant because this section is about matches
+        matchesContainer.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:32px 20px;text-align:center;position:relative;overflow:hidden;border-radius:16px;">
+            <div class="match-card-bg-blur" style="opacity:0.5;"></div>
+            <div style="position:relative;z-index:1;color:rgba(6,182,212,0.35);">
+                ${icon('football', 48, 'rgba(6,182,212,0.35)')}
+            </div>
+            <p style="color:#94a3b8;font-size:13px;font-family:'Tajawal',sans-serif;margin:0;line-height:1.7;position:relative;z-index:1;">
+                لا توجد مباريات متوفرة حالياً<br>
+                <span style="color:#475569;font-size:11px;">تابعنا قريبًا للمزيد!</span>
+            </p>
+        </div>`;
+        return;
+    }
+
+    const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%230d1a2e' stroke='%231e3a5f' stroke-width='2'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' font-size='18' fill='%23475569'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E`;
+
+    matchesContainer.innerHTML = analysisPosts.map((m, i) => {
+        let leagueName = '';
+        let homeTeam = { name: '', logo: fallbackSvg };
+        let awayTeam = { name: '', logo: fallbackSvg };
+        let scoreStr = 'VS';
+        let hasMatchData = false;
+
+        const matchMatch = (m.content || '').match(/\[MATCH_CARD:([A-Za-z0-9+/=]+)\]/);
+        if (matchMatch) {
+            try {
+                const data = JSON.parse(safeDecodeB64(matchMatch[1]));
+                leagueName = data.lName || '';
+                homeTeam = { name: data.hName || '', logo: data.hLogo || fallbackSvg };
+                awayTeam = { name: data.aName || '', logo: data.aLogo || fallbackSvg };
+                scoreStr = toEngDigits((data.score || '').replace(/<[^>]*>/g, '').trim()) || 'VS';
+                hasMatchData = true;
+            } catch (e) { }
+        }
+
+        const dateStr = m.created_at
+            ? new Date(m.created_at).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short' })
+            : '';
+        const shortTitle = (m.title || '').length > 45
+            ? (m.title || '').substring(0, 45) + '...'
+            : (m.title || '');
+
+        // Chevron-left (RTL "go to details"): correct for Arabic RTL navigation
+        const detailsArrow = icon('chevronLeft', 12, 'currentColor');
+
+        if (hasMatchData) {
+            return `
+            <a href="${location.pathname}?post=${m.id}"
+               onclick="event.preventDefault(); openArticle(allPosts.find(x => x.id === '${m.id}'));"
+               class="match-sidebar-card fade-in" style="animation-delay:${i * 0.08}s;">
+                <div class="match-card-bg-blur"></div>
+                <div class="match-card-inner">
+                    <div class="match-card-league">
+                        <span class="match-card-league-dot"></span>
+                        ${leagueName || 'MATCH OF THE DAY'}
+                    </div>
+                    <div class="match-card-body">
+                        <div class="match-team">
+                            <img src="${homeTeam.logo}" alt="${homeTeam.name}" onerror="this.src='${fallbackSvg}'">
+                            <span class="match-team-name">${homeTeam.name || 'الفريق الأول'}</span>
+                        </div>
+                        <div class="match-score-box">
+                            <div class="match-score">${scoreStr}</div>
+                            <span class="match-time-badge">${dateStr}</span>
+                        </div>
+                        <div class="match-team">
+                            <img src="${awayTeam.logo}" alt="${awayTeam.name}" onerror="this.src='${fallbackSvg}'">
+                            <span class="match-team-name">${awayTeam.name || 'الفريق الثاني'}</span>
+                        </div>
+                    </div>
+                    <div class="match-card-footer">
+                        <span class="match-card-title-text">${shortTitle}</span>
+                        <span class="match-card-cta">
+                            ${detailsArrow}
+                            تفاصيل
+                        </span>
+                    </div>
+                </div>
+            </a>`;
+        } else {
+            const imgHTML = m.cover_image_url
+                ? `<img src="${m.cover_image_url}" style="width:100%;height:130px;object-fit:cover;display:block;position:relative;z-index:2;" onerror="this.style.display='none'">`
+                : '';
+            return `
+            <a href="${location.pathname}?post=${m.id}"
+               onclick="event.preventDefault(); openArticle(allPosts.find(x => x.id === '${m.id}'));"
+               class="match-sidebar-card fade-in" style="animation-delay:${i * 0.08}s;">
+                <div class="match-card-bg-blur"></div>
+                ${imgHTML}
+                <div class="match-card-inner">
+                    <div class="match-card-league" style="justify-content:flex-start;padding-top:14px;">
+                        <span class="match-card-league-dot"></span>
+                        قسيمة اليوم
+                    </div>
+                    <div style="padding:10px 18px 6px;">
+                        <p style="font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;color:#e2e8f0;margin:0 0 8px;line-height:1.5;">${shortTitle}</p>
+                    </div>
+                    <div class="match-card-footer">
+                        <span class="match-card-title-text">${dateStr}</span>
+                        <span class="match-card-cta">
+                            ${detailsArrow}
+                            تفاصيل
+                        </span>
+                    </div>
+                </div>
+            </a>`;
+        }
+    }).join('');
+}
+
+let searchPlaceholderTimer;
+function initSearchPlaceholderAnim() {
+    const searchInput = document.getElementById('news-search-input');
+    if (!searchInput || allPosts.length === 0) return;
+    const latestTitles = allPosts.slice(0, 5).map(p => stripHtml(p.content).substring(0, 30) + '...');
+    let currentIdx = 0;
+    if (searchPlaceholderTimer) clearInterval(searchPlaceholderTimer);
+    searchPlaceholderTimer = setInterval(() => {
+        searchInput.setAttribute('placeholder', `ابحث عن: ${latestTitles[currentIdx]}`);
+        currentIdx = (currentIdx + 1) % latestTitles.length;
+    }, 3000);
+    searchInput.setAttribute('placeholder', `ابحث عن: ${latestTitles[0]}`);
+}
+
+function updateTrendingSidebar() {
+    const list = document.getElementById('trending-widget-body');
+    if (!list) return;
+
+    const trPosts = allPosts.slice(1, 11);
+    list.innerHTML = trPosts.map((p, i) => {
+        const d = new Date(p.created_at);
+        const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+        const fallbackHTML = window.getFallbackImgHTML ? window.getFallbackImgHTML() : '';
+        const fallbackB64 = btoa(encodeURIComponent(fallbackHTML));
+        const img = p.cover_image_url ?
+            `<img src="${p.cover_image_url}" loading="lazy" onerror="this.outerHTML=decodeURIComponent(atob('${fallbackB64}'))" style="width:65px;height:65px;object-fit:cover;border-radius:10px;flex-shrink:0;">` :
+            `<div style="width:65px;height:65px;border-radius:10px;overflow:hidden;flex-shrink:0;">${fallbackHTML}</div>`;
+
+        // Trophy icon in trending sidebar: represents popular/top-performing articles
+        return `
+        <a href="${location.pathname}?post=${p.id}" class="tr-item fade-in" style="animation-delay: ${i * 0.05}s" onclick="event.preventDefault(); openArticle(allPosts.find(x => x.id === '${p.id}'));">
+            <div class="tr-icon">
+               ${icon('trophy', 16, '#06b6d4')}
+            </div>
+            ${img}
+            <div style="flex: 1; min-width: 0;">
+                <h4 class="tr-title">${p.title || stripHtml(p.content).substring(0, 40)}</h4>
+                <div class="tr-meta">نُشر في ${dateStr}</div>
+            </div>
+        </a>`;
+    }).join('');
+}
+
+function updateImportantTopicsSidebar() {
+    const list = document.getElementById('topics-widget-body');
+    if (!list) return;
+
+    // Trophy icon for the premium partner widget
+    list.parentElement.querySelector('.widget-title').innerHTML = `
+        ${icon('trophy', 20, '#f59e0b')}
+        <span style="margin-right:8px;">شريكنا المميز</span>
+    `;
+
+    list.innerHTML = `
+        <div style="
+            position:relative;
+            border-radius:14px;
+            overflow:hidden;
+            background: linear-gradient(145deg, #0d1a2e 0%, #0f2744 50%, #0a1628 100%);
+            border:1px solid rgba(6,182,212,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        ">
+            <!-- Glow effect top -->
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#06b6d4,#3b82f6,transparent);"></div>
+
+            <!-- Header with logo -->
+            <div style="padding:20px 20px 16px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <a href="/" style="display:inline-block;margin-bottom:12px;">
+                    <img src="../logo-spinbetter-official.png"
+                         alt="SpinBetter"
+                         style="height:44px;width:auto;object-fit:contain;filter:drop-shadow(0 2px 12px rgba(6,182,212,0.4));"
+                         onerror="this.style.display='none'">
+                </a>
+                <div style="
+                    display:inline-flex;align-items:center;gap:6px;
+                    background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);
+                    border-radius:20px;padding:4px 12px;margin:0 auto;
+                ">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#06b6d4;box-shadow:0 0 8px #06b6d4;animation:pulse-dot 2s infinite;flex-shrink:0;"></span>
+                    <span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#06b6d4;font-family:'Tajawal',sans-serif;">منصة رائدة #1</span>
+                </div>
+            </div>
+
+            <!-- Stars + Rating -->
+            <div style="padding:14px 20px 0;text-align:center;">
+                <div style="color:#f59e0b;font-size:16px;letter-spacing:2px;margin-bottom:6px;">★★★★★</div>
+                <p style="font-family:'Tajawal',sans-serif;font-size:13px;color:#94a3b8;line-height:1.65;margin:0;">
+                    أفضل منصة مراهنات في الشرق الأوسط مع دعم عربي على مدار الساعة وأسرع سحب للأرباح.
+                </p>
+            </div>
+
+            <!-- Promo code badge -->
+            <div style="margin:14px 20px 0;padding:10px 14px;background:rgba(227,30,36,0.08);border:1px dashed rgba(227,30,36,0.35);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <div>
+                    <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#94a3b8;font-family:'Tajawal',sans-serif;margin-bottom:2px;">كود بروموكود حصري</div>
+                    <div style="font-size:20px;font-weight:900;color:#fff;font-family:'Oswald',sans-serif;letter-spacing:3px;">W300</div>
+                </div>
+                <div style="text-align:left;">
+                    <div style="font-size:9px;color:#94a3b8;font-family:'Tajawal',sans-serif;margin-bottom:2px;">بونص ترحيبي</div>
+                    <div style="font-size:18px;font-weight:900;color:#4ade80;font-family:'Oswald',sans-serif;">200%</div>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div style="padding:16px 20px 20px;">
+                <a href="https://redirspinner.com/2N0q?p=%2Fregistration%2F"
+                   target="_blank" rel="noopener"
+                   style="
+                       display:block;text-align:center;
+                       background:linear-gradient(135deg,#06b6d4,#0ea5e9);
+                       color:#000;font-family:'Tajawal',sans-serif;
+                       font-weight:900;font-size:14px;
+                       padding:12px 16px;border-radius:10px;
+                       text-decoration:none;letter-spacing:0.5px;
+                       box-shadow:0 4px 20px rgba(6,182,212,0.3);
+                       transition:all 0.25s;
+                   "
+                   onmouseover="this.style.boxShadow='0 6px 30px rgba(6,182,212,0.55)';this.style.transform='translateY(-1px)'"
+                   onmouseout="this.style.boxShadow='0 4px 20px rgba(6,182,212,0.3)';this.style.transform='translateY(0)'"
+                >
+                    سجّل الآن واستلم البونص
+                </a>
+            </div>
+
+            <!-- Glow effect bottom -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(6,182,212,0.3),transparent);"></div>
+        </div>
+    `;
+}
+
+/* ── Grid ────────────────────────────────────────────────── */
+function getEmptyStateMessage(filter, hasSearch) {
+    if (hasSearch) return {
+        icon: '🔍',
+        title: 'لا توجد نتائج',
+        sub: `لم نجد أي مقالات تطابق "${currentSearch}". جرب كلمة بحث مختلفة.`
+    };
     const messages = {
         prediction: { icon: '🎯', title: 'لا توجد توقعات حالياً', sub: 'لم يتم نشر أي توقعات بعد. تابعنا قريباً!' },
         analysis: { icon: '🏷️', title: 'لا توجد قسايم اليوم', sub: 'لم يتم نشر أي قسايم بعد. تابعنا قريباً!' },
@@ -212,81 +1010,183 @@ function getEmptyStateMessage(filter) {
 
 function renderGrid() {
     const grid = document.getElementById('news-grid');
-    grid.innerHTML = '';
-    const filtered = currentFilter === 'all' ? allPosts : allPosts.filter(p => p.category === currentFilter);
-    if (!filtered.length) {
-        const msg = getEmptyStateMessage(currentFilter);
+    if (grid) grid.innerHTML = '';
+
+    if (!filteredPosts.length) {
+        const msg = getEmptyStateMessage(currentFilter, !!currentSearch);
         grid.innerHTML = `
             <div style="
-                grid-column:1/-1;
-                display:flex;
-                flex-direction:column;
-                align-items:center;
-                justify-content:center;
-                padding:80px 20px;
-                text-align:center;
-                gap:16px;
+                grid-column:1/-1;display:flex;flex-direction:column;
+                align-items:center;justify-content:center;
+                padding:80px 20px;text-align:center;gap:16px;
             ">
                 <div style="
-                    width:80px;height:80px;
-                    border-radius:50%;
+                    width:80px;height:80px;border-radius:50%;
                     background:rgba(255,255,255,0.04);
                     border:1px solid rgba(255,255,255,0.08);
                     display:flex;align-items:center;justify-content:center;
-                    font-size:32px;
-                    margin-bottom:8px;
+                    font-size:32px;margin-bottom:8px;
                 ">${msg.icon}</div>
-                <h3 style="
-                    font-size:20px;font-weight:700;
-                    color:#e2e8f0;margin:0;
-                    font-family:'Tajawal',sans-serif;
-                ">${msg.title}</h3>
-                <p style="
-                    font-size:14px;color:#475569;margin:0;
-                    font-family:'Tajawal',sans-serif;
-                    max-width:320px;line-height:1.6;
-                ">${msg.sub}</p>
+                <h3 style="font-size:20px;font-weight:700;color:#e2e8f0;margin:0;font-family:'Tajawal',sans-serif;">${msg.title}</h3>
+                <p style="font-size:14px;color:#475569;margin:0;font-family:'Tajawal',sans-serif;max-width:320px;line-height:1.6;">${msg.sub}</p>
+                ${currentSearch ? `<button onclick="clearNewsSearch()" style="margin-top:8px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);color:#06b6d4;padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;">مسح البحث</button>` : ''}
             </div>`;
         return;
     }
-    filtered.forEach((post, i) => {
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pagePosts = filteredPosts.slice(start, start + PAGE_SIZE);
+
+    pagePosts.forEach((post, i) => {
         const card = createCardElement(post);
-        card.style.animationDelay = (i * 0.07) + 's';
+        card.style.animationDelay = (i * 0.05) + 's';
         grid.appendChild(card);
     });
 }
 
-/* ── Card ────────────────────────────────────────────────── */
+/* ── Pagination ──────────────────────────────────────────── */
+function renderPagination() {
+    const old = document.getElementById('news-pagination');
+    if (old) old.remove();
 
+    const totalPages = Math.ceil(filteredPosts.length / PAGE_SIZE);
+    if (totalPages <= 1) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'news-pagination';
+    wrap.style.cssText = `
+        display:flex;justify-content:center;align-items:center;
+        gap:8px;margin:0 0 60px;flex-wrap:wrap;
+    `;
+
+    // Arrow icons: chevron-left/right for RTL Arabic pagination — semantically correct
+    const prev = makePagBtn(icon('arrowRight', 18, 'currentColor'), currentPage > 1, () => {
+        currentPage--;
+        applyFiltersAndRender();
+        scrollToGrid();
+    });
+    wrap.appendChild(prev);
+
+    for (let i = 1; i <= totalPages; i++) {
+        const isActive = i === currentPage;
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.style.cssText = `
+            width:38px;height:38px;border-radius:8px;border:1px solid;
+            font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;
+            cursor:pointer;transition:all 0.2s;
+            background:${isActive ? '#06b6d4' : 'transparent'};
+            color:${isActive ? '#000' : '#64748b'};
+            border-color:${isActive ? '#06b6d4' : 'rgba(255,255,255,0.1)'};
+        `;
+        if (!isActive) {
+            btn.addEventListener('mouseover', () => { btn.style.borderColor = 'rgba(6,182,212,0.4)'; btn.style.color = '#e2e8f0'; });
+            btn.addEventListener('mouseout', () => { btn.style.borderColor = 'rgba(255,255,255,0.1)'; btn.style.color = '#64748b'; });
+        }
+        btn.addEventListener('click', () => { currentPage = i; applyFiltersAndRender(); scrollToGrid(); });
+        wrap.appendChild(btn);
+    }
+
+    const next = makePagBtn(icon('arrowLeft', 18, 'currentColor'), currentPage < totalPages, () => {
+        currentPage++;
+        applyFiltersAndRender();
+        scrollToGrid();
+    });
+    wrap.appendChild(next);
+
+    const counter = document.createElement('div');
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, filteredPosts.length);
+    counter.style.cssText = 'width:100%;text-align:center;color:#475569;font-size:12px;font-family:Tajawal,sans-serif;margin-top:4px;';
+    counter.textContent = `عرض ${start}–${end} من ${filteredPosts.length} مقال`;
+    wrap.appendChild(counter);
+
+    document.getElementById('news-grid').insertAdjacentElement('afterend', wrap);
+}
+
+function makePagBtn(svgContent, enabled, onClick) {
+    const btn = document.createElement('button');
+    btn.innerHTML = svgContent;
+    btn.disabled = !enabled;
+    btn.style.cssText = `
+        width:38px;height:38px;border-radius:8px;
+        border:1px solid rgba(255,255,255,0.1);
+        background:transparent;
+        color:${enabled ? '#94a3b8' : '#1e293b'};
+        font-size:16px;cursor:${enabled ? 'pointer' : 'default'};
+        transition:all 0.2s;
+        display:flex;align-items:center;justify-content:center;
+        padding:0;
+    `;
+    if (enabled) btn.addEventListener('click', onClick);
+    return btn;
+}
+
+function scrollToGrid() {
+    const tabsEl = document.getElementById('news-tabs');
+    if (tabsEl) tabsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── Hero Carousel ───────────────────────────────────────── */
+let heroCarouselTimer;
+let currentHeroIdx = 0;
+
+function initHeroCarousel() {
+    const container = document.getElementById('hero-article-container');
+    if (!container) return;
+    if (allPosts.length === 0) {
+        container.innerHTML = '';
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = 'block';
+
+    const heroPosts = allPosts.slice(0, 4);
+    if (heroCarouselTimer) clearInterval(heroCarouselTimer);
+    currentHeroIdx = 0;
+
+    renderHeroSlide(heroPosts, container);
+
+    if (heroPosts.length > 1) {
+        heroCarouselTimer = setInterval(() => {
+            currentHeroIdx = (currentHeroIdx + 1) % heroPosts.length;
+            renderHeroSlide(heroPosts, container);
+        }, 8000);
+    }
+}
+
+function renderHeroSlide(heroPosts, container) {
+    const post = heroPosts[currentHeroIdx];
+    let imgHTML = getMatchOrFallback(post, 'hero');
+
+    container.innerHTML = `
+    <a href="${location.pathname}?post=${post.id}" class="p-hero-overlay-card fade-in" onclick="event.preventDefault(); openArticle(allPosts.find(x => x.id === '${post.id}'));">
+        ${imgHTML}
+        <div class="p-hero-gradient"></div>
+        <div class="p-hero-content-over">
+            <div class="p-hero-badge">
+                ${icon('newspaper', 16, 'currentColor')}
+                <span style="margin-right:4px;">أحدث الأخبار</span>
+            </div>
+            <h2 class="p-hero-title-over">${post.title || ''}</h2>
+            <p class="p-hero-excerpt-over">${stripHtml(post.content).substring(0, 180)}...</p>
+            <div style="display:flex; gap:6px; margin-top:20px;">
+                ${heroPosts.map((_, i) => `<div style="width:24px; height:4px; border-radius:2px; background:${i === currentHeroIdx ? '#06b6d4' : 'rgba(255,255,255,0.2)'}; transition:background 0.3s;"></div>`).join('')}
+            </div>
+        </div>
+    </a>`;
+}
+
+/* ── Card ────────────────────────────────────────────────── */
 function createCardElement(post) {
     const isLiked = userLikedPosts.includes(post.id);
     const cat = getCatInfo(post.category);
-    const mins = estimateReadTime(post.content);
     const excerpt = stripHtml(post.content);
+    const stats = getFakeStats(post);
+    const exactDate = new Date(post.created_at);
+    const exactDateStr = `${exactDate.getDate()}/${exactDate.getMonth() + 1}/${exactDate.getFullYear()}`;
 
-    let imgHTML = `<div style="width:100%;min-height:130px;background:linear-gradient(135deg, #0d1117 0%, #1e293b 100%);border-radius:0.5rem;"></div>`;
-
-    if (post.cover_image_url) {
-        imgHTML = `<img src="${post.cover_image_url}" loading="lazy" alt="${(post.title || '').replace(/"/g, '&quot;')}">`;
-    } else {
-        const matchDataMatch = (post.content || '').match(/\[MATCH_CARD:([A-Za-z0-9+/=]+)\]/);
-        if (matchDataMatch) {
-            try {
-                const data = JSON.parse(decodeURIComponent(escape(atob(matchDataMatch[1]))));
-                const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext y='18' font-size='16'%3E⚽%3C/text%3E%3C/svg%3E`;
-                const cleanScore = (data.score || '').replace(/<[^>]*>/g, '').trim();
-                imgHTML = `
-                <div style="width:100%;min-height:140px;background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(14,165,233,0.08),rgba(139,92,246,0.12));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px;font-family:'Tajawal',sans-serif;border-radius:0.5rem;">
-                    <div style="font-size:10px;font-weight:700;color:#06b6d4;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${data.lName}</div>
-                    <div style="display:flex;align-items:center;gap:18px;width:100%;justify-content:center;">
-                        <img src="${data.hLogo}" alt="" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.15));" onerror="this.src='${fallbackSvg}'">
-                        <div style="font-size:22px;font-weight:900;color:#fff;font-family:'Inter',sans-serif;letter-spacing:1px;white-space:nowrap;">${cleanScore || 'VS'}</div>
-                        <img src="${data.aLogo}" alt="" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,0.15));" onerror="this.src='${fallbackSvg}'">
-                    </div>
-                </div>`;
-            } catch (e) { }
-        }
-    }
+    let imgHTML = getMatchOrFallback(post, 'card');
 
     const ctaHTML = (post.cta_text && post.cta_url)
         ? `<a class="mc-cta" href="${post.cta_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${post.cta_text}</a>`
@@ -294,18 +1194,21 @@ function createCardElement(post) {
 
     function buildOutcomeHTML(text, color) {
         if (!text) return '';
-        const isGreen   = color === 'green';
-        const isRed     = color === 'red';
-        const cssClass  = isGreen ? 'green' : isRed ? 'red' : 'pending';
-        const label     = isGreen ? 'نجح' : isRed ? 'فشل' : 'معلق';
+        const isGreen = color === 'green';
+        const isRed = color === 'red';
+        const cssClass = isGreen ? 'green' : isRed ? 'red' : 'pending';
+        const label = isGreen ? 'نجح' : isRed ? 'فشل' : 'معلق';
         const shortText = text.length > 60 ? text.substring(0, 60) + '...' : text;
-        const iconSVG   = isGreen
-            ? `<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;flex-shrink:0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`
-            : isRed
-            ? `<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;flex-shrink:0;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>`
-            : `<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;flex-shrink:0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
+
+        // ✅ checkCircle for success, ❌ xCircle for failure, ⏳ hourglass for pending
+        // These directly communicate prediction outcome — critical semantic correctness
+        let svgIcon;
+        if (isGreen) svgIcon = icon('checkCircle', 20, 'currentColor');
+        else if (isRed) svgIcon = icon('xCircle', 20, 'currentColor');
+        else svgIcon = icon('hourglass', 20, 'currentColor');
+
         return `<div class="mc-outcome ${cssClass}">
-            ${iconSVG}
+            ${svgIcon}
             <div class="mc-outcome-text-wrap">
                 <span class="mc-outcome-label">${label}</span>
                 <span class="mc-outcome-value">${shortText}</span>
@@ -314,144 +1217,99 @@ function createCardElement(post) {
     }
     const outcomeHTML = buildOutcomeHTML(post.outcome_text, post.outcome_color);
 
-    const card = document.createElement('div');
+    const card = document.createElement('a');
+    card.href = `${location.pathname}?post=${post.id}`;
     card.className = 'news-card fade-in';
+    card.style.textDecoration = 'none';
+    card.style.color = 'inherit';
+    card.style.display = 'flex';
 
-    const stats          = getFakeStats(post);
-    const viewsFormatted = fmtNum(stats.views);
-    const sharesFormatted = fmtNum(stats.shares);
-    const likesFormatted  = fmtNum(stats.likes);
-
-    const exactDate = new Date(post.created_at);
-    const exactDateStr = `${exactDate.getDate()}/${exactDate.getMonth()+1}/${exactDate.getFullYear()}`;
-
+    // Clock: time since publish — semantically correct
+    // Calendar: exact publish date — semantically correct
+    // Heart: article like — semantically correct
+    // Eye: view count — semantically correct
+    // Share: share branching network — semantically correct
     card.innerHTML = `
-        <div class="mc-cat-row">
-            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; line-height: 1;">
-                <span id="ntime-${post.id}" class="mc-time"></span>
-                <span class="mc-date-exact" style="font-size: 10.5px; color: #475569; font-weight: 700; letter-spacing: 0.5px; font-family: 'Inter', sans-serif;">${exactDateStr}</span>
-            </div>
-            <div class="mc-cat-label ${cat.badge}">
-                <span class="mc-cat-dot"></span>${cat.name}
-            </div>
-        </div>
-        <div class="mc-img">
-            ${imgHTML}
-        </div>
+        <div class="mc-img">${imgHTML}</div>
         <div class="mc-body">
-            <h3 class="mc-title">${post.title || ''}</h3>
+            <div class="mc-cat-row" style="margin-bottom: 10px; justify-content: flex-end; align-items: center;">
+                <div class="mc-cat-label ${cat.badge}">
+                    <span class="mc-cat-dot"></span>${cat.name}
+                </div>
+            </div>
+            <p class="mc-title">${post.title || ''}</p>
             <p class="mc-excerpt">${excerpt}</p>
             ${outcomeHTML}
+            ${ctaHTML}
         </div>
-        ${ctaHTML}
         <div class="mc-footer">
-            <button class="mc-readmore js-read-more">اقرأ المزيد</button>
             <div class="mc-actions">
-                <div class="mc-action">
-                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                    ${viewsFormatted}
-                </div>
-                <div class="card-share-wrapper" id="csw-${post.id}">
-                    <button class="mc-action js-card-share" aria-label="مشاركة">
-                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                        ${sharesFormatted}
+                <button id="like-btn-${post.id}" class="mc-action ${isLiked ? 'liked' : ''}" onclick="event.preventDefault();event.stopPropagation();toggleLike('${post.id}',event)" title="إعجاب">
+                    ${icon('heart', 16, 'currentColor')}
+                    <span id="like-count-${post.id}">${fmtNum(stats.likes)}</span>
+                </button>
+                <span class="mc-action" title="مشاهدات">
+                    ${icon('eye', 16, 'currentColor')}
+                    ${fmtNum(stats.views)}
+                </span>
+                <div class="card-share-wrapper">
+                    <button class="mc-action" onclick="event.preventDefault();event.stopPropagation();toggleCardShare('${post.id}',event)" title="مشاركة">
+                        ${icon('share', 16, 'currentColor')}
                     </button>
-                    <div class="card-share-dropdown" id="csd-${post.id}">
-                        <div class="csd-option csd-copy js-card-copy">
-                            <div class="csd-icon csd-icon-copy"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+                    <div class="card-share-dropdown" id="card-share-${post.id}">
+                        <div class="csd-option" onclick="event.preventDefault();event.stopPropagation();copyCardLink('${post.id}')">
+                            <span class="csd-icon csd-icon-copy">${icon('copy', 16, 'currentColor')}</span>
                             نسخ الرابط
                         </div>
-                        <a class="csd-option csd-wa" id="csd-wa-${post.id}" href="#" target="_blank" rel="noopener">
-                            <div class="csd-icon csd-icon-wa"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.52 1.33 5L2 22l5.13-1.31C8.56 21.55 10.23 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.72 0-3.34-.47-4.73-1.28l-.34-.2-3.04.78.81-2.95-.22-.35C3.47 15.26 3 13.69 3 12 3 7.03 7.03 3 12 3s9 4.03 9 9-4.03 9-9 9z"/></svg></div>
+                        <a class="csd-option" href="https://wa.me/?text=${encodeURIComponent(location.origin + location.pathname + '?post=' + post.id)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                            <span class="csd-icon csd-icon-wa">${icon('whatsapp', 16, 'currentColor')}</span>
                             واتساب
                         </a>
-                        <a class="csd-option csd-tg" id="csd-tg-${post.id}" href="#" target="_blank" rel="noopener">
-                            <div class="csd-icon csd-icon-tg"><svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></div>
+                        <a class="csd-option" href="https://t.me/share/url?url=${encodeURIComponent(location.origin + location.pathname + '?post=' + post.id)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                            <span class="csd-icon csd-icon-tg">${icon('telegram', 16, 'currentColor')}</span>
                             تيليجرام
                         </a>
                     </div>
                 </div>
-                <button class="mc-action js-like-btn ${isLiked ? 'liked' : ''}" id="like-btn-${post.id}" aria-label="إعجاب">
-                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    <span id="like-count-${post.id}">${likesFormatted}</span>
-                </button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span id="ntime-${post.id}" style="color:#64748b;font-size:10px;font-family:'Tajawal',sans-serif;"></span>
+                <button class="mc-readmore" onclick="event.preventDefault();event.stopPropagation();openArticle(allPosts.find(p=>p.id==='${post.id}'))">اقرأ المزيد</button>
             </div>
         </div>`;
-    // Set time via innerHTML (critical — NOT textContent)
-    card.querySelector(`#ntime-${post.id}`).innerHTML = formatTimeAgo(post.created_at);
 
-    // Events
-    card.querySelector('.js-read-more').addEventListener('click', e => { e.stopPropagation(); openArticle(post); });
-    card.addEventListener('click', e => {
-        if (e.target.closest('.mc-action,.mc-cta,.card-share-wrapper,.csd-option')) return;
+    card.addEventListener('click', (e) => {
+        if (e.target.closest('.mc-action, .mc-cta, .card-share-wrapper, .csd-option, .mc-readmore')) return;
+        e.preventDefault();
         openArticle(post);
     });
-    card.querySelector('.js-card-share').addEventListener('click', e => toggleCardShare(post.id, e));
-    card.querySelector('.js-card-copy').addEventListener('click', e => copyCardPostLink(post.id, e));
-    card.querySelector('.js-like-btn').addEventListener('click', e => toggleLike(post.id, e));
 
-    // Share links
-    const shareUrl = location.origin + location.pathname + '?post=' + post.id;
-    const waEl = card.querySelector(`#csd-wa-${post.id}`);
-    const tgEl = card.querySelector(`#csd-tg-${post.id}`);
-    const { waTxt, tgTxt, ogUrl } = buildShareMsg(post, shareUrl);
-    if (waEl) waEl.href = `https://wa.me/?text=${encodeURIComponent(waTxt)}`;
-    if (tgEl) tgEl.href = `https://t.me/share/url?url=${encodeURIComponent(ogUrl)}&text=${encodeURIComponent(tgTxt)}`;
+    // BUG FIX: Use innerHTML instead of formatTimeAgo HTML injection to avoid XSS risk
+    // and ensure the clock SVG renders inside the already-rendered card correctly
+    setTimeout(() => {
+        const el = document.getElementById(`ntime-${post.id}`);
+        if (el) el.innerHTML = formatTimeAgo(post.created_at);
+    }, 0);
 
     return card;
 }
 
-/* ── Share Message Builder ───────────────────────────────── */
-
-function buildShareMsg(post, shareUrl) {
-    const title = post.title || 'SpinBetter';
-    const cat = getCatInfo(post.category);
-    const excerpt = stripHtml(post.content || '').substring(0, 180).trim();
-    const imgUrl = post.cover_image_url || '';
-    // Use ?post=ID so Cloudflare Function can serve OG tags
-    const ogUrl = location.origin + location.pathname + '?post=' + post.id;
-
-    // Try to extract match details from content
-    let matchLine = '';
-    const matchDataMatch = (post.content || '').match(/\[MATCH_CARD:([A-Za-z0-9+/=]+)\]/);
-    if (matchDataMatch) {
-        try {
-            const data = JSON.parse(decodeURIComponent(escape(atob(matchDataMatch[1]))));
-            const score = (data.score || '').replace(/<[^>]*>/g, '').trim();
-            matchLine = `\n\n⚽ ${data.hName} ${score || 'vs'} ${data.aName}` +
-                (data.lName ? ` | ${data.lName}` : '');
-        } catch (e) { }
-    }
-
-    // Build sections
-    const catLine = `🏷 ${cat.name}`;
-    const titleLine = `📰 ${title}`;
-    const excerptLine = excerpt ? `\n\n${excerpt}${excerpt.length >= 180 ? '...' : ''}` : '';
-    const imgSection = imgUrl ? `\n\n🖼 ${imgUrl}` : '';
-    const promoLine = `\n\n🔥 SpinBetter | الكود W300 → مكافأة 200% عند التسجيل!`;
-    const linkLine = `\n\n🔗 ${shareUrl}`;
-
-    const waTxt = `${catLine}\n${titleLine}${matchLine}${excerptLine}${imgSection}${promoLine}\n\n🔗 ${ogUrl}`;
-    const tgTxt = `${catLine}\n${titleLine}${matchLine}${excerptLine}${imgSection}${promoLine}`;
-
-    return { waTxt, tgTxt, ogUrl };
-}
-
-
 /* ── Card Share ──────────────────────────────────────────── */
-
-function toggleCardShare(id, event) {
+function toggleCardShare(postId, event) {
     if (event) event.stopPropagation();
-    document.querySelectorAll('.card-share-dropdown.open').forEach(el => { if (el.id !== 'csd-' + id) el.classList.remove('open'); });
-    const dd = document.getElementById('csd-' + id);
-    if (dd) dd.classList.toggle('open');
+    const dd = document.getElementById('card-share-' + postId);
+    if (!dd) return;
+    const isOpen = dd.classList.contains('open');
+    document.querySelectorAll('.card-share-dropdown.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) dd.classList.add('open');
 }
 
-function copyCardPostLink(id, event) {
-    if (event) event.stopPropagation();
-    const url = location.origin + location.pathname + '?post=' + id;
-    navigator.clipboard.writeText(url).then(() => showNewsToast('تم نسخ الرابط ✓')).catch(() => prompt('الرابط:', url));
-    const dd = document.getElementById('csd-' + id);
+function copyCardLink(postId) {
+    const url = location.origin + location.pathname + '?post=' + postId;
+    navigator.clipboard.writeText(url)
+        .then(() => showNewsToast('تم نسخ الرابط ✓'))
+        .catch(() => prompt('الرابط:', url));
+    const dd = document.getElementById('card-share-' + postId);
     if (dd) dd.classList.remove('open');
 }
 
@@ -464,7 +1322,6 @@ document.addEventListener('click', e => {
 });
 
 /* ── Reading Progress ────────────────────────────────────── */
-
 function setupReadingProgress() {
     const overlay = document.getElementById('article-view');
     const bar = document.getElementById('readingProgress');
@@ -476,14 +1333,12 @@ function setupReadingProgress() {
 }
 
 /* ── Article Overlay ─────────────────────────────────────── */
-
 function replaceMatchCards(content) {
     if (!content) return '';
     return content.replace(/<blockquote[^>]*>.*?\[MATCH_CARD:([A-Za-z0-9+/=]+)\].*?<\/blockquote>/gs, (fullMatch, b64) => {
         try {
-            const data = JSON.parse(decodeURIComponent(escape(atob(b64))));
-            const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext y='18' font-size='16'%3E⚽%3C/text%3E%3C/svg%3E`;
-
+            const data = JSON.parse(safeDecodeB64(b64));
+            const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23334155' stroke-width='1.5' fill='none'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' font-size='12' fill='%23475569'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E`;
             return `<div style="margin:20px 0;direction:ltr;font-family:'Tajawal',sans-serif;">
   <div style="background:#111827;border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;">
     <div style="height:3px;background:#e31e24;"></div>
@@ -505,54 +1360,70 @@ function replaceMatchCards(content) {
         <span style="font-size:12px;font-weight:700;color:#e2e8f0;text-align:center;line-height:1.3;">${data.aName}</span>
       </div>
     </div>
-    ${data.venue && data.venue !== 'غير معروف' ? `<div style="text-align:center;padding:7px 14px;border-top:1px solid rgba(255,255,255,0.05);font-size:10px;color:#334155;">🏟️ ${data.venue}</div>` : ''}
+    ${data.venue && data.venue !== 'غير معروف' ? `<div style="text-align:center;padding:7px 14px;border-top:1px solid rgba(255,255,255,0.05);font-size:10px;color:#334155;">${icon('stadium', 12, '#475569')} ${data.venue}</div>` : ''}
   </div>
 </div>`;
-        } catch (e) {
-            console.error('Match card parse error', e);
-            return fullMatch;
-        }
+        } catch (e) { return fullMatch; }
     });
 }
 
 function openArticle(post) {
+    if (!post) return;
     try {
         currentViewingPost = post;
         const isLiked = userLikedPosts.includes(post.id);
 
         try { history.pushState(null, null, '?post=' + post.id); } catch (e) { }
-
-        try { updateMetaTags(post); } catch (e) { console.error("Meta tags error:", e); }
+        try { updateMetaTags(post); } catch (e) { }
 
         const titleEl = document.getElementById('article-title');
         if (titleEl) titleEl.textContent = post.title || '';
 
         const dateEl = document.getElementById('article-date');
-        if (dateEl) dateEl.innerHTML = formatTimeAgo(post.created_at);
+        if (dateEl) {
+            const dDate = new Date(post.created_at);
+            const dateStr = new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }).format(dDate);
+            const timeStr = new Intl.DateTimeFormat('ar-EG', { hour: 'numeric', minute: 'numeric', hour12: true }).format(dDate);
+            
+            dateEl.innerHTML = `
+                <span style="display:inline-flex;align-items:center;gap:6px;">${icon('calendar', 14, 'currentColor')} ${dateStr}</span>
+                <span style="opacity:0.3;margin:0 4px;">|</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;">${icon('clock', 14, 'currentColor')} ${timeStr}</span>
+            `;
+        }
 
         const rtEl = document.querySelector('#article-read-time span');
         if (rtEl) rtEl.textContent = estimateReadTime(post.content) + ' دقائق قراءة';
 
         const viewsEl = document.getElementById('article-views-val');
-        if (viewsEl) {
-            const s = getFakeStats(post);
-            viewsEl.textContent = fmtNum(s.views);
-        }
+        if (viewsEl) viewsEl.textContent = fmtNum(getFakeStats(post).views);
 
         const bodyEl = document.getElementById('article-body');
-        if (bodyEl) bodyEl.innerHTML = replaceMatchCards(post.content || '');
+        if (bodyEl) {
+            let processed = replaceMatchCards(post.content || '');
+            if (window.DOMPurify) {
+                processed = DOMPurify.sanitize(processed, { 
+                    ADD_TAGS: ['iframe', 'blockquote'], 
+                    ADD_ATTR: ['style', 'target', 'rel', 'class', 'allowfullscreen', 'frameborder', 'scrolling', 'border', 'dir'] 
+                });
+            }
+            bodyEl.innerHTML = processed;
+        }
 
         // Outcome banner
         const existingBanner = document.getElementById('article-outcome-banner');
         if (existingBanner) existingBanner.remove();
         if (post.outcome_text && post.outcome_color) {
-            const icon = post.outcome_color === 'green' ? '🏆' : '❌';
+            // 🏆 trophy for won prediction, ❌ for failed — emotionally resonant and clear
+            const icon_html = post.outcome_color === 'green'
+                ? icon('trophy', 24, 'currentColor')
+                : icon('xCircle', 24, 'currentColor');
             const label = post.outcome_color === 'green' ? 'نجح التوقع' : 'فشل التوقع';
             const banner = document.createElement('div');
             banner.id = 'article-outcome-banner';
             banner.className = `article-outcome-banner ${post.outcome_color}`;
             banner.innerHTML = `
-                <span class="aob-icon">${icon}</span>
+                <span class="aob-icon">${icon_html}</span>
                 <div>
                     <span class="aob-label">${label}</span>
                     <span class="aob-text">${post.outcome_text}</span>
@@ -564,10 +1435,7 @@ function openArticle(post) {
         if (likesEl) likesEl.textContent = post.likes || 0;
 
         const likeBtn = document.getElementById('article-like-btn');
-        if (likeBtn) {
-            if (isLiked) likeBtn.classList.add('liked');
-            else likeBtn.classList.remove('liked');
-        }
+        if (likeBtn) { if (isLiked) likeBtn.classList.add('liked'); else likeBtn.classList.remove('liked'); }
 
         function setCat(el) {
             if (!el) return;
@@ -606,7 +1474,7 @@ function openArticle(post) {
             }
         }
 
-        try { updateShareLinks(post); } catch (e) { console.error("Share links error:", e); }
+        try { updateShareLinks(post); } catch (e) { }
 
         const shareBtnEl = document.getElementById('article-share-btn');
         if (shareBtnEl) shareBtnEl.onclick = toggleShareDropdown;
@@ -614,9 +1482,10 @@ function openArticle(post) {
         const shareDd = document.getElementById('share-dropdown');
         if (shareDd) shareDd.classList.remove('open');
 
-        try { renderRelatedPosts(post); } catch (e) { console.error("Related posts error:", e); }
+        try { renderRelatedPosts(post); } catch (e) { }
 
-        supabaseClient.rpc('increment_views', { post_id: post.id }).then(() => { }).catch(() => { });
+        // FIX: Use async IIFE — supabaseClient.rpc() returns PostgrestFilterBuilder, not a raw Promise
+        (async () => { try { await supabaseClient.rpc('increment_views', { post_id: post.id }); } catch (_) { } })();
 
         const drawer = document.getElementById('article-view');
         if (drawer) {
@@ -627,12 +1496,10 @@ function openArticle(post) {
             void drawer.offsetWidth;
             drawer.classList.add('active');
             document.body.style.overflow = 'hidden';
-        } else {
-            console.error("article-view not found");
         }
     } catch (err) {
-        console.error("Error opening article:", err);
-        alert("حدث خطأ أثناء فتح المقال: " + err.message);
+        console.error('Error opening article:', err);
+        alert('حدث خطأ أثناء فتح المقال: ' + err.message);
     }
 }
 
@@ -643,11 +1510,12 @@ function renderRelatedPosts(currentPost) {
     if (!related.length) { section.style.display = 'none'; return; }
     section.style.display = 'block';
     const list = document.getElementById('related-posts-list');
+    if (!list) return; // BUG FIX: guard against missing element
     list.innerHTML = '';
     related.forEach(rp => {
         const imgH = rp.cover_image_url
-            ? `<img src="${rp.cover_image_url}" loading="lazy" alt="" style="width:100%;height:110px;object-fit:cover;display:block;">`
-            : `<div style="width:100%;height:110px;background:linear-gradient(135deg,#1e293b,#0d1117);"></div>`;
+            ? `<img src="${rp.cover_image_url}" loading="lazy" alt="" style="width:100%;height:110px;object-fit:cover;display:block;" onerror="this.style.display='none'">`
+            : `<div style="width:100%;height:110px;overflow:hidden;">${window.getFallbackImgHTML ? window.getFallbackImgHTML() : ''}</div>`;
         const el = document.createElement('div');
         el.className = 'related-card';
         el.innerHTML = `<div class="related-card-inner">${imgH}<div style="padding:10px;"><p style="font-size:13px;font-weight:700;color:#fff;margin:0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${rp.title || ''}</p></div></div>`;
@@ -658,6 +1526,7 @@ function renderRelatedPosts(currentPost) {
 
 function closeArticle() {
     const drawer = document.getElementById('article-view');
+    if (!drawer) return; // BUG FIX: guard
     drawer.classList.remove('active');
     document.body.style.overflow = '';
     const bar = document.getElementById('readingProgress');
@@ -671,17 +1540,38 @@ function closeArticle() {
 }
 
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('article-view').classList.contains('active')) closeArticle();
+    const drawer = document.getElementById('article-view');
+    if (e.key === 'Escape' && drawer && drawer.classList.contains('active')) closeArticle();
 });
-document.getElementById('article-view').addEventListener('click', function (e) {
-    if (e.target === this) closeArticle();
+
+// BUG FIX: Use optional chaining to avoid crash if element doesn't exist at load time
+document.addEventListener('click', function handleArticleOverlayClick(e) {
+    const drawer = document.getElementById('article-view');
+    if (drawer && e.target === drawer) closeArticle();
+}, true);
+
+// Separate the article-view click handler to avoid duplicate listener issues
+document.addEventListener('DOMContentLoaded', () => {
+    const av = document.getElementById('article-view');
+    if (av) {
+        av.addEventListener('click', function (e) {
+            if (e.target === this) closeArticle();
+        });
+    }
 });
 
 /* ── Article Share ───────────────────────────────────────── */
-
 function toggleShareDropdown(event) {
     if (event) event.stopPropagation();
-    document.getElementById('share-dropdown').classList.toggle('open');
+    const dd = document.getElementById('share-dropdown');
+    if (dd) dd.classList.toggle('open');
+}
+
+function buildShareMsg(post, shareUrl) {
+    const title = post.title || '';
+    const waTxt = `${title}\n${shareUrl}`;
+    const tgTxt = title;
+    return { waTxt, tgTxt, ogUrl: shareUrl };
 }
 
 function updateShareLinks(post) {
@@ -695,12 +1585,14 @@ function updateShareLinks(post) {
 
 function copyArticleLink() {
     const url = location.origin + location.pathname + '?post=' + (currentViewingPost?.id || '');
-    navigator.clipboard.writeText(url).then(() => showNewsToast('تم نسخ الرابط ✓')).catch(() => prompt('الرابط:', url));
-    document.getElementById('share-dropdown').classList.remove('open');
+    navigator.clipboard.writeText(url)
+        .then(() => showNewsToast('تم نسخ الرابط ✓'))
+        .catch(() => prompt('الرابط:', url));
+    const dd = document.getElementById('share-dropdown');
+    if (dd) dd.classList.remove('open');
 }
 
 /* ── Likes ───────────────────────────────────────────────── */
-
 async function toggleLike(postId, event = null) {
     if (event) event.stopPropagation();
     const idx = allPosts.findIndex(p => p.id === postId);
@@ -711,25 +1603,34 @@ async function toggleLike(postId, event = null) {
     let newCount = allPosts[idx].likes || 0;
 
     if (isLiked) {
-        userLikedPosts = userLikedPosts.filter(id => id !== postId);
         newCount = Math.max(0, newCount - 1);
-        if (likeBtn) likeBtn.classList.remove('liked');
     } else {
-        userLikedPosts.push(postId);
         newCount++;
-        if (likeBtn) likeBtn.classList.add('liked');
     }
-    if (countEl) countEl.textContent = newCount;
-    allPosts[idx].likes = newCount;
 
     try {
         if (isLiked) {
-            await supabaseClient.from('post_likes').delete().match({ post_id: postId, user_fingerprint: userFingerprint });
+            const { error } = await supabaseClient.from('post_likes').delete().match({ post_id: postId, user_fingerprint: userFingerprint });
+            if (error) throw error;
         } else {
-            await supabaseClient.from('post_likes').insert([{ post_id: postId, user_fingerprint: userFingerprint }]);
+            const { error } = await supabaseClient.from('post_likes').insert([{ post_id: postId, user_fingerprint: userFingerprint }]);
+            if (error) throw error;
         }
         await supabaseClient.from('posts').update({ likes: newCount }).eq('id', postId);
-    } catch (err) { console.error('Like error:', err); }
+
+        if (isLiked) {
+            userLikedPosts = userLikedPosts.filter(id => id !== postId);
+            if (likeBtn) likeBtn.classList.remove('liked');
+        } else {
+            userLikedPosts.push(postId);
+            if (likeBtn) likeBtn.classList.add('liked');
+        }
+        if (countEl) countEl.textContent = newCount;
+        allPosts[idx].likes = newCount;
+    } catch (err) {
+        console.error('Like error:', err);
+        showNewsToast('حدث خطأ أثناء تسجيل الإعجاب. حاول مرة أخرى.');
+    }
 }
 
 async function toggleLikeFromArticle() {
@@ -744,7 +1645,6 @@ async function toggleLikeFromArticle() {
 }
 
 /* ── Toast ───────────────────────────────────────────────── */
-
 function showNewsToast(message) {
     let c = document.getElementById('news-toast-container');
     if (!c) {
@@ -762,21 +1662,14 @@ function showNewsToast(message) {
 }
 
 /* ── Real-time ───────────────────────────────────────────── */
-
 function setupRealtime() {
     supabaseClient
         .channel('realtime-posts')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
             if (!payload.new?.published) return;
             allPosts.unshift(payload.new);
-            if (currentFilter === 'all' || currentFilter === payload.new.category) {
-                const grid = document.getElementById('news-grid');
-                if (grid.textContent.includes('لا توجد')) grid.innerHTML = '';
-                const card = createCardElement(payload.new);
-                grid.insertBefore(card, grid.firstChild);
-            } else {
-                showNewsToast('مقال جديد — اضغط للتحديث');
-            }
+            applyFiltersAndRender();
+            showNewsToast('📰 مقال جديد تم نشره!');
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts' }, payload => {
             if (!payload.new) return;
