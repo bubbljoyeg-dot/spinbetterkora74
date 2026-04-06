@@ -4,7 +4,7 @@
   <!-- الصفحة الرئيسية -->
   <url>
     <loc>https://kora74.online/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -12,39 +12,45 @@
   <!-- بوابات المراهنات والأخبار الرئيسية -->
   <url>
     <loc>https://kora74.online/spinbetter-news/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-sports-betting/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://kora74.online/sports/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-casino/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://kora74.online/spinbetter-compare/</loc>
+    <lastmod>2026-04-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- سكربتات وأدوات حصرية -->
   <url>
     <loc>https://kora74.online/spinbetter-apple-script/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-apple-script-egypt/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -52,25 +58,25 @@
   <!-- الحساب والمالية -->
   <url>
     <loc>https://kora74.online/spinbetter-registration/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-promo-code/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-deposit/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-withdrawal/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -78,19 +84,19 @@
   <!-- محتوى مخصص لمصر -->
   <url>
     <loc>https://kora74.online/spinbetter-egypt/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-egypt-guide/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-vodafone-cash/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -98,19 +104,19 @@
   <!-- تطبيقات ومنصات -->
   <url>
     <loc>https://kora74.online/spinbetter-ios/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-pc/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-comprehensive/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -118,19 +124,19 @@
   <!-- مساعدة ومعلومات -->
   <url>
     <loc>https://kora74.online/spinbetter-faq/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-support/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>always</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-about/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -138,19 +144,19 @@
   <!-- سياسات وقانوني -->
   <url>
     <loc>https://kora74.online/spinbetter-responsible-gambling/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-privacy/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://kora74.online/spinbetter-cookies/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -158,7 +164,7 @@
   <!-- خرائط الموقع الداعمة -->
   <url>
     <loc>https://kora74.online/spinbetter-sitemap/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
@@ -167,7 +173,7 @@
   <!-- توعية ضد المحتالين -->
   <url>
     <loc>https://kora74.online/spinbetter-scam-awareness/</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
