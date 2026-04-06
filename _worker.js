@@ -12,9 +12,9 @@ export default {
                 const originalRes = await env.ASSETS.fetch(request);
                 let xml = await originalRes.text();
 
-                // Fetch published posts from Supabase
+                // Fetch published posts from Supabase (avoid updated_at as it may not exist)
                 const supabaseRes = await fetch(
-                    `${SUPABASE_URL}/rest/v1/posts?published=eq.true&select=id,updated_at,created_at`,
+                    `${SUPABASE_URL}/rest/v1/posts?published=eq.true&select=id,created_at`,
                     {
                         headers: {
                             'apikey': SUPABASE_ANON_KEY,
@@ -29,8 +29,7 @@ export default {
                     
                     posts.forEach(post => {
                         const postUrl = `https://kora74.online/spinbetter-news/?post=${post.id}`;
-                        // Use updated_at if available, else created_at
-                        const lastModRaw = post.updated_at || post.created_at || new Date().toISOString();
+                        const lastModRaw = post.created_at || new Date().toISOString();
                         const lastMod = lastModRaw.split('T')[0]; // Format: YYYY-MM-DD
                         
                         dynamicUrls += `
@@ -43,9 +42,14 @@ export default {
                     });
 
                     // Inject dynamic URLs right before the closing tag of urlset
+                    // Also adding a meta comment so we know it ran
                     if (dynamicUrls !== "") {
-                        xml = xml.replace('</urlset>', dynamicUrls + '\n</urlset>');
+                        xml = xml.replace('</urlset>', '  <!-- DYNAMIC EDGE ARTICLES SUCCESS -->\n' + dynamicUrls + '\n</urlset>');
+                    } else {
+                        xml = xml.replace('</urlset>', '  <!-- DYNAMIC EDGE: NO PUBLISHED POSTS FOUND -->\n</urlset>');
                     }
+                } else {
+                    xml = xml.replace('</urlset>', `  <!-- DYNAMIC EDGE FETCH FAILED: ${supabaseRes.status} -->\n</urlset>`);
                 }
 
                 return new Response(xml, {
