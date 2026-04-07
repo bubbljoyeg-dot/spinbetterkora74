@@ -1210,7 +1210,50 @@ function createCardElement(post) {
     const exactDate = new Date(post.created_at);
     const exactDateStr = `${exactDate.getDate()}/${exactDate.getMonth() + 1}/${exactDate.getFullYear()}`;
 
-    let imgHTML = getMatchOrFallback(post, 'card');
+    let imgHTML = '';
+    const hasMultipleImages = post.cover_image_url && post.cover_image_url.includes(',');
+    const captionsArray = [];
+    
+    if (hasMultipleImages) {
+        const images = post.cover_image_url.split(',');
+        let slidesHtml = '';
+        let dotsHtml = '';
+        const fallbackB64 = btoa(encodeURIComponent(window.getFallbackImgHTML ? window.getFallbackImgHTML() : ''));
+        
+        images.forEach((item, i) => {
+            const parts = item.split('|');
+            const imgUrl = parts[0].trim();
+            const imgCap = parts[1] || '';
+            captionsArray.push(imgCap); // We will use this in the observer
+            
+            slidesHtml += `
+                <div class="card-slide" style="flex:0 0 100%; height:100%; scroll-snap-align:start; position:relative; display:flex; align-items:center; justify-content:center;">
+                    <img src="${imgUrl}" loading="lazy" style="width:100%; height:100%; max-height:240px; object-fit:contain; border-radius:0.5rem; display:block;" onerror="this.outerHTML=decodeURIComponent(atob('${fallbackB64}'))">
+                </div>
+            `;
+            
+            dotsHtml += `<div class="card-dot" data-index="${i}" style="width:6px; height:6px; border-radius:50%; background:${i === 0 ? '#e31e24' : 'rgba(255,255,255,0.4)'}; transition:background 0.3s; box-shadow:0 0 4px rgba(0,0,0,0.5);"></div>`;
+        });
+        
+        const sliderId = 'card-slider-' + post.id;
+        
+        // Hide scrollbar using inline CSS trick or classes
+        imgHTML = `
+            <div style="position:relative; width:100%; height:100%;">
+                <style>#${sliderId}::-webkit-scrollbar { display: none; }</style>
+                <div id="${sliderId}" style="width:100%; height:100%; display:flex; flex-direction:row; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; -ms-overflow-style:none; scrollbar-width:none; z-index:1;">
+                    ${slidesHtml}
+                </div>
+                <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const s=document.getElementById('${sliderId}'); s.scrollBy({left: s.clientWidth, behavior: 'smooth'});" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:26px; height:26px; border-radius:50%; background:rgba(0,0,0,0.65); border:1px solid rgba(255,255,255,0.4); color:#fff; font-size:12px; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; padding-bottom:2px; box-shadow:0 2px 5px rgba(0,0,0,0.5);">❯</button>
+                <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const s=document.getElementById('${sliderId}'); s.scrollBy({left: -s.clientWidth, behavior: 'smooth'});" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); width:26px; height:26px; border-radius:50%; background:rgba(0,0,0,0.65); border:1px solid rgba(255,255,255,0.4); color:#fff; font-size:12px; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; padding-bottom:2px; box-shadow:0 2px 5px rgba(0,0,0,0.5);">❮</button>
+                <div id="dots-${sliderId}" style="position:absolute; bottom:8px; left:0; right:0; display:flex; justify-content:center; gap:5px; z-index:10; pointer-events:none;">
+                    ${dotsHtml}
+                </div>
+            </div>
+        `;
+    } else {
+        imgHTML = getMatchOrFallback(post, 'card');
+    }
 
     const ctaHTML = (post.cta_text && post.cta_url)
         ? `<a class="mc-cta" href="${post.cta_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${post.cta_text}</a>`
@@ -1261,8 +1304,8 @@ function createCardElement(post) {
                     <span class="mc-cat-dot"></span>${cat.name}
                 </div>
             </div>
-            <p class="mc-title">${post.title || ''}</p>
-            <p class="mc-excerpt">${excerpt}</p>
+            <p class="mc-title" id="mc-title-${post.id}" style="transition: opacity 0.2s ease;">${hasMultipleImages && captionsArray[0] ? captionsArray[0] : (post.title || '')}</p>
+            <p class="mc-excerpt" id="mc-excerpt-${post.id}" style="transition: opacity 0.2s ease;">${excerpt}</p>
             ${outcomeHTML}
             ${ctaHTML}
         </div>
@@ -1304,6 +1347,7 @@ function createCardElement(post) {
 
     card.addEventListener('click', (e) => {
         if (e.target.closest('.mc-action, .mc-cta, .card-share-wrapper, .csd-option, .mc-readmore')) return;
+        // Do not block scroll clicks if not standard
         e.preventDefault();
         openArticle(post);
     });
@@ -1313,6 +1357,43 @@ function createCardElement(post) {
     setTimeout(() => {
         const el = document.getElementById(`ntime-${post.id}`);
         if (el) el.innerHTML = formatTimeAgo(post.created_at);
+        
+        // Bind slider observer if multiple images exist
+        if (hasMultipleImages) {
+            const sliderDiv = card.querySelector('#card-slider-' + post.id);
+            const dotsWrap = card.querySelector('#dots-card-slider-' + post.id);
+            if (sliderDiv && dotsWrap) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const slideTarget = entry.target;
+                            const idx = Array.from(sliderDiv.children).indexOf(slideTarget);
+                            if (idx !== -1) {
+                                Array.from(dotsWrap.children).forEach((d, a) => {
+                                    d.style.background = a === idx ? '#e31e24' : 'rgba(255,255,255,0.4)';
+                                });
+                                
+                                // Update text dynamically (Update the Title to the image caption, as requested)
+                                const titleEl = card.querySelector('#mc-title-' + post.id);
+                                if (titleEl) {
+                                    const newText = captionsArray[idx] || (post.title || '');
+                                    if (titleEl.innerHTML !== newText) {
+                                        titleEl.style.opacity = '0';
+                                        setTimeout(() => {
+                                            titleEl.innerHTML = newText;
+                                            titleEl.style.opacity = '1';
+                                        }, 200);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }, { root: sliderDiv, threshold: 0.5 });
+                
+                // Note: sliderDiv.children contains slides (we have a <style> block but it's not observable, so safe)
+                Array.from(sliderDiv.querySelectorAll('.card-slide')).forEach(child => observer.observe(child));
+            }
+        }
     }, 0);
 
     return card;
@@ -1480,16 +1561,21 @@ function openArticle(post) {
             
             if (images.length === 1) {
                 const parts = images[0].split('|');
-                const imgU = parts[0];
+                const imgU = parts[0].trim();
                 const imgCap = parts[1] || '';
-                if (imgEl) { imgEl.style.display = ''; imgEl.src = imgU; imgEl.alt = post.title || ''; }
+                if (imgEl) { imgEl.style.display = 'block'; imgEl.style.opacity = '1'; imgEl.src = imgU; imgEl.alt = post.title || ''; }
                 // Optional: add caption below single image if desired, but default is to just show it in slider
             } else {
-                if (imgEl) { imgEl.style.display = 'none'; }
+                if (imgEl) { 
+                    imgEl.style.display = 'block'; 
+                    imgEl.style.opacity = '0'; // Keep image to enforce height of heroWrap natively
+                    const fallbackParts = images[0].split('|');
+                    imgEl.src = fallbackParts[0].trim();
+                }
                 const sliderDiv = document.createElement('div');
                 sliderDiv.id = 'article-image-slider';
                 sliderDiv.className = 'article-slider-elem';
-                sliderDiv.style.cssText = 'width:100%; display:flex; flex-direction:row; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; -ms-overflow-style:none; scrollbar-width:none; position:relative; z-index:1;';
+                sliderDiv.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:row; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; -ms-overflow-style:none; scrollbar-width:none; z-index:1;';
                 
                 // Observer for dots
                 const observer = new IntersectionObserver((entries) => {
@@ -1506,16 +1592,16 @@ function openArticle(post) {
                 
                 images.forEach((item, i) => {
                     const parts = item.split('|');
-                    const imgUrl = parts[0];
+                    const imgUrl = parts[0].trim();
                     const imgCap = parts[1] || '';
 
                     const slide = document.createElement('div');
                     slide.dataset.index = i;
-                    slide.style.cssText = 'flex:0 0 100%; scroll-snap-align:start; position:relative;';
+                    slide.style.cssText = 'flex:0 0 100%; height:100%; scroll-snap-align:start; position:relative;';
                     
-                    let html = `<img src="${imgUrl}" loading="lazy">`;
+                    let html = `<img src="${imgUrl}" loading="lazy" style="width:100%; height:100%; object-fit:contain; display:block; border-radius:inherit; background:rgba(0,0,0,0.4);">`;
                     if (imgCap) {
-                        html += `<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent, rgba(0,0,0,0.8));padding:40px 15px 15px;color:white;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;text-align:center;pointer-events:none;">${imgCap}</div>`;
+                        html += `<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent, rgba(0,0,0,0.8), rgba(0,0,0,1));padding:50px 15px 32px;color:#fff;font-size:14px;line-height:1.6;font-weight:700;font-family:'Tajawal',sans-serif;text-align:center;pointer-events:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 3px rgba(0,0,0,0.9);">${imgCap}</div>`;
                     }
                     slide.innerHTML = html;
                     
@@ -1532,13 +1618,13 @@ function openArticle(post) {
                 prevBtn.className = 'article-slider-elem';
                 prevBtn.innerHTML = '❯'; // Right arrow (Prev in RTL)
                 prevBtn.style.cssText = 'position:absolute;right:10px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:18px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background 0.3s;';
-                prevBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); sliderDiv.scrollBy({left: document.dir === 'rtl' ? sliderDiv.clientWidth : -sliderDiv.clientWidth, behavior: 'smooth'}); };
+                prevBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); sliderDiv.scrollBy({left: sliderDiv.clientWidth, behavior: 'smooth'}); };
                 
                 const nextBtn = document.createElement('button');
                 nextBtn.className = 'article-slider-elem';
                 nextBtn.innerHTML = '❮'; // Left arrow (Next in RTL)
                 nextBtn.style.cssText = 'position:absolute;left:10px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:18px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background 0.3s;';
-                nextBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); sliderDiv.scrollBy({left: document.dir === 'rtl' ? -sliderDiv.clientWidth : sliderDiv.clientWidth, behavior: 'smooth'}); };
+                nextBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); sliderDiv.scrollBy({left: -sliderDiv.clientWidth, behavior: 'smooth'}); };
                 
                 heroWrap.appendChild(style);
                 heroWrap.appendChild(sliderDiv);
@@ -1547,7 +1633,7 @@ function openArticle(post) {
                 
                 const dotsWrap = document.createElement('div');
                 dotsWrap.className = 'article-slider-elem';
-                dotsWrap.style.cssText = 'position:absolute;bottom:15px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:10;';
+                dotsWrap.style.cssText = 'position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:10;';
                 images.forEach((_, i) => {
                     const dot = document.createElement('div');
                     dot.id = 'slider-dot-' + i;
