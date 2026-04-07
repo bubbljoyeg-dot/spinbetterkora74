@@ -1489,7 +1489,7 @@ function openArticle(post) {
                 const sliderDiv = document.createElement('div');
                 sliderDiv.id = 'article-image-slider';
                 sliderDiv.className = 'article-slider-elem';
-                sliderDiv.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-ms-overflow-style:none;scrollbar-width:none;border-radius:16px 16px 0 0;';
+                sliderDiv.style.cssText = 'width:100%; display:flex; flex-direction:row; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; -ms-overflow-style:none; scrollbar-width:none; position:relative; z-index:1;';
                 
                 // Observer for dots
                 const observer = new IntersectionObserver((entries) => {
@@ -1511,11 +1511,11 @@ function openArticle(post) {
 
                     const slide = document.createElement('div');
                     slide.dataset.index = i;
-                    slide.style.cssText = 'flex:0 0 100%;height:100%;scroll-snap-align:start;position:relative;';
+                    slide.style.cssText = 'flex:0 0 100%; scroll-snap-align:start; position:relative;';
                     
-                    let html = `<img src="${imgUrl}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+                    let html = `<img src="${imgUrl}" loading="lazy">`;
                     if (imgCap) {
-                        html += `<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent, rgba(0,0,0,0.8));padding:30px 15px 15px;color:white;font-size:12px;font-family:'Tajawal',sans-serif;text-align:center;">${imgCap}</div>`;
+                        html += `<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent, rgba(0,0,0,0.8));padding:40px 15px 15px;color:white;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;text-align:center;pointer-events:none;">${imgCap}</div>`;
                     }
                     slide.innerHTML = html;
                     
