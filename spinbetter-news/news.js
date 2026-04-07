@@ -1479,7 +1479,11 @@ function openArticle(post) {
             document.querySelectorAll('.article-slider-elem').forEach(el => el.remove());
             
             if (images.length === 1) {
-                if (imgEl) { imgEl.style.display = ''; imgEl.src = images[0]; imgEl.alt = post.title || ''; }
+                const parts = images[0].split('|');
+                const imgU = parts[0];
+                const imgCap = parts[1] || '';
+                if (imgEl) { imgEl.style.display = ''; imgEl.src = imgU; imgEl.alt = post.title || ''; }
+                // Optional: add caption below single image if desired, but default is to just show it in slider
             } else {
                 if (imgEl) { imgEl.style.display = 'none'; }
                 const sliderDiv = document.createElement('div');
@@ -1500,11 +1504,21 @@ function openArticle(post) {
                     });
                 }, { root: sliderDiv, threshold: 0.5 });
                 
-                images.forEach((url, i) => {
+                images.forEach((item, i) => {
+                    const parts = item.split('|');
+                    const imgUrl = parts[0];
+                    const imgCap = parts[1] || '';
+
                     const slide = document.createElement('div');
                     slide.dataset.index = i;
-                    slide.style.cssText = 'flex:0 0 100%;height:100%;scroll-snap-align:start;';
-                    slide.innerHTML = `<img src="${url}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+                    slide.style.cssText = 'flex:0 0 100%;height:100%;scroll-snap-align:start;position:relative;';
+                    
+                    let html = `<img src="${imgUrl}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+                    if (imgCap) {
+                        html += `<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent, rgba(0,0,0,0.8));padding:30px 15px 15px;color:white;font-size:12px;font-family:'Tajawal',sans-serif;text-align:center;">${imgCap}</div>`;
+                    }
+                    slide.innerHTML = html;
+                    
                     sliderDiv.appendChild(slide);
                     observer.observe(slide);
                 });
