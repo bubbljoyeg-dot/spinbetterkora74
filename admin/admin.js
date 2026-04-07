@@ -583,7 +583,8 @@ function openPostModal(post = null) {
         else if (noneRadio) noneRadio.checked = true;
 
         if (post.cover_image_url) {
-            imgCurrent.innerHTML = `<img src="${post.cover_image_url}" style="max-width: 200px; max-height: 120px; border-radius: 8px; border: 1px solid #333;" alt="Cover">`;
+            const urls = post.cover_image_url.split(',');
+            imgCurrent.innerHTML = urls.map(u => `<img src="${u}" style="max-width: 100px; max-height: 80px; border-radius: 6px; border: 1px solid #333; margin-left: 10px;" alt="Cover">`).join('');
         }
         deleteBtn.style.display = 'inline-block';
         deleteBtn.onclick = () => { deletePost(post.id); closePostModal(); };
@@ -620,8 +621,9 @@ document.getElementById('closePostModalBtn').addEventListener('click', closePost
 const postImageInput = document.getElementById('post-image-upload');
 if (postImageInput) {
     postImageInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files[0]) {
-            document.getElementById('post-upload-filename').innerText = "تم اختيار الصورة: " + e.target.files[0].name;
+        if (e.target.files && e.target.files.length > 0) {
+            const names = Array.from(e.target.files).map(f => f.name).join(', ');
+            document.getElementById('post-upload-filename').innerText = "تم اختيار: " + names;
             document.getElementById('post-current-image').innerHTML = ''; // Hide old image preview
         }
     });
@@ -632,7 +634,7 @@ async function savePost() {
     const category = document.getElementById('post-category').value;
     const content = quillEditor.root.innerHTML;
     const published = document.getElementById('post-published').checked;
-    const imageFile = document.getElementById('post-image-upload').files[0];
+    const imageFiles = document.getElementById('post-image-upload').files;
     const ctaText = document.getElementById('post-cta-text').value.trim();
     const ctaUrl = document.getElementById('post-cta-url').value.trim();
     const outcomeTextEl = document.getElementById('post-outcome-text');
@@ -654,121 +656,125 @@ async function savePost() {
         let coverImageUrl = undefined;
 
         // Handle new image upload
-        if (imageFile) {
-            const fileExt = imageFile.name.split('.').pop();
-            let slug = title;
+        if (imageFiles && imageFiles.length > 0) {
+            let uploadedUrls = [];
             
-            try {
-                // Call public translate API to convert Arabic title to English
-                const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q=${encodeURIComponent(title)}`;
-                const res = await fetch(translateUrl);
-                if (res.ok) {
-                    const json = await res.json();
-                    if (json && json[0] && json[0][0] && json[0][0][0]) {
-                        slug = json[0][0][0];
-                    }
-                }
-            } catch (e) {
-                console.warn("Translation failed, using original title", e);
-            }
-
-            // Slugify: lowercase, replace non-alphanumeric with dashes, trim
-            slug = slug.toLowerCase().trim()
-                .replace(/['"]/g, '') // remove quotes completely
-                .replace(/[^a-z0-9\u0600-\u06FF]+/g, '-') // replace spaces/symbols with dashes
-                .replace(/(^-|-$)/g, ''); // trim dashes from start and end
+            for (let i = 0; i < imageFiles.length; i++) {
+                const imageFile = imageFiles[i];
+                const fileExt = imageFile.name.split('.').pop();
+                let slug = title;
                 
-            if (!slug) slug = 'post';
+                try {
+                    // Call public translate API to convert Arabic title to English
+                    const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q=${encodeURIComponent(title)}`;
+                    const res = await fetch(translateUrl);
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (json && json[0] && json[0][0] && json[0][0][0]) {
+                            slug = json[0][0][0];
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Translation failed, using original title", e);
+                }
 
-            // Example output: liverpool-match-goals-today.jpg (or liverpool-match-goals-today-x8vf.jpg for uniqueness)
-            // Appended a short random hash to prevent conflicts if uploading same named article twice
-            const fileName = `${slug}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const filePath = `covers/${fileName}`;
+                // Slugify: lowercase, replace non-alphanumeric with dashes, trim
+                slug = slug.toLowerCase().trim()
+                    .replace(/['"]/g, '') // remove quotes completely
+                    .replace(/[^a-z0-9\u0600-\u06FF]+/g, '-') // replace spaces/symbols with dashes
+                    .replace(/(^-|-$)/g, ''); // trim dashes from start and end
+                    
+                if (!slug) slug = 'post';
 
-            // --- WATERMARK SCRIPT ---
-            let fileToUpload = imageFile;
-            try {
-                fileToUpload = await new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        
-                        // Draw Original Image
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
-                        // Set Watermark Styles
-                        ctx.globalAlpha = 0.8;
-                        ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-                        ctx.shadowBlur = Math.max(4, canvas.width * 0.005);
-                        ctx.shadowOffsetX = 2;
-                        ctx.shadowOffsetY = 2;
-                        
-                        // Responsive Font Size (about 4% of image height, min 16px)
-                        const fontSize = Math.max(16, Math.floor(canvas.height * 0.04));
-                        ctx.font = `bold ${fontSize}px Arial`;
-                        ctx.textBaseline = 'bottom';
-                        
-                        // Starting positions (Bottom-Left)
-                        let textX = Math.max(10, canvas.width * 0.02);
-                        const textY = canvas.height - Math.max(10, canvas.height * 0.02);
-                        const space = fontSize * 0.25; // gap between words
-                        
-                        // Draw "KORA" (White)
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillText('KORA', textX, textY);
-                        textX += ctx.measureText('KORA').width + space;
-                        
-                        // Draw "74" (Red)
-                        ctx.fillStyle = '#ff1a1a';
-                        ctx.fillText('74', textX, textY);
-                        textX += ctx.measureText('74').width + space;
-                        
-                        // Draw " - كوره 74 الاخباريه" (White)
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillText(' - كوره 74 الاخباريه', textX, textY);
-                        
-                        // Export back to Blob object
-                        canvas.toBlob((blob) => {
-                            if (blob) {
-                                try {
-                                    // Try constructing a File (required by some Supabase versions)
-                                    const watermarkedFile = new File([blob], fileName, { type: imageFile.type || 'image/jpeg' });
-                                    resolve(watermarkedFile);
-                                } catch (fileErr) {
-                                    // Fallback to pure blob if browser doesn't support File constructor
-                                    resolve(blob);
+                // Example output: liverpool-match-goals-today.jpg (or liverpool-match-goals-today-x8vf.jpg for uniqueness)
+                const fileName = `${slug}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const filePath = `covers/${fileName}`;
+
+                // --- WATERMARK SCRIPT ---
+                let fileToUpload = imageFile;
+                try {
+                    fileToUpload = await new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            const ctx = canvas.getContext('2d');
+                            
+                            // Draw Original Image
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            
+                            // Set Watermark Styles
+                            ctx.globalAlpha = 0.8;
+                            ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                            ctx.shadowBlur = Math.max(4, canvas.width * 0.005);
+                            ctx.shadowOffsetX = 2;
+                            ctx.shadowOffsetY = 2;
+                            
+                            // Responsive Font Size (about 4% of image height, min 16px)
+                            const fontSize = Math.max(16, Math.floor(canvas.height * 0.04));
+                            ctx.font = `bold ${fontSize}px Arial`;
+                            ctx.textBaseline = 'bottom';
+                            
+                            // Starting positions (Bottom-Left)
+                            let textX = Math.max(10, canvas.width * 0.02);
+                            const textY = canvas.height - Math.max(10, canvas.height * 0.02);
+                            const space = fontSize * 0.25; // gap between words
+                            
+                            // Draw "KORA" (White)
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillText('KORA', textX, textY);
+                            textX += ctx.measureText('KORA').width + space;
+                            
+                            // Draw "74" (Red)
+                            ctx.fillStyle = '#ff1a1a';
+                            ctx.fillText('74', textX, textY);
+                            textX += ctx.measureText('74').width + space;
+                            
+                            // Draw " - كوره 74 الاخباريه" (White)
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillText(' - كوره 74 الاخباريه', textX, textY);
+                            
+                            // Export back to Blob object
+                            canvas.toBlob((blob) => {
+                                if (blob) {
+                                    try {
+                                        // Try constructing a File (required by some Supabase versions)
+                                        const watermarkedFile = new File([blob], fileName, { type: imageFile.type || 'image/jpeg' });
+                                        resolve(watermarkedFile);
+                                    } catch (fileErr) {
+                                        // Fallback to pure blob if browser doesn't support File constructor
+                                        resolve(blob);
+                                    }
+                                } else {
+                                    resolve(imageFile); // Fallback
                                 }
-                            } else {
-                                resolve(imageFile); // Fallback
-                            }
-                        }, imageFile.type || 'image/jpeg', 0.92);
-                    };
-                    img.onerror = () => resolve(imageFile); // Fallback on error
-                    img.src = URL.createObjectURL(imageFile);
-                });
-            } catch (err) {
-                console.warn("Watermark failed, uploading original.", err);
-                fileToUpload = imageFile;
+                            }, imageFile.type || 'image/jpeg', 0.92);
+                        };
+                        img.onerror = () => resolve(imageFile); // Fallback on error
+                        img.src = URL.createObjectURL(imageFile);
+                    });
+                } catch (err) {
+                    console.warn("Watermark failed, uploading original.", err);
+                    fileToUpload = imageFile;
+                }
+                // --- END WATERMARK SCRIPT ---
+
+                const { data: uploadData, error: uploadError } = await supabaseClient
+                    .storage
+                    .from('post-images')
+                    .upload(filePath, fileToUpload, {
+                        contentType: imageFile.type || 'image/jpeg',
+                        upsert: false
+                    });
+
+                if (uploadError) throw new Error("فشل رفع الصورة: " + uploadError.message);
+
+                const { data: publicUrlData } = supabaseClient.storage.from('post-images').getPublicUrl(filePath);
+                uploadedUrls.push(publicUrlData.publicUrl);
             }
-            // --- END WATERMARK SCRIPT ---
-
-            alert('تمت معالجة الصورة بنجاح وتسميتها: ' + fileName);
-
-            const { data: uploadData, error: uploadError } = await supabaseClient
-                .storage
-                .from('post-images')
-                .upload(filePath, fileToUpload, {
-                    contentType: imageFile.type || 'image/jpeg',
-                    upsert: false
-                });
-
-            if (uploadError) throw new Error("فشل رفع الصورة: " + uploadError.message);
-
-            const { data: publicUrlData } = supabaseClient.storage.from('post-images').getPublicUrl(filePath);
-            coverImageUrl = publicUrlData.publicUrl;
+            alert('تم معالجة ورفع ' + imageFiles.length + ' صور بنجاح.');
+            coverImageUrl = uploadedUrls.join(',');
         }
 
         const postData = {
