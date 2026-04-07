@@ -424,6 +424,7 @@ if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeAdminSidebar);
 
 let quillEditor = null;
 let currentEditingPostId = null;
+let selectedPostImages = [];
 
 function showSection(sectionName) {
     // Determine menus
@@ -559,6 +560,7 @@ function openPostModal(post = null) {
     const outcomeTextInput = document.getElementById('post-outcome-text');
 
     // Clear/Reset fields
+    selectedPostImages = [];
     imgUpload.value = '';
     imgFilename.innerText = '';
     imgCurrent.innerHTML = '';
@@ -583,8 +585,13 @@ function openPostModal(post = null) {
         else if (noneRadio) noneRadio.checked = true;
 
         if (post.cover_image_url) {
-            const urls = post.cover_image_url.split(',');
-            imgCurrent.innerHTML = urls.map(u => `<img src="${u}" style="max-width: 100px; max-height: 80px; border-radius: 6px; border: 1px solid #333; margin-left: 10px;" alt="Cover">`).join('');
+            const items = post.cover_image_url.split(',');
+            imgCurrent.innerHTML = items.map(item => {
+                const parts = item.split('|');
+                const pUrl = parts[0];
+                const pCap = parts[1] || '';
+                return `<div style="display:inline-block; text-align:center; margin-left:10px;"><img src="${pUrl}" style="width: 100px; height: 80px; object-fit:cover; border-radius: 6px; border: 1px solid #333;" alt="Cover"><div style="font-size:10px; color:#aaa; margin-top:4px; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${pCap}</div></div>`;
+            }).join('');
         }
         deleteBtn.style.display = 'inline-block';
         deleteBtn.onclick = () => { deletePost(post.id); closePostModal(); };
@@ -622,19 +629,53 @@ const postImageInput = document.getElementById('post-image-upload');
 if (postImageInput) {
     postImageInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files.length > 0) {
-            const names = Array.from(e.target.files).map(f => f.name).join(', ');
-            document.getElementById('post-upload-filename').innerText = "تم اختيار: " + names;
-            document.getElementById('post-current-image').innerHTML = ''; // Hide old image preview
+            selectedPostImages.push(...Array.from(e.target.files));
+            updateSelectedImagesUI();
+            e.target.value = ''; // Reset input to allow picking the same file again
         }
     });
 }
+
+function updateSelectedImagesUI() {
+    const container = document.getElementById('post-current-image');
+    const nameLabel = document.getElementById('post-upload-filename');
+    
+    if (selectedPostImages.length === 0) {
+        nameLabel.innerText = "لا توجد صور جديدة مختارة";
+        container.innerHTML = '';
+        return;
+    }
+    
+    nameLabel.innerText = `تم اختيار ${selectedPostImages.length} صور جديدة (سيتم استبدال الصور القديمة بها)`;
+    
+    let html = '<div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">';
+    selectedPostImages.forEach((f, idx) => {
+        const tempUrl = URL.createObjectURL(f);
+        html += `
+            <div style="position:relative; display:flex; gap:15px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; align-items:center;">
+                <div style="position:relative; flex-shrink:0;">
+                    <img src="${tempUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #444;" />
+                    <button type="button" onclick="removeSelectedImage(${idx})" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;">×</button>
+                </div>
+                <input type="text" id="caption-input-${idx}" placeholder="أضف تعليق (Caption) لهذه الصورة... (اختياري لكن مفيد للـ SEO)" style="flex:1; padding:10px; border-radius:6px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:white; font-family:'Tajawal', sans-serif;">
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+window.removeSelectedImage = function(idx) {
+    selectedPostImages.splice(idx, 1);
+    updateSelectedImagesUI();
+};
 
 async function savePost() {
     const title = document.getElementById('post-title').value.trim();
     const category = document.getElementById('post-category').value;
     const content = quillEditor.root.innerHTML;
     const published = document.getElementById('post-published').checked;
-    const imageFiles = document.getElementById('post-image-upload').files;
+    const imageFiles = selectedPostImages;
     const ctaText = document.getElementById('post-cta-text').value.trim();
     const ctaUrl = document.getElementById('post-cta-url').value.trim();
     const outcomeTextEl = document.getElementById('post-outcome-text');
@@ -661,12 +702,16 @@ async function savePost() {
             
             for (let i = 0; i < imageFiles.length; i++) {
                 const imageFile = imageFiles[i];
+                const captionEl = document.getElementById(`caption-input-${i}`);
+                const captionText = captionEl ? captionEl.value.trim() : '';
+
                 const fileExt = imageFile.name.split('.').pop();
-                let slug = title;
+                let baseTextForSlug = captionText !== '' ? captionText : title;
+                let slug = baseTextForSlug;
                 
                 try {
-                    // Call public translate API to convert Arabic title to English
-                    const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q=${encodeURIComponent(title)}`;
+                    // Call public translate API to convert Arabic title/caption to English for SEO filename
+                    const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q=${encodeURIComponent(baseTextForSlug)}`;
                     const res = await fetch(translateUrl);
                     if (res.ok) {
                         const json = await res.json();
@@ -771,7 +816,8 @@ async function savePost() {
                 if (uploadError) throw new Error("فشل رفع الصورة: " + uploadError.message);
 
                 const { data: publicUrlData } = supabaseClient.storage.from('post-images').getPublicUrl(filePath);
-                uploadedUrls.push(publicUrlData.publicUrl);
+                const finalUrlStr = captionText ? `${publicUrlData.publicUrl}|${captionText}` : publicUrlData.publicUrl;
+                uploadedUrls.push(finalUrlStr);
             }
             alert('تم معالجة ورفع ' + imageFiles.length + ' صور بنجاح.');
             coverImageUrl = uploadedUrls.join(',');
