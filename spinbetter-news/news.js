@@ -437,13 +437,15 @@ window.getFallbackImgHTML = function () {
 
 function getMatchOrFallback(post, mode = 'card') {
     if (post.cover_image_url) {
+        let firstImageUrl = post.cover_image_url;
+        if (firstImageUrl.includes(',')) firstImageUrl = firstImageUrl.split(',')[0];
         const fall = btoa(encodeURIComponent(window.getFallbackImgHTML ? window.getFallbackImgHTML() : ''));
         if (mode === 'hero') {
-            return `<img src="${post.cover_image_url}" class="p-hero-bg" style="object-fit:cover; width:100%; height:100%; position:absolute; inset:0; transition: transform 10s ease, opacity 0.8s ease;" onerror="this.outerHTML=decodeURIComponent(atob('${fall}'))">`;
+            return `<img src="${firstImageUrl}" class="p-hero-bg" style="object-fit:cover; width:100%; height:100%; position:absolute; inset:0; transition: transform 10s ease, opacity 0.8s ease;" onerror="this.outerHTML=decodeURIComponent(atob('${fall}'))">`;
         } else if (mode === 'sidebar') {
-            return `<img src="${post.cover_image_url}" loading="lazy" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.outerHTML=decodeURIComponent(atob('${fall}'))">`;
+            return `<img src="${firstImageUrl}" loading="lazy" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.outerHTML=decodeURIComponent(atob('${fall}'))">`;
         } else {
-            return `<img src="${post.cover_image_url}" loading="lazy" alt="" onerror="this.onerror=null; this.parentElement.innerHTML=window.getFallbackImgHTML()">`;
+            return `<img src="${firstImageUrl}" loading="lazy" alt="" onerror="this.onerror=null; this.parentElement.innerHTML=window.getFallbackImgHTML()">`;
         }
     }
 
@@ -542,10 +544,12 @@ function updateMetaTags(post) {
     // Ensure Absolute URL for image
     let absoluteImageUrl = '';
     if (post.cover_image_url) {
+        let firstImageUrl = post.cover_image_url;
+        if (firstImageUrl.includes(',')) firstImageUrl = firstImageUrl.split(',')[0];
         try {
-            absoluteImageUrl = new URL(post.cover_image_url, location.origin).href;
+            absoluteImageUrl = new URL(firstImageUrl, location.origin).href;
         } catch (e) {
-            absoluteImageUrl = post.cover_image_url;
+            absoluteImageUrl = firstImageUrl;
         }
     }
 
@@ -905,8 +909,9 @@ function updateTrendingSidebar() {
         const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
         const fallbackHTML = window.getFallbackImgHTML ? window.getFallbackImgHTML() : '';
         const fallbackB64 = btoa(encodeURIComponent(fallbackHTML));
-        const img = p.cover_image_url ?
-            `<img src="${p.cover_image_url}" loading="lazy" onerror="this.outerHTML=decodeURIComponent(atob('${fallbackB64}'))" style="width:65px;height:65px;object-fit:cover;border-radius:10px;flex-shrink:0;">` :
+        const firstImg = p.cover_image_url ? (p.cover_image_url.includes(',') ? p.cover_image_url.split(',')[0] : p.cover_image_url) : null;
+        const img = firstImg ?
+            `<img src="${firstImg}" loading="lazy" onerror="this.outerHTML=decodeURIComponent(atob('${fallbackB64}'))" style="width:65px;height:65px;object-fit:cover;border-radius:10px;flex-shrink:0;">` :
             `<div style="width:65px;height:65px;border-radius:10px;overflow:hidden;flex-shrink:0;">${fallbackHTML}</div>`;
 
         // Trophy icon in trending sidebar: represents popular/top-performing articles
@@ -1469,13 +1474,82 @@ function openArticle(post) {
         const imgEl = document.getElementById('article-img');
         const contentWrap = document.getElementById('article-content-wrap');
         if (post.cover_image_url) {
-            if (imgEl) { imgEl.src = post.cover_image_url; imgEl.alt = post.title || ''; }
+            const images = post.cover_image_url.split(',');
+            // Clean up previous slider elements if any
+            document.querySelectorAll('.article-slider-elem').forEach(el => el.remove());
+            
+            if (images.length === 1) {
+                if (imgEl) { imgEl.style.display = ''; imgEl.src = images[0]; imgEl.alt = post.title || ''; }
+            } else {
+                if (imgEl) { imgEl.style.display = 'none'; }
+                const sliderDiv = document.createElement('div');
+                sliderDiv.id = 'article-image-slider';
+                sliderDiv.className = 'article-slider-elem';
+                sliderDiv.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-ms-overflow-style:none;scrollbar-width:none;border-radius:16px 16px 0 0;';
+                
+                // Observer for dots
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if(entry.isIntersecting) {
+                            const idx = entry.target.dataset.index;
+                            images.forEach((_, a) => {
+                                const d = document.getElementById('slider-dot-' + a);
+                                if (d) d.style.background = a == idx ? '#06b6d4' : 'rgba(255,255,255,0.4)';
+                            });
+                        }
+                    });
+                }, { root: sliderDiv, threshold: 0.5 });
+                
+                images.forEach((url, i) => {
+                    const slide = document.createElement('div');
+                    slide.dataset.index = i;
+                    slide.style.cssText = 'flex:0 0 100%;height:100%;scroll-snap-align:start;';
+                    slide.innerHTML = `<img src="${url}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+                    sliderDiv.appendChild(slide);
+                    observer.observe(slide);
+                });
+                
+                const style = document.createElement('style');
+                style.className = 'article-slider-elem';
+                style.innerHTML = '#article-image-slider::-webkit-scrollbar { display: none; }';
+                
+                // Left is visually right in RTL if dir=rtl is applied, but standard arrows
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'article-slider-elem';
+                prevBtn.innerHTML = '❯'; // Right arrow (Prev in RTL)
+                prevBtn.style.cssText = 'position:absolute;right:10px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:18px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background 0.3s;';
+                prevBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); sliderDiv.scrollBy({left: document.dir === 'rtl' ? sliderDiv.clientWidth : -sliderDiv.clientWidth, behavior: 'smooth'}); };
+                
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'article-slider-elem';
+                nextBtn.innerHTML = '❮'; // Left arrow (Next in RTL)
+                nextBtn.style.cssText = 'position:absolute;left:10px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:18px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background 0.3s;';
+                nextBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); sliderDiv.scrollBy({left: document.dir === 'rtl' ? -sliderDiv.clientWidth : sliderDiv.clientWidth, behavior: 'smooth'}); };
+                
+                heroWrap.appendChild(style);
+                heroWrap.appendChild(sliderDiv);
+                heroWrap.appendChild(prevBtn);
+                heroWrap.appendChild(nextBtn);
+                
+                const dotsWrap = document.createElement('div');
+                dotsWrap.className = 'article-slider-elem';
+                dotsWrap.style.cssText = 'position:absolute;bottom:15px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:10;';
+                images.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.id = 'slider-dot-' + i;
+                    dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${i===0?'#06b6d4':'rgba(255,255,255,0.4)'};transition:all 0.3s;`;
+                    dotsWrap.appendChild(dot);
+                });
+                heroWrap.appendChild(dotsWrap);
+            }
             if (heroWrap) heroWrap.style.display = 'block';
             const ac = document.getElementById('article-cat');
             if (ac) ac.style.display = 'none';
             if (contentWrap) contentWrap.classList.add('has-hero');
         } else {
-            if (imgEl) imgEl.src = '';
+            // Clean up slider
+            document.querySelectorAll('.article-slider-elem').forEach(el => el.remove());
+            if (imgEl) { imgEl.style.display = ''; imgEl.src = ''; }
             if (heroWrap) heroWrap.style.display = 'none';
             const ac = document.getElementById('article-cat');
             if (ac) ac.style.display = '';
@@ -1532,8 +1606,9 @@ function renderRelatedPosts(currentPost) {
     if (!list) return; // BUG FIX: guard against missing element
     list.innerHTML = '';
     related.forEach(rp => {
-        const imgH = rp.cover_image_url
-            ? `<img src="${rp.cover_image_url}" loading="lazy" alt="" style="width:100%;height:110px;object-fit:cover;display:block;" onerror="this.style.display='none'">`
+        const firstImg = rp.cover_image_url ? (rp.cover_image_url.includes(',') ? rp.cover_image_url.split(',')[0] : rp.cover_image_url) : null;
+        const imgH = firstImg
+            ? `<img src="${firstImg}" loading="lazy" alt="" style="width:100%;height:110px;object-fit:cover;display:block;" onerror="this.style.display='none'">`
             : `<div style="width:100%;height:110px;overflow:hidden;">${window.getFallbackImgHTML ? window.getFallbackImgHTML() : ''}</div>`;
         const el = document.createElement('div');
         el.className = 'related-card';
