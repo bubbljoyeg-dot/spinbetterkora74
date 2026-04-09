@@ -478,7 +478,7 @@ function getMatchOrFallback(post, mode = 'card') {
                 </div>`;
             } else {
                 return `
-                <div style="width:100%;min-height:140px;background: url('../backgroundmatches-kora74.jpg') center/cover no-repeat; display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;font-family:'Tajawal',sans-serif;height:100%;position:relative;">
+                <div style="width:100%;min-height:140px;background: url('../kora74matchcards.webp') center/cover no-repeat; display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;font-family:'Tajawal',sans-serif;height:100%;position:relative;">
                     <div style="position:absolute;inset:0;background:rgba(2,6,23,0.7);"></div>
                     <div style="font-size:11px;font-weight:800;color:#06b6d4;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:2;">${data.lName}</div>
                     <div style="display:flex;align-items:center;gap:12px;width:100%;justify-content:center;position:relative;z-index:2;">
@@ -903,7 +903,7 @@ function updateTrendingSidebar() {
     const list = document.getElementById('trending-widget-body');
     if (!list) return;
 
-    const trPosts = allPosts.slice(1, 11);
+    const trPosts = allPosts.filter(p => p.category === 'news').slice(1, 11);
     list.innerHTML = trPosts.map((p, i) => {
         const d = new Date(p.created_at);
         const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
@@ -1165,7 +1165,7 @@ function initHeroCarousel() {
     }
     container.style.display = 'block';
 
-    const heroPosts = allPosts.slice(0, 4);
+    const heroPosts = allPosts.filter(p => p.category === 'news').slice(0, 4);
     if (heroCarouselTimer) clearInterval(heroCarouselTimer);
     currentHeroIdx = 0;
 
@@ -1506,6 +1506,7 @@ function openArticle(post) {
         const bodyEl = document.getElementById('article-body');
         if (bodyEl) {
             let processed = replaceMatchCards(post.content || '');
+
             if (window.DOMPurify) {
                 processed = DOMPurify.sanitize(processed, { 
                     ADD_TAGS: ['iframe', 'blockquote'], 
