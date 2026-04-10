@@ -1072,3 +1072,29 @@ function insertMatchCard(fixtureId) {
 
     showToast(`✅ تم إدراج مباراة ${f.teams.home.name} vs ${f.teams.away.name}`, 'success');
 }
+
+function insertInstagramShortcode() {
+    if (!quillEditor) { showToast('افتح المحرر أولاً', 'warning'); return; }
+    
+    const urlInput = document.getElementById('instagram-url-input');
+    const url = urlInput ? urlInput.value.trim() : '';
+    
+    if (!url || !url.includes('instagram.com/p/')) {
+        showToast('يرجى إدخال رابط صحيح لبوست إنستجرام', 'warning');
+        return;
+    }
+    
+    // Extract base URL without query params
+    const cleanUrl = url.split('?')[0].replace(/\/$/, ""); 
+    
+    const shortcodeText = `[INSTAGRAM:${cleanUrl}]`;
+    const blockquote = `<blockquote>📸 <strong>إنستجرام:</strong> ${cleanUrl} <br><br><span style="font-size:8px;color:rgba(255,255,255,0.1);word-break:break-all;">${shortcodeText}</span></blockquote><p><br></p>`;
+    
+    const range = quillEditor.getSelection();
+    const index = range ? range.index : quillEditor.getLength();
+    quillEditor.clipboard.dangerouslyPasteHTML(index, blockquote);
+    quillEditor.setSelection(quillEditor.getLength(), 0);
+    
+    urlInput.value = '';
+    showToast('تم إدراج رابط إنستجرام بنجاح', 'success');
+}
