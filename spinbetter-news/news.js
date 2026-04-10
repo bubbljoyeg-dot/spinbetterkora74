@@ -392,7 +392,9 @@ function estimateReadTime(html) {
 }
 
 function stripHtml(html) {
-    const cleanHtml = (html || '').replace(/<blockquote[^>]*>.*?\[MATCH_CARD:[A-Za-z0-9+/=]+\].*?<\/blockquote>/gs, '');
+    const cleanHtml = (html || '')
+        .replace(/<blockquote[^>]*>.*?\[MATCH_CARD:[A-Za-z0-9+/=]+\].*?<\/blockquote>/gs, '')
+        .replace(/<blockquote[^>]*>.*?\[INSTAGRAM:.*?\].*?<\/blockquote>/gs, '');
     const d = document.createElement('div');
     d.innerHTML = cleanHtml;
     const t = d.textContent || d.innerText || '';
@@ -1468,7 +1470,12 @@ function replaceMatchCards(content) {
     ${data.venue && data.venue !== 'غير معروف' ? `<div style="text-align:center;padding:7px 14px;border-top:1px solid rgba(255,255,255,0.05);font-size:10px;color:#334155;">${icon('stadium', 12, '#475569')} ${data.venue}</div>` : ''}
   </div>
 </div>`;
-        } catch (e) { return fullMatch; }
+    } catch (e) { return fullMatch; }
+    }).replace(/<blockquote[^>]*>.*?\[INSTAGRAM:(.+?)\].*?<\/blockquote>/gs, (fullMatch, cleanUrl) => {
+        // Use standard Instagram embed HTML
+        return `<div style="margin:20px auto;max-width:540px;">
+                    <blockquote class="instagram-media" data-instgrm-permalink="${cleanUrl}" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"></blockquote>
+                </div>`;
     });
 }
 
@@ -1509,11 +1516,16 @@ function openArticle(post) {
 
             if (window.DOMPurify) {
                 processed = DOMPurify.sanitize(processed, { 
-                    ADD_TAGS: ['iframe', 'blockquote'], 
-                    ADD_ATTR: ['style', 'target', 'rel', 'class', 'allowfullscreen', 'frameborder', 'scrolling', 'border', 'dir'] 
+                    ADD_TAGS: ['iframe', 'blockquote', 'script'], 
+                    ADD_ATTR: ['style', 'target', 'rel', 'class', 'allowfullscreen', 'frameborder', 'scrolling', 'border', 'dir', 'data-instgrm-permalink', 'data-instgrm-version'] 
                 });
             }
             bodyEl.innerHTML = processed;
+
+            // Process instagram embeds
+            if (window.instgrm && window.instgrm.Embeds) {
+                setTimeout(() => window.instgrm.Embeds.process(), 50);
+            }
         }
 
         // Outcome banner
