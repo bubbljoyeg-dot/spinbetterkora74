@@ -158,7 +158,7 @@ window.handleLogin = async function () {
 };
 
 // Logout
-logoutBtn.addEventListener('click', async () => {
+if (logoutBtn) logoutBtn.addEventListener('click', async () => {
     await supabaseClient.auth.signOut();
     currentAdminSession = null;
     showLogin();
@@ -191,7 +191,7 @@ function showDashboard() {
 }
 
 // Load Tickets Logic
-refreshBtn.addEventListener('click', loadTickets);
+if (refreshBtn) refreshBtn.addEventListener('click', loadTickets);
 
 async function loadTickets() {
     ticketsTbody.innerHTML = `<tr><td colspan="6" class="text-center">🔄 Loading data...</td></tr>`;
@@ -209,7 +209,7 @@ async function loadTickets() {
         // Update Stats
         document.getElementById('total-count').innerText = tickets.length;
         document.getElementById('pending-count').innerText = tickets.filter(t => t.status === 'قيد الانتظار').length;
-        document.getElementById('resolved-count').innerText = tickets.filter(t => t.status !== 'قيد الانتظار').length;
+        document.getElementById('resolved-count').innerText = tickets.filter(t => t.status === 'تم الرد').length;
 
         // Render Table
         ticketsTbody.innerHTML = '';
@@ -294,8 +294,10 @@ if (adminImageInput) {
 }
 
 // Close Modal
-document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-document.getElementById('closeModalBtnFooter').addEventListener('click', closeModal);
+const closeModalBtn = document.getElementById('closeModalBtn');
+const closeModalBtnFooter = document.getElementById('closeModalBtnFooter');
+if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+if (closeModalBtnFooter) closeModalBtnFooter.addEventListener('click', closeModal);
 
 function closeModal() {
     document.getElementById('ticket-modal').classList.remove('active');
@@ -303,7 +305,8 @@ function closeModal() {
 }
 
 // Update Ticket (Reply / Save)
-document.getElementById('saveReplyBtn').addEventListener('click', async () => {
+const saveReplyBtnEl = document.getElementById('saveReplyBtn');
+if (saveReplyBtnEl) saveReplyBtnEl.addEventListener('click', async () => {
     if (!currentViewingTicket) return;
     const btn = document.getElementById('saveReplyBtn');
     const spinner = document.getElementById('saveSpinner');
@@ -425,6 +428,7 @@ if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeAdminSidebar);
 let quillEditor = null;
 let currentEditingPostId = null;
 let selectedPostImages = [];
+let _embeddedShortcodes = {};
 
 function showSection(sectionName) {
     // Determine menus
@@ -434,12 +438,14 @@ function showSection(sectionName) {
     // Determine sections
     const secDashboard = document.getElementById('dashboard-section');
     const secPosts = document.getElementById('posts-section');
+    const secPostEditor = document.getElementById('post-editor-section');
 
     // Reset Views
     if (navDashboard) navDashboard.classList.remove('active');
     if (navPosts) navPosts.classList.remove('active');
     if (secDashboard) secDashboard.style.display = 'none';
     if (secPosts) secPosts.style.display = 'none';
+    if (secPostEditor) secPostEditor.style.display = 'none';
 
     if (sectionName === 'dashboard') {
         if (navDashboard) navDashboard.classList.add('active');
@@ -448,6 +454,9 @@ function showSection(sectionName) {
         if (navPosts) navPosts.classList.add('active');
         if (secPosts) secPosts.style.display = 'block';
         loadPosts();
+    } else if (sectionName === 'post-editor') {
+        if (navPosts) navPosts.classList.add('active'); // keep posts active or neutral
+        if (secPostEditor) secPostEditor.style.display = 'flex';
     }
 
     if (window.innerWidth <= 768) {
@@ -544,7 +553,8 @@ function initQuill() {
 }
 
 function openPostModal(post = null) {
-    document.getElementById('post-modal').classList.add('active');
+    _embeddedShortcodes = {};
+    showSection('post-editor');
     initQuill();
 
     const titleInput = document.getElementById('post-title');
@@ -619,12 +629,11 @@ function openPostModal(post = null) {
 }
 
 function closePostModal() {
-    document.getElementById('post-modal').classList.remove('active');
+    showSection('posts');
     currentEditingPostId = null;
 }
 
-document.getElementById('closePostModalBtn').addEventListener('click', closePostModal);
-
+// closePostModalBtn was removed as part of the modal destruction.
 const postImageInput = document.getElementById('post-image-upload');
 if (postImageInput) {
     postImageInput.addEventListener('change', (e) => {
@@ -673,7 +682,14 @@ window.removeSelectedImage = function(idx) {
 async function savePost() {
     const title = document.getElementById('post-title').value.trim();
     const category = document.getElementById('post-category').value;
-    const content = quillEditor.root.innerHTML;
+    let content = quillEditor.root.innerHTML;
+    Object.keys(_embeddedShortcodes).forEach(uid => {
+        const scText = _embeddedShortcodes[uid];
+        content = content.replace(
+            new RegExp(`(<blockquote[^>]*data-sc="${uid}"[^>]*>)(.*?)(</blockquote>)`, 's'),
+            `$1$2<span style="display:none;">${scText}</span>$3`
+        );
+    });
     const published = document.getElementById('post-published').checked;
     const imageFiles = selectedPostImages;
     const ctaText = document.getElementById('post-cta-text').value.trim();
@@ -819,7 +835,7 @@ async function savePost() {
                 const finalUrlStr = captionText ? `${publicUrlData.publicUrl}|${captionText}` : publicUrlData.publicUrl;
                 uploadedUrls.push(finalUrlStr);
             }
-            alert('تم معالجة ورفع ' + imageFiles.length + ' صور بنجاح.');
+            showToast('تم معالجة ورفع ' + imageFiles.length + ' صور بنجاح ✅', 'success');
             coverImageUrl = uploadedUrls.join(',');
         }
 
@@ -1062,8 +1078,9 @@ function insertMatchCard(fixtureId) {
     const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(shortcodeObj))));
     const shortcodeText = `[MATCH_CARD:${base64Data}]`;
     
-    // We insert a placeholder quote for the admin to see visually
-    const blockquote = `<blockquote>⚽ <strong>مباراة مدرجة:</strong> ${f.teams.home.name} ضد ${f.teams.away.name} <br><br><span style="font-size:8px;color:rgba(255,255,255,0.1);word-break:break-all;">${shortcodeText}</span></blockquote><p><br></p>`;
+    const uid = 'sc_' + Date.now();
+    _embeddedShortcodes[uid] = shortcodeText;
+    const blockquote = `<blockquote style="border-left:3px solid #22c55e;padding:12px 16px;background:rgba(34,197,94,0.06);border-radius:6px;margin:10px 0;display:flex;align-items:center;gap:10px;" data-sc="${uid}"><span style="font-size:22px;">⚽</span><div><strong style="color:#22c55e;font-size:14px;">مباراة مدرجة</strong><div style="font-size:13px;color:#94a3b8;margin-top:2px;">${f.teams.home.name} ضد ${f.teams.away.name}</div></div></blockquote><p><br></p>`;
 
     const range = quillEditor.getSelection();
     const index = range ? range.index : quillEditor.getLength();
@@ -1073,28 +1090,85 @@ function insertMatchCard(fixtureId) {
     showToast(`✅ تم إدراج مباراة ${f.teams.home.name} vs ${f.teams.away.name}`, 'success');
 }
 
-function insertInstagramShortcode() {
+function insertUniversalEmbed() {
     if (!quillEditor) { showToast('افتح المحرر أولاً', 'warning'); return; }
     
-    const urlInput = document.getElementById('instagram-url-input');
-    const url = urlInput ? urlInput.value.trim() : '';
+    const embedInput = document.getElementById('universal-embed-input');
+    const rawHtml = embedInput ? embedInput.value.trim() : '';
     
-    if (!url || !url.includes('instagram.com/p/')) {
-        showToast('يرجى إدخال رابط صحيح لبوست إنستجرام', 'warning');
+    if (!rawHtml) {
+        showToast('يرجى إدخال كود الـ Embed', 'warning');
         return;
     }
     
-    // Extract base URL without query params
-    const cleanUrl = url.split('?')[0].replace(/\/$/, ""); 
-    
-    const shortcodeText = `[INSTAGRAM:${cleanUrl}]`;
-    const blockquote = `<blockquote>📸 <strong>إنستجرام:</strong> ${cleanUrl} <br><br><span style="font-size:8px;color:rgba(255,255,255,0.1);word-break:break-all;">${shortcodeText}</span></blockquote><p><br></p>`;
+    const base64Data = btoa(unescape(encodeURIComponent(rawHtml)));
+    const shortcodeText = `[EMBED_CODE:${base64Data}]`;
+    const uid = 'sc_' + Date.now();
+    _embeddedShortcodes[uid] = shortcodeText;
+    const blockquote = `<blockquote style="border-left:3px solid #06b6d4;padding:12px 16px;background:rgba(6,182,212,0.06);border-radius:6px;margin:10px 0;display:flex;align-items:center;gap:10px;" data-sc="${uid}"><span style="font-size:22px;">🌐</span><div><strong style="color:#06b6d4;font-size:14px;">محتوى مضمن (Embed)</strong><div style="font-size:13px;color:#94a3b8;margin-top:2px;">سيظهر في الموقع عند النشر</div></div></blockquote><p><br></p>`;
     
     const range = quillEditor.getSelection();
     const index = range ? range.index : quillEditor.getLength();
     quillEditor.clipboard.dangerouslyPasteHTML(index, blockquote);
     quillEditor.setSelection(quillEditor.getLength(), 0);
     
-    urlInput.value = '';
-    showToast('تم إدراج رابط إنستجرام بنجاح', 'success');
+    embedInput.value = '';
+    showToast('تم إدراج كود الـ Embed بنجاح', 'success');
+}
+
+function toggleLivePreview() {
+    const previewDiv = document.getElementById('editor-live-preview');
+    if (!previewDiv) return;
+    
+    if (previewDiv.style.display === 'block') {
+        previewDiv.style.display = 'none';
+        return;
+    }
+    
+    if (!quillEditor) return;
+    
+    let content = quillEditor.root.innerHTML;
+    
+    // Replace EMBED_CODE
+    content = content.replace(/<blockquote[^>]*>.*?\[EMBED_CODE:([A-Za-z0-9+/=]+)\].*?<\/blockquote>/gs, (fullMatch, b64) => {
+        try {
+            return decodeURIComponent(escape(atob(b64)));
+        } catch(e) { return fullMatch; }
+    });
+    
+    // Replace Legacy INSTAGRAM
+    content = content.replace(/<blockquote[^>]*>.*?\[INSTAGRAM:(.+?)\].*?<\/blockquote>/gs, (fullMatch, cleanUrl) => {
+        return `<div style="margin:20px auto;max-width:540px;">
+                    <blockquote class="instagram-media" data-instgrm-permalink="${cleanUrl}" data-instgrm-version="14" style=" background:#FFF; border:0; margin: 1px; max-width:540px; width:100%;"></blockquote>
+                </div>`;
+    });
+    
+    // Replace MATCH_CARD
+    content = content.replace(/<blockquote[^>]*>.*?\[MATCH_CARD:([A-Za-z0-9+/=]+)\].*?<\/blockquote>/gs, (fullMatch, b64) => {
+        try {
+            const data = JSON.parse(decodeURIComponent(escape(atob(b64))));
+            return `<div style="background:#1e293b; border:1px solid #334155; padding:15px; text-align:center; border-radius:12px; margin:20px 0;">
+                <h4 style="color:#fff; margin-bottom:10px;">⚽ مقاطع المباراة: ${data.hName} ضد ${data.aName}</h4>
+            </div>`;
+        } catch(e) { return fullMatch; }
+    });
+    
+    previewDiv.innerHTML = `<h3 style="color:var(--accent); border-bottom:1px solid var(--accent); padding-bottom:10px; margin-bottom:20px;">المعاينة الحية:</h3><div style="font-size:1.15rem; line-height:1.8; color:#f8fafc; padding:20px; border-radius:8px; background:rgba(0,0,0,0.3);">${content}</div>`;
+    previewDiv.style.display = 'block';
+    
+    // Scroll to preview
+    previewDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Execute scripts (e.g. Twitter/FB embeds)
+    const scripts = previewDiv.querySelectorAll('script');
+    scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        if (oldScript.innerHTML) newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+
+    if (window.instgrm && window.instgrm.Embeds) {
+        setTimeout(() => { try { window.instgrm.Embeds.process(); } catch(e){} }, 200);
+    }
 }
