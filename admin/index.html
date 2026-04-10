@@ -81,7 +81,7 @@
 <body>
 
     <!-- Login Screen -->
-    <div class="login-screen" id="login-screen">
+    <div class="login-screen active" id="login-screen">
         <div class="login-card">
             <h2>
                 <svg viewBox="0 0 24 24">
@@ -303,265 +303,155 @@
                 </section>
             </div><!-- End Posts View -->
 
-        </main>
-    </div>
-
-    <!-- Ticket Read/Reply Modal (Premium LTR) -->
-    <div id="ticket-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>
-                    <svg viewBox="0 0 24 24" style="width:24px;fill:var(--accent);">
-                        <path
-                            d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l4 4 4-4h3c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z" />
-                    </svg>
-                    Ticket Inspection & Resolution
-                </h2>
-                <button class="close-btn" id="closeModalBtn">&times;</button>
-            </div>
-
-            <div class="modal-body">
-
-                <!-- Quick Info Ribbon -->
-                <div class="modal-info-grid">
-                    <div class="info-item">
-                        <span class="label">Tracking Code</span>
-                        <span class="val" id="model-code"
-                            style="color: var(--accent); font-family: monospace;">---</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">Customer Name</span>
-                        <span class="val" id="model-name">---</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">Issue Category</span>
-                        <span class="val" id="model-issue-type">---</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">Current Status</span>
-                        <span class="val" id="model-status">---</span>
-                    </div>
-                </div>
-
-                <!-- Description Section -->
-                <div class="modal-description">
-                    <span class="label">Detailed Statement from Customer:</span>
-                    <div class="desc-box" id="model-issue-desc">No detailed breakdown provided.</div>
-                </div>
-
-                <!-- Attached Media (Image/Screenshot) -->
-                <div class="modal-image-col">
-                    <span class="label">Customer Attachment (Screenshot/Proof):</span>
-                    <div class="img-container" id="model-image">
-                        <!-- Image injected via JS -->
-                        <div class="no-image">No images or screenshots attached by the customer.</div>
-                    </div>
-                </div>
-
-                <!-- Admin Action Area -->
-                <div class="modal-reply-col">
-                    <label>Official Admin Resolution & Reply:</label>
-                    <textarea id="modal-admin-reply"
-                        placeholder="Provide a comprehensive and professional resolution for the customer. This will be publicly available in their tracking portal."></textarea>
-
-                    <label for="admin-image-upload" class="admin-upload-area">
-                        <svg viewBox="0 0 24 24" style="width:24px; fill:currentColor; margin-bottom:5px;">
-                            <path
-                                d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
-                        </svg>
-                        <span>Attach supplementary image for customer (Optional)</span>
-                        <input type="file" id="admin-image-upload" accept="image/png, image/jpeg, image/webp">
-                        <div class="upload-filename" id="admin-upload-filename"></div>
-                    </label>
-
-                    <div class="status-select-wrapper">
-                        <label>Post-action Ticket Status:</label>
-                        <select id="modal-status-select">
-                            <option value="قيد الانتظار">Pending (Awaiting Further Check)</option>
-                            <option value="جاري التحقيق">Under Investigation (In Progress)</option>
-                            <option value="تم الرد">Resolved & Replied (Closed)</option>
-                            <option value="مرفوضة">Rejected (Spam / Invalid)</option>
-                            <option value="تصعيد للإدارة">Escalated to Management</option>
-                        </select>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="modal-footer" style="justify-content: space-between;">
-                <button class="btn-danger" id="deleteTicketBtn"
-                    style="width: auto; padding: 12px 20px; font-size: 14px;">🗑️ Delete Ticket</button>
-                <div style="display: flex; gap: 15px;">
-                    <button class="btn-secondary" id="closeModalBtnFooter" style="padding:12px 24px;">Cancel</button>
-                    <button class="btn-save" id="saveReplyBtn">
-                        Commit Resolution & Notify
-                        <div class="spinner" id="saveSpinner"
-                            style="display: none; border-left-color: #000; width:16px; height:16px; margin-left:8px; vertical-align:middle;">
-                        </div>
-                    </button>
-                </div>
+    <!-- Post Editor Full Screen Workspace (RTL) -->
+    <div id="post-editor-section" dir="rtl" style="display: none;">
+        <div class="editor-header">
+            <h2 id="post-modal-title">
+                <svg viewBox="0 0 24 24" style="width:28px;fill:var(--accent);">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                </svg>
+                نشر مقال جديد
+            </h2>
+            <div class="editor-actions">
+                <button class="btn-secondary" onclick="toggleLivePreview()" style="padding:12px 24px; font-size: 15px; margin-left: 10px; border-color: var(--accent); color: var(--accent);">
+                    <svg viewBox="0 0 24 24" style="width:16px; fill:currentColor; margin-left:5px;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    المعاينة الحية
+                </button>
+                <button class="btn-secondary" onclick="closePostModal()" style="padding:12px 24px; font-size: 15px;">عودة للمقالات</button>
+                <button class="btn-save" onclick="savePost()" id="savePostBtn" style="padding:12px 24px; font-size: 15px;">
+                    حفظ ونشر
+                    <div class="spinner" id="savePostSpinner" style="display: none; border-left-color: #000; width:16px; height:16px; margin-right:8px; vertical-align:middle;"></div>
+                </button>
             </div>
         </div>
-    </div><!-- End Ticket Modal -->
 
-    <!-- Post Editor Modal (RTL) -->
-    <div id="post-modal" class="modal" dir="rtl" style="text-align: right;">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h2 id="post-modal-title" style="display: flex; align-items: center; gap: 10px; font-family: inherit;">
-                    <svg viewBox="0 0 24 24" style="width:24px;fill:var(--accent);">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                    </svg>
-                    نشر مقال جديد
-                </h2>
-                <button class="close-btn" id="closePostModalBtn">&times;</button>
+        <div class="editor-workspace">
+            <!-- Main Content Column -->
+            <div class="editor-main-col">
+                <input type="text" id="post-title" class="editor-title-input" placeholder="أدخل عنوان المقال هنا...">
+                
+                <div class="form-group" style="margin-bottom:0;">
+                    <div id="quill-editor" class="quill-dark-theme quill-full-container"></div>
+                </div>
+
+                <!-- Live Preview Pane -->
+                <div id="editor-live-preview">
+                    <!-- Preview injected here -->
+                </div>
+
+                <div class="editor-cta-row">
+                    <div>
+                        <label>نص زر الدعوة (CTA) - <span style="color:var(--text-muted)">اختياري</span></label>
+                        <input type="text" id="post-cta-text" placeholder="مثال: سجل الآن">
+                    </div>
+                    <div>
+                        <label>رابط زر الدعوة (CTA) - <span style="color:var(--text-muted)">اختياري</span></label>
+                        <input type="url" id="post-cta-url" placeholder="https://">
+                    </div>
+                </div>
             </div>
 
-            <div class="modal-body" style="display: flex; flex-direction: column; gap: 0;">
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label>صورة الغلاف (اختياري)</label>
-                    <label for="post-image-upload" class="admin-upload-area" style="cursor: pointer; padding: 30px;">
+            <!-- Sidebar Settings Column -->
+            <div class="editor-sidebar-col">
+                
+                <!-- Status & Category -->
+                <div class="editor-panel">
+                    <div class="editor-panel-title">⚙️ الإعدادات العامة</div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>التصنيف <span style="color:red">*</span></label>
+                        <select id="post-category" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1f2937; color: white;">
+                            <option value="news">أخبار</option>
+                            <option value="prediction">توقعات</option>
+                            <option value="analysis">تحليل</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group checkbox-group" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+                        <input type="checkbox" id="post-published" checked style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent);">
+                        <label for="post-published" style="cursor: pointer; margin: 0; font-size: 1.05rem; color: #fff;">نشر فوراً للجمهور</label>
+                    </div>
+
+                    <button class="btn-danger" id="deletePostBtn" style="display: none; padding: 12px 20px; font-size: 14px; margin-top:20px;">🗑️ حذف المقال بالكامل</button>
+                </div>
+
+                <!-- Cover Image -->
+                <div class="editor-panel">
+                    <div class="editor-panel-title">🖼️ صورة الغلاف</div>
+                    <label for="post-image-upload" class="admin-upload-area" style="cursor: pointer; padding: 20px;">
                         <svg viewBox="0 0 24 24" style="width:24px; fill:currentColor; margin-bottom:5px;">
-                            <path
-                                d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
                         </svg>
-                        <span>ارفع صورة أو عدة صور (JPEG/PNG/WEBP)</span>
-                        <input type="file" id="post-image-upload" accept="image/png, image/jpeg, image/webp"
-                            style="display: none;" multiple>
-                        <div class="upload-filename" id="post-upload-filename"
-                            style="margin-top: 10px; color: var(--accent);"></div>
+                        <span style="font-size:11px;">ارفع صورة أو عدة صور (JPEG/PNG/WEBP)</span>
+                        <input type="file" id="post-image-upload" accept="image/png, image/jpeg, image/webp" style="display: none;" multiple>
+                        <div class="upload-filename" id="post-upload-filename" style="margin-top: 10px; color: var(--accent);"></div>
                     </label>
                     <div id="post-current-image" style="margin-top: 10px;"></div>
                 </div>
 
-                <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 25px;">
-                    <div class="form-group" style="flex: 1; min-width: 300px;">
-                        <label>عنوان المقال <span style="color:red">*</span></label>
-                        <input type="text" id="post-title" placeholder="أدخل العنوان هنا..."
-                            style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-size: 1.1rem; font-weight: bold;">
-                    </div>
-                    <div class="form-group" style="flex: 0 0 200px;">
-                        <label>التصنيف <span style="color:red">*</span></label>
-                        <select id="post-category"
-                            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #1f2937; color: white;">
-                            <option value="news">أخبار</option>
-                            <option value="prediction">توقعات</option>
-                            <option value="analysis">قسايم اليوم</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- ⚽ Match API Search Panel -->
-                <div class="match-search-panel" id="match-search-panel">
-                    <div class="match-search-panel-header">
-                        <span style="font-size:20px;">⚽</span>
-                        <h4>بحث وإدراج مباراة من API</h4>
-                        <span style="margin-right:auto;font-size:11px;color:#475569;">إدراج بطاقة مباراة احترافية داخل المحرر</span>
-                    </div>
-                    <div class="match-search-controls">
-                        <input type="date" id="match-date-picker" class="match-date-input" title="اختر تاريخ المباريات">
-                        <input type="text" id="match-team-search" class="match-search-input" placeholder="🔍 ابحث عن فريق... (اختياري)">
-                        <button class="btn-fetch-matches" id="btn-fetch-matches" onclick="fetchMatchesFromApi()">
-                            <svg viewBox="0 0 24 24" style="width:15px;fill:currentColor;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                            جلب المباريات
-                        </button>
-                    </div>
-                    <div class="matches-list-container" id="matches-list-container" style="display:none;">
-                        <!-- Match items injected via JS -->
-                    </div>
-                </div>
-
-                <!-- 📸 Instagram API Insert Panel -->
-                <div class="match-search-panel" id="instagram-insert-panel" style="margin-top: 15px;">
-                    <div class="match-search-panel-header">
-                        <span style="font-size:20px;">📸</span>
-                        <h4>إضافة بوست إنستجرام</h4>
-                        <span style="margin-right:auto;font-size:11px;color:#475569;">إدراج بوست إنستجرام داخل المقال</span>
-                    </div>
-                    <div class="match-search-controls" style="display:flex; gap:10px;">
-                        <input type="url" id="instagram-url-input" class="match-search-input" placeholder="رابط البوست (مثال: https://www.instagram.com/p/...)" style="flex:1;">
-                        <button class="btn-fetch-matches" id="btn-insert-instagram" onclick="insertInstagramShortcode()">
-                            إدراج
-                        </button>
-                    </div>
-                </div>
-
-
-
-                <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 25px;">
-                    <div class="form-group" style="flex: 1; min-width: 200px;">
-                        <label>نص زر الدعوة (CTA) - <span style="color:var(--text-muted)">اختياري</span></label>
-                        <input type="text" id="post-cta-text" placeholder="مثال: سجل الآن"
-                            style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-size: 1rem;">
-                    </div>
-                    <div class="form-group" style="flex: 2; min-width: 300px;">
-                        <label>رابط زر الدعوة (CTA) - <span style="color:var(--text-muted)">اختياري</span></label>
-                        <input type="url" id="post-cta-url" placeholder="https://"
-                            style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-size: 1rem;">
-                    </div>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label>محتوى المقال <span style="color:red">*</span></label>
-                    <div id="quill-editor" class="quill-dark-theme" style="height: 350px;"></div>
-                </div>
-
-                <!-- ✅ Outcome Reply Section -->
-                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:20px;direction:rtl;">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-                        <span style="font-size:18px;">🎯</span>
-                        <span style="font-size:14px;font-weight:700;color:#e2e8f0;font-family:'Tajawal',sans-serif;">تحديث النتيجة (اختياري)</span>
-                        <span style="font-size:11px;color:#475569;margin-right:auto;font-family:'Tajawal',sans-serif;">أضف رداً على توقع بعد انتهاء المباراة</span>
-                    </div>
-                    <div style="margin-bottom:14px;">
-                        <input type="text" id="post-outcome-text" placeholder="مثال: ✅ التوقع نجح! الفريق سجل في الشوط الأول كما توقعنا."
-                            style="width:100%;padding:12px 15px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.2);color:white;font-size:0.95rem;font-family:'Tajawal',sans-serif;box-sizing:border-box;">
-                    </div>
-                    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                        <span style="font-size:12px;color:#94a3b8;font-family:'Tajawal',sans-serif;">اختر لون النتيجة:</span>
-                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 16px;border-radius:8px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);transition:all 0.2s;">
-                            <input type="radio" name="outcome-color" id="outcome-green" value="green" style="accent-color:#22c55e;width:16px;height:16px;">
-                            <span style="font-size:13px;font-weight:700;color:#22c55e;font-family:'Tajawal',sans-serif;">🟢 ناجح / رابح</span>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 16px;border-radius:8px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);transition:all 0.2s;">
-                            <input type="radio" name="outcome-color" id="outcome-red" value="red" style="accent-color:#ef4444;width:16px;height:16px;">
-                            <span style="font-size:13px;font-weight:700;color:#ef4444;font-family:'Tajawal',sans-serif;">🔴 خاسر / فاشل</span>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);transition:all 0.2s;">
-                            <input type="radio" name="outcome-color" id="outcome-none" value="" checked style="accent-color:#94a3b8;width:16px;height:16px;">
-                            <span style="font-size:13px;font-weight:700;color:#94a3b8;font-family:'Tajawal',sans-serif;">⚪ بدون نتيجة</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group checkbox-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="post-published" checked
-                        style="width: 20px; height: 20px; cursor: pointer;">
-                    <label for="post-published" style="cursor: pointer; margin: 0; font-size: 1.05rem;">نشر فوراً (إزالة
-                        التحديد للحفظ كمسودة)</label>
-                </div>
-            </div>
-
-            <div class="modal-footer" style="justify-content: space-between;">
-                <button class="btn-danger" id="deletePostBtn"
-                    style="display: none; width: auto; padding: 12px 20px; font-size: 14px;">🗑️ حذف المقال</button>
-                <div style="display: flex; gap: 15px; margin-left: auto;">
-                    <button class="btn-secondary" onclick="closePostModal()" style="padding:12px 24px;">إلغاء</button>
-                    <button class="btn-save" onclick="savePost()" id="savePostBtn">
-                        حفظ المقال
-                        <div class="spinner" id="savePostSpinner"
-                            style="display: none; border-left-color: #000; width:16px; height:16px; margin-left:8px; vertical-align:middle;">
+                <!-- Tools & Embs -->
+                <div class="editor-panel">
+                    <div class="editor-panel-title">🛠️ أدوات الإدراج السريع</div>
+                    
+                    <!-- ⚽ Match API Search -->
+                    <div class="match-search-panel" id="match-search-panel" style="margin-bottom:20px; background:rgba(0,0,0,0.3);">
+                        <div class="match-search-panel-header">
+                            <span style="font-size:20px;">⚽</span>
+                            <h4>بطاقة مباراة</h4>
                         </div>
-                    </button>
+                        <div class="match-search-controls" style="flex-direction:column;">
+                            <input type="date" id="match-date-picker" class="match-date-input" title="اختر تاريخ المباريات">
+                            <input type="text" id="match-team-search" class="match-search-input" placeholder="🔍 ابحث عن فريق...">
+                            <button class="btn-fetch-matches" id="btn-fetch-matches" onclick="fetchMatchesFromApi()">جلب المباريات</button>
+                        </div>
+                        <div class="matches-list-container" id="matches-list-container" style="display:none; max-height:200px;"></div>
+                    </div>
+
+                    <!-- 🌐 Universal Embed -->
+                    <div class="match-search-panel" id="embed-insert-panel" style="background:rgba(0,0,0,0.3);">
+                        <div class="match-search-panel-header">
+                            <span style="font-size:20px;">🌐</span>
+                            <h4>كود Embed</h4>
+                        </div>
+                        <div class="match-search-controls" style="flex-direction:column; gap:10px;">
+                            <textarea id="universal-embed-input" class="match-search-input" placeholder="الصق الـ HTML هنا..." style="width:100%; min-height:80px; resize:vertical; padding:10px; font-family:monospace; direction:ltr; text-align:left;"></textarea>
+                            <button class="btn-fetch-matches" id="btn-insert-embed" onclick="insertUniversalEmbed()" style="align-self:flex-start;">إدراج الكود</button>
+                        </div>
+                    </div>
+
                 </div>
+
+                <!-- Outcome Update Section -->
+                <div class="editor-panel">
+                    <div class="editor-panel-title">🎯 تحديث النتيجة بعد المباراة</div>
+                    <input type="text" id="post-outcome-text" placeholder="مثال: ✅ التوقع نجح!" style="width:100%;padding:12px 15px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.2);color:white;font-size:0.95rem;font-family:'Tajawal',sans-serif;margin-bottom:12px;box-sizing:border-box;">
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 12px;border-radius:8px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);">
+                            <input type="radio" name="outcome-color" id="outcome-green" value="green" style="accent-color:#22c55e;">
+                            <span style="font-size:13px;font-weight:700;color:#22c55e;">🟢 ناجح</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 12px;border-radius:8px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);">
+                            <input type="radio" name="outcome-color" id="outcome-red" value="red" style="accent-color:#ef4444;">
+                            <span style="font-size:13px;font-weight:700;color:#ef4444;">🔴 خاسر</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">
+                            <input type="radio" name="outcome-color" id="outcome-none" value="" checked style="accent-color:#94a3b8;">
+                            <span style="font-size:13px;font-weight:700;color:#94a3b8;">⚪ لا شيء</span>
+                        </label>
+                    </div>
+                </div>
+
             </div>
         </div>
-    </div><!-- End Post Editor Modal -->
+
+    </div><!-- End Post Editor Section -->
+        </main>
+    </div>
 
     <!-- Hidden Input for Delete Logic -->
     <input type="hidden" id="modal-ticket-id">
 
-    <script src="/admin/admin.js?v=2025"></script>
+    <script src="./admin.js?v=8" defer></script>
 </body>
 
 </html>
