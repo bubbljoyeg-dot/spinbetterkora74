@@ -49,6 +49,8 @@ export async function onRequest(context) {
   const rawText = (post.content || '')
     .replace(/<blockquote[^>]*>.*?\[MATCH_CARD:[A-Za-z0-9+/=]+\].*?<\/blockquote>/gs, '')
     .replace(/\[MATCH_CARD:[A-Za-z0-9+/=]+\]/g, '')
+    .replace(/<blockquote[^>]*>.*?\[INSTAGRAM:.*?\].*?<\/blockquote>/gs, '')
+    .replace(/\[INSTAGRAM:.*?\]/g, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
