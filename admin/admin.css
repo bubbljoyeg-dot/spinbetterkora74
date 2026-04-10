@@ -1076,7 +1076,7 @@ body {
 }
 
 /* ============================================================
-   MATCH API — Search Panel
+   MATCH API â€” Search Panel
    ============================================================ */
 .match-search-panel {
     background: rgba(6, 182, 212, 0.04);
@@ -1461,4 +1461,247 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+/* ============================================================
+   POST EDITOR — FULL REDESIGN
+   ============================================================ */
+
+#post-editor-section {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    min-height: 100vh;
+    background: #080e1a;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* ── Top Action Bar ── */
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 14px 28px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.editor-header h2 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.editor-actions .btn-secondary {
+    padding: 9px 18px;
+    font-size: 13.5px;
+    border-radius: 8px;
+}
+
+.editor-actions .btn-save {
+    padding: 9px 22px;
+    font-size: 13.5px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    box-shadow: 0 0 16px rgba(56,189,248,0.3);
+}
+
+/* ── Two-Column Workspace ── */
+.editor-workspace {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 0;
+    align-items: start;
+    width: 100%;
+    min-height: calc(100vh - 61px);
+}
+
+/* ── Main Writing Column ── */
+.editor-main-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 28px 32px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    min-width: 0;
+    min-height: calc(100vh - 61px);
+}
+
+.editor-title-input {
+    width: 100%;
+    padding: 14px 4px;
+    border: none;
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: #f8fafc;
+    font-size: 28px;
+    font-weight: 800;
+    font-family: 'Tajawal', sans-serif;
+    outline: none;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+    direction: rtl;
+}
+
+.editor-title-input::placeholder {
+    color: rgba(255,255,255,0.2);
+}
+
+.editor-title-input:focus {
+    border-bottom-color: var(--accent);
+}
+
+/* Quill editor sizing */
+.quill-full-container {
+    min-height: 280px;
+    height: auto;
+    flex: 1;
+}
+
+.ql-editor {
+    min-height: 260px;
+    font-size: 1.1rem;
+    line-height: 1.9;
+    padding: 16px 4px;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.ql-toolbar.ql-snow {
+    border: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 10px 0 !important;
+    margin-bottom: 8px;
+}
+
+.quill-dark-theme.ql-container.ql-snow {
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+/* CTA Row */
+.editor-cta-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.editor-cta-row input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #f8fafc;
+    font-size: 0.95rem;
+    font-family: 'Tajawal', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.editor-cta-row input:focus {
+    border-color: var(--accent);
+}
+
+.editor-cta-row label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* ── Right Settings Sidebar ── */
+.editor-sidebar-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(255,255,255,0.015);
+    height: 100%;
+    overflow-y: auto;
+    border-left: 1px solid rgba(255,255,255,0.06);
+}
+
+.editor-panel {
+    background: transparent;
+    padding: 20px 18px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.editor-panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Live Preview */
+#editor-live-preview {
+    margin-top: 24px;
+    padding: 24px;
+    background: rgba(15,23,42,0.8);
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    display: none;
+}
+
+/* Upload Area */
+.admin-upload-area {
+    border: 1.5px dashed rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.admin-upload-area:hover {
+    border-color: var(--accent);
+    background: rgba(56,189,248,0.04);
+}
+
+@media (max-width: 1100px) {
+    .editor-workspace {
+        grid-template-columns: 1fr;
+    }
+    .editor-sidebar-col {
+        border-left: none;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
 }
