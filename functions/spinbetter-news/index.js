@@ -51,6 +51,8 @@ export async function onRequest(context) {
     .replace(/\[MATCH_CARD:[A-Za-z0-9+/=]+\]/g, '')
     .replace(/<blockquote[^>]*>.*?\[INSTAGRAM:.*?\].*?<\/blockquote>/gs, '')
     .replace(/\[INSTAGRAM:.*?\]/g, '')
+    .replace(/<blockquote[^>]*>.*?\[EMBED_CODE:.*?\].*?<\/blockquote>/gs, '')
+    .replace(/\[EMBED_CODE:.*?\]/g, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
