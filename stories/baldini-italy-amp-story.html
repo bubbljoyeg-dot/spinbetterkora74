@@ -11,18 +11,38 @@
     <script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async custom-element="amp-story" src="https://cdn.ampproject.org/v0/amp-story-1.0.js"></script>
 
-    <style amp-custom>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@700&display=swap');
-      amp-story { font-family: 'Inter', sans-serif; }
-      h1, h2 { font-family: 'Oswald', sans-serif; text-transform: uppercase; color: #fff; }
-      .top-grad { background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); padding: 30px 20px; }
-      .bot-grad { background: linear-gradient(to top, rgba(0,0,0,0.95) 70%, transparent); padding: 40px 20px; }
-      .badge { display: inline-block; background: #e63946; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; margin-bottom: 15px; }
-      .stats { display: flex; justify-content: space-around; background: rgba(255,255,255,0.1); border-radius: 1rem; padding: 15px 10px; margin: 20px 0; }
-      .stat-num { display: block; font-size: 20px; font-weight: 700; color: #ffe600; }
-      .player-card { background: rgba(255,255,255,0.07); border-radius: 1rem; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #e63946; }
-      .btn { display: block; background: #e63946; color: #fff; text-align: center; padding: 15px; border-radius: 1rem; text-decoration: none; font-weight: 700; text-transform: uppercase; margin-top: 10px; }
-    </style>
+<style amp-custom>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@700&display=swap');
+  amp-story { font-family: 'Inter', sans-serif; background: #111; }
+  h1, h2 { font-family: 'Oswald', sans-serif; text-transform: uppercase; color: #fff; margin: 0; }
+  
+  /* تدرج خفيف جداً عشان يظهر الكلام بس ميغطيش الصورة */
+  .top-grad { 
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%); 
+    padding: 40px 20px 80px; 
+  }
+  .bot-grad { 
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); 
+    padding: 80px 20px 40px; 
+  }
+
+  .badge { display: inline-block; background: #e63946; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; text-transform: uppercase; }
+  
+  /* ضبط الـ stats والبطاقات بالـ 1rem */
+  .stats { display: flex; justify-content: space-around; background: rgba(255,255,255,0.08); border-radius: 1rem; padding: 15px 10px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); }
+  .stat-num { display: block; font-size: 22px; font-weight: 700; color: #ffe600; }
+  .stat-lbl { font-size: 10px; color: #bbb; text-transform: uppercase; }
+  
+  .player-card { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+  .player-name { color: #fff; font-size: 14px; }
+  .player-num { color: #ffe600; font-weight: 700; }
+
+  p { color: #ccc; font-size: 15px; line-height: 1.5; margin-top: 10px; }
+  .btn { display: block; background: #e63946; color: #fff; text-align: center; padding: 16px; border-radius: 1rem; text-decoration: none; font-weight: 700; text-transform: uppercase; margin-top: 15px; }
+
+  /* أهم جزء: التأكد إن الصورة بتغطي الشاشة صح */
+  amp-img img { object-fit: cover; }
+</style>
   </head>
   <body>
     <amp-story standalone title="Baldini's Italy Era" publisher="Kora74" publisher-logo-src="https://kora74.online/favicon.png" poster-portrait-src="https://kora74.online/stories/cc1.webp">
