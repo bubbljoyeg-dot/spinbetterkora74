@@ -14,8 +14,8 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script async src="//www.instagram.com/embed.js"></script>
     <script>
         window.onerror = function (msg, url, line) {
             alert("System Error!\nMsg: " + msg + "\nLine: " + line);
@@ -468,6 +468,21 @@
                     </div>
                     <div class="matches-list-container" id="matches-list-container" style="display:none;">
                         <!-- Match items injected via JS -->
+                    </div>
+                </div>
+
+                <!-- 📸 Instagram API Insert Panel -->
+                <div class="match-search-panel" id="instagram-insert-panel" style="margin-top: 15px;">
+                    <div class="match-search-panel-header">
+                        <span style="font-size:20px;">📸</span>
+                        <h4>إضافة بوست إنستجرام</h4>
+                        <span style="margin-right:auto;font-size:11px;color:#475569;">إدراج بوست إنستجرام داخل المقال</span>
+                    </div>
+                    <div class="match-search-controls" style="display:flex; gap:10px;">
+                        <input type="url" id="instagram-url-input" class="match-search-input" placeholder="رابط البوست (مثال: https://www.instagram.com/p/...)" style="flex:1;">
+                        <button class="btn-fetch-matches" id="btn-insert-instagram" onclick="insertInstagramShortcode()">
+                            إدراج
+                        </button>
                     </div>
                 </div>
 
