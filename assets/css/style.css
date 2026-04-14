@@ -48,6 +48,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -591,7 +592,7 @@ h1 {
 
 .cta-block p {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 18px;
 }
 
@@ -659,7 +660,7 @@ h1 {
 
 .content-box p {
   color: var(--text-muted);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.8;
   margin-bottom: 14px;
 }
@@ -672,7 +673,7 @@ h1 {
 
 .content-box li {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.75;
   margin-bottom: 8px;
 }
@@ -689,7 +690,7 @@ h1 {
   }
 
   .content-box h2 {
-    font-size: 17px;
+    font-size: 18px;
   }
 }
 
@@ -1612,7 +1613,7 @@ h1 {
   }
 
   .hero-desc {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .promo {
@@ -3208,7 +3209,7 @@ h1 {
 
 .hig-center .hero-desc {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.75;
   margin: 0;
   max-width: 480px;
@@ -5440,6 +5441,7 @@ h1 {
   -ms-overflow-style: none;
   flex: 1;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 .favorites-section__row::-webkit-scrollbar {

@@ -9,14 +9,14 @@
   transition: all 0.3s ease;
 }
 
-/* Professional Casino Colors for each icon */
-.marquee-content img:nth-of-type(1) { filter: drop-shadow(0 0 4px #ffd700) brightness(1.2); } /* Bonus - Gold */
-.marquee-content img:nth-of-type(2) { filter: drop-shadow(0 0 4px #00ff88) brightness(1.3); } /* Platform - Green */
-.marquee-content img:nth-of-type(3) { filter: drop-shadow(0 0 4px #ff4757) brightness(1.3); } /* Casino - Red */
-.marquee-content img:nth-of-type(4) { filter: drop-shadow(0 0 4px #2ed573) brightness(1.3); } /* Sports - Lime */
-.marquee-content img:nth-of-type(5) { filter: drop-shadow(0 0 4px #ffa502) brightness(1.3); } /* Payment - Orange */
-.marquee-content img:nth-of-type(6) { filter: drop-shadow(0 0 4px #70a1ff) brightness(1.3); } /* Support - Blue */
-.marquee-content img:nth-of-type(7) { filter: drop-shadow(0 0 4px #ff6b81) brightness(1.3); } /* Register - Pink */
+/* Professional Casino Colors for each SVG icon */
+.marquee-content svg:nth-of-type(1) { filter: drop-shadow(0 0 4px #d0e315) brightness(1.2); } /* Bonus - Lime */
+.marquee-content svg:nth-of-type(2) { filter: drop-shadow(0 0 4px #46a659) brightness(1.3); } /* Platform - Green */
+.marquee-content svg:nth-of-type(3) { filter: drop-shadow(0 0 4px #d0e315) brightness(1.3); } /* Casino - Lime */
+.marquee-content svg:nth-of-type(4) { filter: drop-shadow(0 0 4px #46a659) brightness(1.3); } /* Sports - Green */
+.marquee-content svg:nth-of-type(5) { filter: drop-shadow(0 0 4px #cca15e) brightness(1.3); } /* Payment - Gold */
+.marquee-content svg:nth-of-type(6) { filter: drop-shadow(0 0 4px #38bdf8) brightness(1.3); } /* Support - Blue */
+.marquee-content svg:nth-of-type(7) { filter: drop-shadow(0 0 4px #d0e315) brightness(1.3); } /* Register - Lime */
 
 /* Hover effect */
 .marquee-icon:hover {
