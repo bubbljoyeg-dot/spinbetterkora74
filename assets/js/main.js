@@ -22,30 +22,46 @@ function copyCodeSb() {
 }
 
 function copyCode() {
+    const code = "W300";
     if (navigator.clipboard) {
-        navigator.clipboard.writeText("W300").catch(() => { });
+        navigator.clipboard.writeText(code).catch(() => { });
     } else {
         const textarea = document.createElement('textarea');
-        textarea.value = "W300";
+        textarea.value = code;
         document.body.appendChild(textarea);
         textarea.select();
         try { document.execCommand('copy'); } catch (e) { }
         document.body.removeChild(textarea);
     }
+    _showCopyFeedback();
+}
 
+function copyCodeMystery() {
+    const code = "MYSTERY2024";
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).catch(() => { });
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = code;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try { document.execCommand('copy'); } catch (e) { }
+        document.body.removeChild(textarea);
+    }
+    _showCopyFeedback();
+}
+
+function _showCopyFeedback() {
     const toast = document.getElementById('copyToast');
     if (toast) {
         toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
+        setTimeout(() => toast.classList.remove('show'), 3000);
     }
-    
     if (window.event) {
         const target = window.event.currentTarget || window.event.srcElement;
         if (target && target.tagName === 'BUTTON') {
             const orig = target.textContent;
-            target.textContent = 'تم النسخ!';
+            target.textContent = '✓ Copied!';
             target.style.background = '#22c55e';
             target.style.color = '#000';
             setTimeout(() => {
