@@ -664,6 +664,20 @@
 
 
     <main class="container">
+    <!-- Hero Header -->
+    <div class="hero-center reveal" style="margin-bottom:20px;">
+      <div class="hero-logo-wrap">
+        <img src="../VVVVVVVVVVLOGO74.png" alt="SpinBetter" class="hero-logo-img">
+      </div>
+      <div class="breadcrumb">
+        <a href="../"><span data-i18n="txt_3aa857">الرئيسية</span></a>
+        <span>›</span>
+        <span><span data-i18n="txt_58f21f">المراهنات الرياضية</span></span>
+      </div>
+      <h1><span data-i18n="txt_58f21f">المراهنات الرياضية</span></h1>
+      <p class="hero-desc">أفضل تغطية رياضية عالمية ومحلية بأعلى الاحتمالات (Odds) في الشرق الأوسط.</p>
+    </div>
+
         <div class="main-container">
             <div class="content-grid">
 
@@ -704,7 +718,7 @@
                             <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg><span data-i18n="txt_9341df"></span></button>
                         <button class="tab-btn active" id="tab-today" onclick="switchTab('today')" aria-label="SpinBetter" data-i18n-aria-label="txt_3ce122">
                             <svg viewBox="0 0 24 24"><path d="M13 2.05V4.08c3.39.49 6 3.39 6 6.92 0 2.74-1.56 5.13-3.89 6.4L13 15v5l5-3-1.55-1.55C18.48 13.69 20 11.01 20 8c0-4.41-3.17-8.1-7-8.9zM11 2.05C7.17 2.85 4 6.54 4 11c0 3.01 1.52 5.69 3.85 7.27L6.5 17 11.5 20v-5l-2.11 2.4C7.56 16.13 6 14.22 6 12c0-3.53 2.61-6.43 6-6.92V3.05l-1-.95z"/></svg><span data-i18n="txt_577022">
-                            تواصل معنا
+                            اليوم
                         </span></button>
                         <button class="tab-btn" id="tab-tomorrow" onclick="switchTab('tomorrow')" aria-label="SpinBetter" data-i18n-aria-label="txt_e48f7d">
                             <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-7-7H8v5h4v-5z"/></svg><span data-i18n="txt_cee877"></span></button>
@@ -804,7 +818,7 @@
                             <div class="sport-card-icon">
                                 <svg viewBox="0 0 24 24" fill="#38bdf8"><path d="M20.19 8.42l-3.6-3.6c-.32-.32-.76-.52-1.24-.52H4c-.99 0-1.99.81-1.99 1.8L2 18c0 .99.82 1.8 1.81 1.8H19c.99 0 1.79-.81 1.79-1.8l.01-7.94c0-.48-.2-.92-.61-1.64z"/></svg>
                             </div>
-                            <strong><span data-i18n="txt_178644">تواصل معنا</span></strong>
+                            <strong><span data-i18n="txt_178644">التنس</span></strong>
                             <span>ATP &amp; WTA</span>
                         </div>
                         <div class="sport-card">
@@ -856,7 +870,7 @@
                     <h2><span data-i18n="txt_1e750e"></span></h2>
                     <ul>
                         <li><strong><span data-i18n="txt_5734ac"></span></strong><span data-i18n="txt_f510d7"></span></li>
-                        <li><strong><span data-i18n="txt_2b3200">تواصل معنا (Accumulator/Parlay):</span></strong><span data-i18n="txt_c7406e"></span></li>
+                        <li><strong><span data-i18n="txt_2b3200">الرهانات التراكمية (Accumulator/Parlay):</span></strong><span data-i18n="txt_c7406e"></span></li>
                         <li><strong><span data-i18n="txt_d53aa2"></span></strong><span data-i18n="txt_49db2c"></span></li>
                         <li><strong><span data-i18n="txt_144356"></span></strong><span data-i18n="txt_05dce5"></span></li>
                     </ul>
@@ -980,6 +994,379 @@
 
   <script src="../assets/js/search_index.js"></script>
   <script src="../assets/js/main.js?v=8"></script>
+
+  <!-- ===[ Matches Engine — Fixed & Working ]=== -->
+  <script>
+  (function () {
+      'use strict';
+
+      /* ── Constants ── */
+      var BET_LINK   = 'https://spin-b.com/mwGY27?tag=d_207183m_665038c_cz_7KM6jg8k4YYCKuqWum5UTg';
+      var PROXY_URL  = 'https://matches-worker.bubbljoy-eg.workers.dev/';
+      var CACHE_TTL  = 2 * 60 * 60 * 1000; // 2 hours
+      var FETCH_TIMEOUT = 12000;            // 12 seconds timeout
+      var PAGE_SIZE  = 10;                  // cards per page
+
+      var IMPORTANT_LEAGUES = {
+          2:   'دوري أبطال أوروبا',
+          3:   'الدوري الأوروبي',
+          39:  'الدوري الإنجليزي',
+          140: 'الدوري الإسباني',
+          135: 'الدوري الإيطالي',
+          78:  'الدوري الألماني',
+          61:  'الدوري الفرنسي',
+          233: 'الدوري المصري',
+          307: 'الدوري السعودي',
+          197: 'الدوري اليوناني'
+      };
+
+      var HEADING_MAP = {
+          yesterday: 'ماتشات أمس – نتائج الدوريات الكبرى',
+          today:     'ماتشات اليوم – أبرز المباريات والأودز',
+          tomorrow:  'ماتشات غداً – الجدول الكامل للمباريات المهمة'
+      };
+
+      /* ── State ── */
+      var currentTab      = 'today';
+      var allMatches      = [];
+      var displayedCount  = 0;
+      var refreshTimer    = null;
+      var isLoading       = false;
+
+      /* ── DOM refs ── */
+      var elLoader      = document.getElementById('matches-loader');
+      var elError       = document.getElementById('matches-error');
+      var elErrorMsg    = document.getElementById('matches-error-msg');
+      var elGrid        = document.getElementById('matches-grid');
+      var elEmpty       = document.getElementById('matches-empty');
+      var elHeading     = document.getElementById('matches-heading');
+      var elLoadWrap    = document.getElementById('load-more-wrap');
+      var elLoadBtn     = document.getElementById('load-more-btn');
+      var elLoadCount   = document.getElementById('load-more-count');
+      var elUpdateText  = document.getElementById('last-update-text');
+      var elUpdateDot   = document.getElementById('update-dot');
+
+      /* ── Helpers ── */
+      function getDateStr(offset) {
+          var d   = new Date();
+          var utc = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + offset);
+          var nd  = new Date(utc);
+          var y   = nd.getUTCFullYear();
+          var m   = String(nd.getUTCMonth() + 1).padStart(2, '0');
+          var day = String(nd.getUTCDate()).padStart(2, '0');
+          return y + '-' + m + '-' + day;
+      }
+
+      function offsetFor(tab) {
+          return tab === 'yesterday' ? -1 : tab === 'tomorrow' ? 1 : 0;
+      }
+
+      function cacheKey(tab) {
+          return 'sb_m_' + tab + '_' + getDateStr(offsetFor(tab));
+      }
+
+      function storageGet(key) {
+          try { return localStorage.getItem(key); } catch (e) { return null; }
+      }
+
+      function storageSet(key, val) {
+          try { localStorage.setItem(key, val); } catch (e) { /* silent */ }
+      }
+
+      function getCached(tab) {
+          var raw = storageGet(cacheKey(tab));
+          if (!raw) return null;
+          try {
+              var obj = JSON.parse(raw);
+              if (Date.now() - obj.ts > CACHE_TTL) return null;
+              return obj;
+          } catch (e) { return null; }
+      }
+
+      function setCache(tab, matches) {
+          storageSet(cacheKey(tab), JSON.stringify({ ts: Date.now(), matches: matches }));
+      }
+
+      function fetchWithTimeout(url, ms) {
+          var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+          var timer;
+          var fetchPromise = controller
+              ? fetch(url, { signal: controller.signal })
+              : fetch(url);
+          var timeoutPromise = new Promise(function (_, reject) {
+              timer = setTimeout(function () {
+                  if (controller) controller.abort();
+                  reject(new Error('timeout'));
+              }, ms);
+          });
+          return Promise.race([fetchPromise, timeoutPromise])
+              .finally(function () { clearTimeout(timer); });
+      }
+
+      function updateBadge(ts) {
+          if (!elUpdateText) return;
+          var diff  = Math.round((Date.now() - ts) / 60000);
+          var fresh = diff < 5;
+          elUpdateDot.className = 'last-update-dot' + (fresh ? '' : ' stale');
+          elUpdateText.textContent = fresh
+              ? 'محدّث الآن'
+              : 'آخر تحديث منذ ' + diff + ' دقيقة';
+      }
+
+      function updateTabStyles(tab) {
+          ['yesterday', 'today', 'tomorrow'].forEach(function (t) {
+              var btn = document.getElementById('tab-' + t);
+              if (!btn) return;
+              btn.className = 'tab-btn' + (t === tab ? ' active' : '');
+          });
+      }
+
+      function showAll(showLoader, showError, showGrid, showEmpty) {
+          elLoader.style.display = showLoader ? 'block' : 'none';
+          elError.style.display  = showError  ? 'block' : 'none';
+          elGrid.style.display   = showGrid   ? 'grid'  : 'none';
+          elEmpty.style.display  = showEmpty  ? 'block' : 'none';
+      }
+
+      /* ── Card Builder ── */
+      function logoHTML(team) {
+          if (team && team.logo) {
+              return '<img src="' + team.logo + '" class="team-logo" loading="lazy" '
+                   + 'onerror="this.outerHTML=\'<div class=team-logo-placeholder>'
+                   + '<svg viewBox=\\\'0 0 24 24\\\'><path d=\\\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l7 4.5-7 4.5z\\\'/></svg></div>\'">';
+          }
+          return '<div class="team-logo-placeholder">'
+               + '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l7 4.5-7 4.5z"/></svg>'
+               + '</div>';
+      }
+
+      function formatStatus(fix) {
+          var s    = (fix.fixture && fix.fixture.status) || {};
+          var code = s.short || '';
+          if (['FT', 'AET', 'PEN'].indexOf(code) !== -1) {
+              return '<span class="status-finished">انتهت</span>';
+          }
+          if (['1H', '2H', 'ET', 'P', 'LIVE', 'HT'].indexOf(code) !== -1) {
+              var min = s.elapsed ? s.elapsed + "'" : 'مباشر';
+              return '<span class="status-live"><span class="status-live-dot"></span>' + min + '</span>';
+          }
+          try {
+              var d  = new Date(fix.fixture.date);
+              var hh = String(d.getHours()).padStart(2, '0');
+              var mm = String(d.getMinutes()).padStart(2, '0');
+              return '<span class="status-upcoming">' + hh + ':' + mm + '</span>';
+          } catch (e) { return ''; }
+      }
+
+      function oddBoxHTML(label, val) {
+          return '<div class="odd-box">'
+               + '<div class="odd-label">' + label + '</div>'
+               + (val
+                   ? '<div class="odd-val">' + parseFloat(val).toFixed(2) + '</div>'
+                   : '<div class="odd-na">–</div>')
+               + '</div>';
+      }
+
+      function buildCard(fix) {
+          var leagueId   = fix.league && fix.league.id;
+          var leagueName = IMPORTANT_LEAGUES[leagueId] || (fix.league && fix.league.name) || 'دوري';
+          var home       = fix.teams && fix.teams.home;
+          var away       = fix.teams && fix.teams.away;
+          var odds       = fix._odds || {};
+          var gh = fix.goals && fix.goals.home;
+          var ga = fix.goals && fix.goals.away;
+          var hasScore = gh !== null && gh !== undefined && ga !== null && ga !== undefined;
+          var midHTML = hasScore
+              ? '<div class="match-score">' + gh + ' – ' + ga + '</div>'
+              : '<div class="match-vs">vs</div>';
+          return '<div class="match-card">'
+               + '<div class="match-card-stripe"></div>'
+               + '<div class="match-league">'
+               + '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>'
+               + leagueName + '</div>'
+               + '<div class="match-teams">'
+               + '<div class="match-team">' + logoHTML(home) + '<div class="team-name">' + (home && home.name || '') + '</div></div>'
+               + midHTML
+               + '<div class="match-team">' + logoHTML(away) + '<div class="team-name">' + (away && away.name || '') + '</div></div>'
+               + '</div>'
+               + '<div class="match-meta">'
+               + '<svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>'
+               + ((fix.fixture && fix.fixture.date) ? fix.fixture.date.split('T')[0] : '')
+               + '&nbsp;&nbsp;' + formatStatus(fix)
+               + '</div>'
+               + '<div class="odds-row">'
+               + oddBoxHTML('1', odds.w1) + oddBoxHTML('X', odds.draw) + oddBoxHTML('2', odds.w2)
+               + '</div>'
+               + '<a href="' + BET_LINK + '" target="_blank" rel="noopener nofollow" class="bet-btn">'
+               + '<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>'
+               + 'راهن الآن على SpinBetter'
+               + '</a>'
+               + '</div>';
+      }
+
+      /* ── Render ── */
+      function renderPage() {
+          var slice = allMatches.slice(0, displayedCount);
+          elGrid.innerHTML = slice.map(buildCard).join('');
+          var remaining = allMatches.length - displayedCount;
+          if (remaining > 0) {
+              elLoadWrap.style.display = 'block';
+              if (elLoadCount) elLoadCount.textContent = 'عرض ' + displayedCount + ' من ' + allMatches.length + ' مباراة';
+          } else {
+              elLoadWrap.style.display = 'none';
+          }
+      }
+
+      function renderMatches(matches) {
+          var important = matches.filter(function (m) {
+              return IMPORTANT_LEAGUES[m.league && m.league.id];
+          });
+          allMatches     = important.length ? important : matches;
+          displayedCount = Math.min(PAGE_SIZE, allMatches.length);
+          if (!allMatches.length) {
+              showAll(false, false, false, true);
+              elLoadWrap.style.display = 'none';
+              return;
+          }
+          showAll(false, false, true, false);
+          renderPage();
+      }
+
+      /* ── Load More ── */
+      window.loadMore = function () {
+          displayedCount = Math.min(displayedCount + PAGE_SIZE, allMatches.length);
+          renderPage();
+          if (elLoadBtn) {
+              setTimeout(function () {
+                  elLoadBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }, 100);
+          }
+      };
+
+      /* ── Odds Parser ── */
+      function parseOdds(fix) {
+          var w1 = null, draw = null, w2 = null;
+          var bk = fix.odds
+              && fix.odds.bookmakers
+              && fix.odds.bookmakers[0]
+              && fix.odds.bookmakers[0].bets
+              && fix.odds.bookmakers[0].bets.find(function (b) { return b.name === 'Match Winner'; });
+          if (bk && bk.values) {
+              var hm = bk.values.find(function (v) { return v.value === 'Home'; });
+              var dr = bk.values.find(function (v) { return v.value === 'Draw'; });
+              var aw = bk.values.find(function (v) { return v.value === 'Away'; });
+              w1   = hm ? parseFloat(hm.odd) : null;
+              draw = dr ? parseFloat(dr.odd) : null;
+              w2   = aw ? parseFloat(aw.odd) : null;
+          }
+          return { w1: w1, draw: draw, w2: w2 };
+      }
+
+      /* ── API Fetch ── */
+      function fetchFromAPI(tab) {
+          var date = getDateStr(offsetFor(tab));
+          var url  = PROXY_URL + '?date=' + date;
+          return fetchWithTimeout(url, FETCH_TIMEOUT)
+              .then(function (r) {
+                  if (!r.ok) throw new Error('HTTP ' + r.status);
+                  return r.json();
+              })
+              .then(function (data) {
+                  if (!data || !data.response) throw new Error('No response');
+                  return data.response
+                      .map(function (f) {
+                          f._odds = parseOdds(f);
+                          return f;
+                      })
+                      .sort(function (a, b) {
+                          return new Date(a.fixture.date) - new Date(b.fixture.date);
+                      });
+              });
+      }
+
+      /* ── Main load ── */
+      function loadTab(tab, forceRefresh) {
+          if (isLoading) return;
+          currentTab = tab;
+          if (elHeading) elHeading.textContent = HEADING_MAP[tab];
+          updateTabStyles(tab);
+          allMatches     = [];
+          displayedCount = 0;
+          elLoadWrap.style.display = 'none';
+
+          if (!forceRefresh) {
+              var cached = getCached(tab);
+              if (cached) {
+                  showAll(false, false, true, false);
+                  renderMatches(cached.matches);
+                  updateBadge(cached.ts);
+                  return;
+              }
+          }
+
+          isLoading = true;
+          showAll(true, false, false, false);
+          fetchFromAPI(tab)
+              .then(function (matches) {
+                  setCache(tab, matches);
+                  showAll(false, false, true, false);
+                  renderMatches(matches);
+                  updateBadge(Date.now());
+              })
+              .catch(function (err) {
+                  console.warn('[Matches]', err.message);
+                  var msg = err.message === 'timeout'
+                      ? 'انتهت مهلة الاتصال – تحقق من الإنترنت'
+                      : 'تعذّر تحميل الماتشات، حاول مرة أخرى';
+                  if (elErrorMsg) elErrorMsg.textContent = msg;
+                  showAll(false, true, false, false);
+                  elLoadWrap.style.display = 'none';
+              })
+              .finally(function () { isLoading = false; });
+      }
+
+      /* ── Public API ── */
+      window.retryFetch = function () { loadTab(currentTab, true); };
+      window.switchTab  = function (tab) { if (tab !== currentTab) loadTab(tab, false); };
+
+      /* ── Auto-refresh on visibility restore ── */
+      document.addEventListener('visibilitychange', function () {
+          if (!document.hidden) {
+              var cached = getCached(currentTab);
+              if (!cached) loadTab(currentTab, true);
+          }
+      });
+
+      /* ── Reveal animation ── */
+      var revealObs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+              if (e.isIntersecting) {
+                  e.target.classList.add('active');
+                  revealObs.unobserve(e.target);
+              }
+          });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal').forEach(function (el) { revealObs.observe(el); });
+
+      /* ── Floating CTA ── */
+      var ctaEl = document.getElementById('stickyCta');
+      if (ctaEl) {
+          window.addEventListener('scroll', function () {
+              ctaEl.classList.toggle('visible', window.scrollY > 400);
+          }, { passive: true });
+      }
+
+      /* ── Init ── */
+      document.addEventListener('DOMContentLoaded', function () {
+          loadTab('today', false);
+      });
+
+      if (document.readyState !== 'loading') {
+          loadTab('today', false);
+      }
+
+  }());
+  </script>
 
   <!-- ===[ Global Search Modal ]=== -->
   <div class="search-overlay" id="searchModal">
