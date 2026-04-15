@@ -32,8 +32,6 @@
   --radius-lg: 20px;
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
   --shadow-btn: 0 4px 20px var(--accent-glow);
-  --download-url: "https://spin-b.com/mwGY27?tag=d_207183m_665038c_cz_7KM6jg8k4YYCKuqWum5UTg";
-  --register-url: "https://redirspinner.com/2N0q?p=%2Fregistration%2F";
 }
 
 /* ─── Reset ────────────────────────────────────── */
@@ -411,7 +409,8 @@ a {
 
 /* ─── Page Layout Container ─────────────────────── */
 .container {
-  width: min(97%, 980px);
+  width: 97%;
+  max-width: 980px;
   margin: 0 auto;
   padding: 20px 14px 40px;
 }
@@ -420,6 +419,9 @@ a {
 .hero-center {
   text-align: center;
   padding: 28px 16px 36px;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
 }
 
 .verified-badge {
@@ -618,8 +620,10 @@ h1 {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
-  margin-bottom: 20px;
+  margin: 0 auto 24px;
   box-shadow: var(--shadow-card);
+  width: 100%;
+  max-width: 860px;
 }
 
 .content-box h2 {
@@ -1589,6 +1593,9 @@ h1 {
   flex-direction: column;
   gap: 18px;
 }
+
+
+
 
 /* ─── Mobile Global Tweaks ──────────────────────── */
 @media (max-width: 768px) {
@@ -3386,252 +3393,6 @@ h1 {
 
   .hig-char--right {
     right: -18px;
-  }
-}
-
-/* ================================================================
-   SB-HERO  — Simple background slideshow + characters + CTA
-   ================================================================ */
-
-.sb-hero {
-  position: relative;
-  width: 100%;
-  height: 520px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ── Background Slides ───────────────────────────────────────── */
-.sb-slides {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-/* Every slide stacked, full size, starts hidden */
-.sb-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  /* 6 slides Ã— 5 s = 30 s cycle */
-  animation: sbFade 30s infinite;
-  animation-delay: calc(var(--n) * 5s);
-}
-
-.sb-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/*
-  Each slide is visible for 5 s out of 30 s = 16.67%
-  Fade-in 0.5 s → hold → fade-out 0.5 s
-*/
-@keyframes sbFade {
-  0% {
-    opacity: 0;
-  }
-
-  1.67% {
-    opacity: 1;
-  }
-
-  /* ~0.5 s fade-in  */
-  16.67% {
-    opacity: 1;
-  }
-
-  /* hold for 5 s    */
-  18.33% {
-    opacity: 0;
-  }
-
-  /* ~0.5 s fade-out */
-  100% {
-    opacity: 0;
-  }
-}
-
-/* ── Overlay ─────────────────────────────────────────────────── */
-.sb-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(to bottom,
-      rgba(2, 6, 23, 0.55) 0%,
-      rgba(2, 6, 23, 0.72) 60%,
-      rgba(2, 6, 23, 0.90) 100%);
-}
-
-/* ── Characters ──────────────────────────────────────────────── */
-.sb-char {
-  position: absolute;
-  bottom: 0;
-  z-index: 3;
-  height: 90%;
-  width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.6));
-  animation: sbCharUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.sb-char--l {
-  left: 0;
-  animation-delay: 0.05s;
-}
-
-.sb-char--r {
-  right: 0;
-  animation-delay: 0.18s;
-}
-
-@keyframes sbCharUp {
-  from {
-    transform: translateY(30%);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* ── Center Content ──────────────────────────────────────────── */
-.sb-content {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  text-align: center;
-  padding: 0 16px;
-  max-width: 520px;
-  width: 100%;
-  animation: sbContentIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both 0.1s;
-}
-
-@keyframes sbContentIn {
-  from {
-    opacity: 0;
-    transform: translateY(-16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.sb-logo {
-  height: 36px;
-  width: auto;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
-}
-
-.sb-content h1 {
-  font-size: clamp(20px, 4vw, 38px);
-  font-weight: 900;
-  line-height: 1.3;
-  margin: 0;
-  background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--purple) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ── W300 Promo Row ──────────────────────────────────────────── */
-.sb-promo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(7, 55, 48, 0.7);
-  border: 1px solid rgba(208, 227, 21, 0.35);
-  border-radius: 12px;
-  padding: 10px 18px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.sb-promo-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.sb-promo-code {
-  font-size: 26px;
-  font-weight: 900;
-  color: var(--accent);
-  letter-spacing: 6px;
-  font-family: monospace;
-  text-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
-}
-
-.sb-copy-btn {
-  background: var(--accent);
-  color: #000;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  font-family: var(--font-ar, inherit);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-
-.sb-copy-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
-}
-
-/* ── Download Button ─────────────────────────────────────────── */
-.sb-cta {
-  font-size: 16px;
-  padding: 14px 32px;
-}
-
-/* ── Responsive ──────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .sb-hero {
-    height: 420px;
-  }
-
-  .sb-char {
-    height: 75%;
-  }
-}
-
-@media (max-width: 480px) {
-  .sb-hero {
-    height: 360px;
-  }
-
-  .sb-char {
-    height: 60%;
-  }
-
-  .sb-char--l {
-    left: -10px;
-  }
-
-  .sb-char--r {
-    right: -10px;
-  }
-
-  .sb-content h1 {
-    font-size: 18px;
-  }
-
-  .sb-promo-code {
-    font-size: 22px;
-    letter-spacing: 4px;
   }
 }
 
