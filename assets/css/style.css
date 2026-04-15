@@ -1029,6 +1029,7 @@ h1 {
 .premium-footer {
   position: relative;
 }
+
 /* [CLEANED] Removed duplicate premium-footer::before */
 
 /* ── Footer Hero CTA (Not Huge any more, sleeker) ── */
@@ -5423,13 +5424,16 @@ h1 {
 /* ── Marquee thumbnails slider ──────────────────────────────── */
 .ph-marquee {
   position: absolute;
-  top: 15px; /* Offset to nest smoothly behind character heads */
+  top: 15px;
+  /* Offset to nest smoothly behind character heads */
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
   overflow: hidden;
-  z-index: 5; /* Behind characters (20) */
-  pointer-events: auto; /* Enable hover interactions */
+  z-index: 5;
+  /* Behind characters (20) */
+  pointer-events: auto;
+  /* Enable hover interactions */
 }
 
 .ph-marquee-track {
@@ -5471,13 +5475,18 @@ h1 {
 
 .ph-game-link:hover img {
   box-shadow: 0 8px 25px rgba(208, 227, 21, 0.4),
-              0 0 20px rgba(208, 227, 21, 0.2);
+    0 0 20px rgba(208, 227, 21, 0.2);
   border-color: rgba(208, 227, 21, 0.6);
 }
 
 @keyframes phMarqueeScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 /* ── Character images ─ tall, no rotation ───────────────────── */
@@ -5556,7 +5565,7 @@ h1 {
 .ph-dl-btn:hover {
   transform: translateY(-3px) scale(1.02) rotateX(5deg);
   box-shadow: 0 12px 30px rgba(208, 227, 21, 0.7),
-              0 0 40px rgba(208, 227, 21, 0.3);
+    0 0 40px rgba(208, 227, 21, 0.3);
 }
 
 .ph-dl-btn:active {
@@ -5751,7 +5760,7 @@ h1 {
   width: auto;
   z-index: 0;
   pointer-events: none;
-  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.5));
 }
 
 .hero-buttons-with-char .btn-app {
@@ -5764,6 +5773,7 @@ h1 {
     height: 230px;
     bottom: 40px;
   }
+
   .hero-buttons-with-char {
     padding-top: 140px;
     margin-top: -100px;
@@ -5774,6 +5784,7 @@ h1 {
    PC ONLY STYLES (min-width: 769px) - Does NOT affect mobile
    ================================================================= */
 @media (min-width: 769px) {
+
   /* Wider content boxes on PC */
   .container {
     max-width: 1400px;
@@ -5915,28 +5926,31 @@ h1 {
 
   /* PC: hide character on button, show on content-box - positioned on left for RTL */
   .hero-btn-char {
-    display: none;  /* Hide mobile character on PC */
+    display: none;
+    /* Hide mobile character on PC */
   }
 
   .page-about .hero-buttons-with-char {
     padding-top: 0;
     margin-top: 0;
   }
+
   .page-about .hero-buttons-with-char .hero-btn-char {
     display: none;
   }
+
   .page-about .content-box-char {
     display: block;
     position: absolute;
     top: -400px;
     /* Character on RIGHT side for RTL */
     left: auto;
-    right: 670px;
-    height:400px;
+    right: 870px;
+    height: 400px;
     width: auto;
     z-index: 10;
     pointer-events: none;
-    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.5));
   }
 
   .hero-buttons-with-char {
@@ -5958,7 +5972,7 @@ h1 {
     width: auto;
     z-index: -1;
     pointer-events: none;
-    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.5));
   }
 
   /* About page content box character - now positioned on RIGHT side */
@@ -6036,11 +6050,11 @@ h1 {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .gallery-item img {
     height: 180px;
   }
-  
+
   .about-gallery {
     padding: 16px;
   }
