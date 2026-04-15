@@ -1,8 +1,8 @@
 /* =================================================
-   SPINBETTER PORTAL â€” PREMIUM NEON DESIGN SYSTEM
+   SPINBETTER PORTAL — PREMIUM NEON DESIGN SYSTEM
    ================================================= */
 
-/* â”€â”€â”€ CSS Variables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── CSS Variables ─────────────────────────────── */
 :root {
   --bg-body: #073730;
   --bg-gradient: radial-gradient(ellipse at 50% 0%, #9334b9 0%, #073730 70%);
@@ -36,7 +36,7 @@
   --register-url: "https://redirspinner.com/2N0q?p=%2Fregistration%2F";
 }
 
-/* â”€â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Reset ────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -63,6 +63,8 @@ body {
   padding-bottom: 0px;
   line-height: 1.7;
   direction: rtl;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 img {
@@ -75,7 +77,7 @@ a {
   text-decoration: none;
 }
 
-/* â”€â”€â”€ Top Bar (Marquee) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Top Bar (Marquee) ─────────────────────────── */
 .top-bar {
   position: fixed;
   top: 0;
@@ -122,7 +124,7 @@ a {
   }
 }
 
-/* â”€â”€â”€ App Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── App Header ────────────────────────────────── */
 .app-header {
   position: fixed;
   top: var(--topbar-h);
@@ -203,7 +205,7 @@ a {
   }
 }
 
-/* â”€â”€â”€ Sidebar Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Sidebar Overlay ───────────────────────────── */
 .sb-overlay {
   position: fixed;
   inset: 0;
@@ -220,7 +222,7 @@ a {
   pointer-events: auto;
 }
 
-/* â”€â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Sidebar ───────────────────────────────────── */
 .sidebar {
   position: fixed;
   top: 0;
@@ -407,14 +409,14 @@ a {
   box-shadow: 0 6px 25px var(--accent-glow);
 }
 
-/* â”€â”€â”€ Page Layout Container â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Page Layout Container ─────────────────────── */
 .container {
   width: min(97%, 980px);
   margin: 0 auto;
   padding: 20px 14px 40px;
 }
 
-/* â”€â”€â”€ Hero Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Hero Section ──────────────────────────────── */
 .hero-center {
   text-align: center;
   padding: 28px 16px 36px;
@@ -528,7 +530,7 @@ h1 {
   }
 }
 
-/* â”€â”€â”€ Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Buttons ───────────────────────────────────── */
 .btn {
   width: 100%;
   padding: 16px 20px;
@@ -610,7 +612,7 @@ h1 {
   }
 }
 
-/* â”€â”€â”€ Content Box (Article Sections) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Content Box (Article Sections) ───────────── */
 .content-box {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -645,7 +647,7 @@ h1 {
 }
 
 .content-box h3::before {
-  content: 'â–¸';
+  content: '▸';
   color: var(--accent);
   font-size: 12px;
   flex-shrink: 0;
@@ -716,7 +718,7 @@ h1 {
   margin-bottom: 14px;
 }
 
-/* â”€â”€â”€ Info Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Info Grid ─────────────────────────────────── */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -757,7 +759,7 @@ h1 {
   line-height: 1.6;
 }
 
-/* â”€â”€â”€ Steps List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Steps List ────────────────────────────────── */
 .steps-list {
   margin: 14px 0;
 }
@@ -798,7 +800,7 @@ h1 {
   margin: 0;
 }
 
-/* â”€â”€â”€ Accordion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Accordion ─────────────────────────────────── */
 .acc-item {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -843,7 +845,7 @@ h1 {
   padding: 0 18px 16px;
 }
 
-/* â”€â”€â”€ Specs Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Specs Table ───────────────────────────────── */
 .specs-table {
   width: 100%;
   border-collapse: collapse;
@@ -871,7 +873,7 @@ h1 {
   color: var(--text-main);
 }
 
-/* â”€â”€â”€ Breadcrumb â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Breadcrumb ────────────────────────────────── */
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -887,7 +889,7 @@ h1 {
   color: var(--accent);
 }
 
-/* â”€â”€â”€ Content Image â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Content Image ─────────────────────────────── */
 .content-img {
   width: 100%;
   border-radius: var(--radius-md);
@@ -896,7 +898,7 @@ h1 {
   object-fit: cover;
 }
 
-/* â”€â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Timeline ──────────────────────────────────── */
 .timeline-wrap {
   margin: 16px 0;
 }
@@ -932,7 +934,7 @@ h1 {
   line-height: 1.75;
 }
 
-/* â”€â”€â”€ Floating Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Floating Toast ────────────────────────────── */
 .toast {
   position: fixed;
   bottom: 90px;
@@ -968,7 +970,7 @@ h1 {
   font-size: 13px;
 }
 
-/* â”€â”€â”€ Floating CTA Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Floating CTA Bar ──────────────────────────── */
 .floating-cta {
   position: fixed;
   bottom: 16px;
@@ -984,7 +986,7 @@ h1 {
 }
 
 
-/* â”€â”€â”€ ULTRA-PREMIUM FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── ULTRA-PREMIUM FOOTER ────────────────────────── */
 .premium-footer {
   position: relative;
   background: #073730;
@@ -1019,21 +1021,13 @@ h1 {
   gap: 40px;
 }
 
-/* â”€â”€â”€ Seamless Bodyâ†’Footer Fade â”€â”€â”€ */
+/* ─── Seamless Body→Footer Fade ─── */
 .premium-footer {
   position: relative;
 }
+/* [CLEANED] Removed duplicate premium-footer::before */
 
-.premium-footer::before {
-  content: '';
-  display: block;
-  height: 80px;
-  background: linear-gradient(to bottom, var(--bg-deep, #073730), transparent);
-  margin-bottom: -80px;
-  pointer-events: none;
-}
-
-/* â”€â”€ Footer Hero CTA (Not Huge any more, sleeker) â”€â”€ */
+/* ── Footer Hero CTA (Not Huge any more, sleeker) ── */
 .pf-huge-cta {
   position: relative;
   text-align: center;
@@ -1102,7 +1096,7 @@ h1 {
   box-shadow: 0 12px 30px rgba(208, 227, 21, 0.35);
 }
 
-/* â”€â”€ Footer Grid (4 Cols) â”€â”€ */
+/* ── Footer Grid (4 Cols) ── */
 .pf-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
@@ -1263,7 +1257,7 @@ h1 {
   transform: translateX(-4px);
 }
 
-/* â”€â”€ Payment SVGs Strip â”€â”€ */
+/* ── Payment SVGs Strip ── */
 .pf-payment-strip {
   display: flex;
   flex-direction: column;
@@ -1300,7 +1294,7 @@ h1 {
   transform: scale(1.05);
 }
 
-/* â”€â”€ Legal Bar â”€â”€ */
+/* ── Legal Bar ── */
 .pf-legal {
   padding: 24px 0 0;
   display: flex;
@@ -1362,7 +1356,7 @@ h1 {
 }
 
 
-/* â”€â”€â”€ Sitemap Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Sitemap Page ──────────────────────────────── */
 .sitemap-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1401,7 +1395,7 @@ h1 {
   color: var(--accent);
 }
 
-/* â”€â”€â”€ Image Gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Image Gallery ─────────────────────────────── */
 .img-gallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1507,7 +1501,7 @@ h1 {
   border: 1px solid var(--border);
 }
 
-/* â”€â”€â”€ Reveal Animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Reveal Animation ──────────────────────────── */
 .reveal {
   opacity: 0;
   transform: translateY(22px);
@@ -1519,7 +1513,7 @@ h1 {
   transform: translateY(0);
 }
 
-/* â”€â”€â”€ Highlight Box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Highlight Box ─────────────────────────────── */
 .highlight-box {
   background: rgba(208, 227, 21, 0.07);
   border-right: 3px solid var(--accent);
@@ -1534,7 +1528,7 @@ h1 {
   font-size: 14px;
 }
 
-/* â”€â”€â”€ Related Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Related Pages ─────────────────────────────── */
 .related-pages {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1578,14 +1572,14 @@ h1 {
   font-weight: 700;
 }
 
-/* â”€â”€â”€ WowBet Extra Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── WowBet Extra Content ──────────────────────── */
 .wowbet-extra-content {
   border-top: 1px solid var(--border);
   margin-top: 30px;
   padding-top: 30px;
 }
 
-/* â”€â”€â”€ Main Container for Sports Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Main Container for Sports Page ───────────── */
 .main-container {
   padding: 0;
 }
@@ -1596,7 +1590,7 @@ h1 {
   gap: 18px;
 }
 
-/* â”€â”€â”€ Mobile Global Tweaks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Mobile Global Tweaks ──────────────────────── */
 @media (max-width: 768px) {
   body {
     padding-top: calc(var(--topbar-h) + var(--header-h));
@@ -1649,7 +1643,7 @@ h1 {
     gap: 12px !important;
   }
 
-  /* Kill the 2-col image splits â€” they crush text on narrow screens */
+  /* Kill the 2-col image splits — they crush text on narrow screens */
   .img-split>div,
   .img-split>img,
   .img-split-item,
@@ -1709,7 +1703,7 @@ h1 {
 }
 
 
-/* â”€â”€â”€ Misc Page Specific â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Misc Page Specific ────────────────────────── */
 .sb-overlay {
   z-index: 1990;
 }
@@ -1718,7 +1712,7 @@ h1 {
   z-index: 2000;
 }
 
-/* â”€â”€â”€ Notification Bell System â”€â”€â”€ */
+/* ─── Notification Bell System ─── */
 .hdr-bell-wrap {
   position: relative;
   display: inline-flex;
@@ -2025,7 +2019,7 @@ h1 {
   flex-shrink: 0;
 }
 
-/* â”€â”€â”€ Premium Sleek Hamburger â”€â”€â”€ */
+/* ─── Premium Sleek Hamburger ─── */
 .hdr-burger {
   position: relative;
   background: transparent;
@@ -2046,7 +2040,7 @@ h1 {
   display: none !important;
 }
 
-/* Elegant 3-line asymmetrical design */
+/* Elegant 3-line asymmetrical design — only show first 3 dots */
 .hdr-burger .dot:nth-child(1),
 .hdr-burger .dot:nth-child(2),
 .hdr-burger .dot:nth-child(3) {
@@ -2055,6 +2049,16 @@ h1 {
   border-radius: 4px !important;
   background: var(--accent) !important;
   transition: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Dots 4-9 stay hidden (redundant safety rule) */
+.hdr-burger .dot:nth-child(4),
+.hdr-burger .dot:nth-child(5),
+.hdr-burger .dot:nth-child(6),
+.hdr-burger .dot:nth-child(7),
+.hdr-burger .dot:nth-child(8),
+.hdr-burger .dot:nth-child(9) {
+  display: none !important;
 }
 
 .hdr-burger .dot:nth-child(1) {
@@ -2080,7 +2084,7 @@ h1 {
   margin-left: 0;
 }
 
-/* â”€â”€â”€ Hero Logo Size â”€â”€â”€ */
+/* ─── Hero Logo Size ─── */
 .hero-logo-wrap {
   display: flex;
   justify-content: center;
@@ -2120,7 +2124,7 @@ h1 {
   }
 }
 
-/* â”€â”€â”€ Content Images (FAQ etc) â”€â”€â”€ */
+/* ─── Content Images (FAQ etc) ─── */
 .content-img {
   max-width: 100%;
   border-radius: var(--radius-lg);
@@ -2142,7 +2146,7 @@ h1 {
   }
 }
 
-/* â”€â”€â”€ Reviews Grid â”€â”€â”€ */
+/* ─── Reviews Grid ─── */
 .reviews-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -2228,12 +2232,14 @@ h1 {
   position: relative;
 }
 
-/* â”€â”€â”€ Global Search UI â”€â”€â”€ */
+/* ─── Global Search UI ─── */
 .hdr-actions {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 
@@ -2382,7 +2388,7 @@ h1 {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 8px 14px;
+  padding: 5px 14px;
   color: var(--text-dim);
   flex: 1;
   min-width: 0;
@@ -2410,20 +2416,24 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transform: translateY(1px);
 }
 
 @media (max-width: 480px) {
   .hdr-search-bar {
-    padding: 6px 10px;
+    padding: 4px 10px;
     margin: 0 5px;
-    font-size: 11px;
+    font-size: 12px;
+    max-width: 140px;
+  }
+
+  .hdr-search-bar span {
+    display: inline-block;
+    transform: translateY(1px);
   }
 }
 
-.hdr-actions {
-  flex: 1;
-  justify-content: flex-end;
-}
+/* [CLEANED] Merged into .hdr-actions above */
 
 /* Chat Bubbles (Scam Awareness) */
 .chat-container {
@@ -2498,21 +2508,20 @@ h1 {
 }
 
 /* ================================================================
-   PF2 â€” PREMIUM iGAMING FOOTER (v2)
+   PF2 — PREMIUM iGAMING FOOTER (v2)
    All colours → existing CSS vars only: --accent #d0e315, --purple #9334b9,
    --gold #bda92e, --bg-body #073730
    ================================================================ */
 
-/* â”€â”€ Wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Wrapper ──────────────────────────────────────────────────── */
 .pf2 {
   background: var(--bg-body);
-  border-top: 1px solid rgba(208, 227, 21, 0.12);
   border-top: 1px solid rgba(208, 227, 21, 0.12);
   overflow: hidden;
   position: relative;
 }
 
-/* â”€â”€ â‘  CAROUSEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── â‘  CAROUSEL ──────────────────────────────────────────────── */
 .pf2-carousel {
   position: relative;
   width: 100%;
@@ -2560,11 +2569,7 @@ h1 {
   }
 }
 
-/* Use CSS transition on each step for smoothness */
-.pf2-slides {
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  animation: pf2SlideSm 18s linear infinite;
-}
+/* [CLEANED] Duplicate .pf2-slides removed - merged above */
 
 @keyframes pf2SlideSm {
 
@@ -2652,7 +2657,7 @@ h1 {
   }
 }
 
-/* â”€â”€ â‘¡ CHARACTERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── â‘¡ CHARACTERS ────────────────────────────────────────────── */
 .pf2-chars {
   position: relative;
   display: flex;
@@ -2762,14 +2767,14 @@ h1 {
 
 /* Reuse existing btn-glowing-massive from style.css */
 
-/* â”€â”€ â‘¢ CONTAINER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── â‘¢ CONTAINER ─────────────────────────────────────────────── */
 .pf2-container {
   width: min(96%, 1200px);
   margin: 0 auto;
   padding: 40px 16px 0;
 }
 
-/* â”€â”€ BRAND â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── BRAND ───────────────────────────────────────────────────── */
 .pf2-brand {
   display: flex;
   flex-direction: column;
@@ -2794,7 +2799,7 @@ h1 {
   max-width: 500px;
 }
 
-/* â”€â”€ â‘£ 4-COLUMN GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── â‘£ 4-COLUMN GRID ─────────────────────────────────────────── */
 .pf2-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -2846,7 +2851,7 @@ h1 {
   padding-right: 4px;
 }
 
-/* â”€â”€ â‘¤ PAYMENT ICONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── â‘¤ PAYMENT ICONS ─────────────────────────────────────────── */
 .pf2-payments {
   border-top: 1px solid rgba(208, 227, 21, 0.1);
   padding: 28px 0;
@@ -2904,7 +2909,7 @@ h1 {
   padding: 4px;
 }
 
-/* â”€â”€ â‘¥ BOTTOM BAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── â‘¥ BOTTOM BAR ────────────────────────────────────────────── */
 .pf2-bottom-bar {
   display: flex;
   align-items: center;
@@ -2994,7 +2999,7 @@ h1 {
   color: var(--accent);
 }
 
-/* â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .pf2-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -3078,11 +3083,11 @@ h1 {
 }
 
 /* ================================================================
-   HERO iGAMING â€” Premium Full-Width Hero
+   HERO iGAMING — Premium Full-Width Hero
    Uses only: --accent #d0e315 | --purple #9334b9 | --gold #bda92e | --bg-body #073730
    ================================================================ */
 
-/* â”€â”€ Wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Wrapper ─────────────────────────────────────────────────── */
 .hero-igaming {
   position: relative;
   width: 100%;
@@ -3098,7 +3103,7 @@ h1 {
   padding-bottom: 0;
 }
 
-/* Subtle background depth â€” NOT neon, very low opacity */
+/* Subtle background depth — NOT neon, very low opacity */
 .hig-orb {
   position: absolute;
   border-radius: 50%;
@@ -3127,12 +3132,12 @@ h1 {
   right: -5%;
 }
 
-/* â”€â”€ Characters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Characters ──────────────────────────────────────────────── */
 .hig-char {
   position: absolute;
   bottom: 0;
   z-index: 3;
-  /* Slide-up from below on load â€” no neon, clean */
+  /* Slide-up from below on load — no neon, clean */
   animation: higLand 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -3141,7 +3146,7 @@ h1 {
   width: auto;
   object-fit: contain;
   display: block;
-  /* Subtle depth shadow â€” NOT neon, purely black */
+  /* Subtle depth shadow — NOT neon, purely black */
   filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.55));
 }
 
@@ -3167,7 +3172,7 @@ h1 {
   }
 }
 
-/* â”€â”€ Center Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Center Content ──────────────────────────────────────────── */
 .hig-center {
   position: relative;
   z-index: 5;
@@ -3195,7 +3200,7 @@ h1 {
   }
 }
 
-/* h1 inherits existing global h1 gradient â€” override for centering */
+/* h1 inherits existing global h1 gradient — override for centering */
 .hig-center h1 {
   font-size: clamp(22px, 4.5vw, 44px);
   line-height: 1.3;
@@ -3229,7 +3234,7 @@ h1 {
   justify-content: center;
 }
 
-/* â”€â”€ iGaming Image Marquee Strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── iGaming Image Marquee Strip ─────────────────────────────── */
 .hig-strip {
   position: relative;
   z-index: 4;
@@ -3271,7 +3276,7 @@ h1 {
   }
 }
 
-/* Individual cards â€” iGaming app preview style */
+/* Individual cards — iGaming app preview style */
 .hig-strip-card {
   flex-shrink: 0;
   display: block;
@@ -3283,7 +3288,7 @@ h1 {
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.3s,
     box-shadow 0.3s;
-  /* Subtle perspective tilt â€” iGaming feel */
+  /* Subtle perspective tilt — iGaming feel */
   transform: perspective(800px) rotateY(0deg);
 }
 
@@ -3303,7 +3308,7 @@ h1 {
   border-radius: 14px;
 }
 
-/* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Responsive ──────────────────────────────────────────────── */
 
 /* Tablet */
 @media (max-width: 1024px) {
@@ -3385,7 +3390,7 @@ h1 {
 }
 
 /* ================================================================
-   SB-HERO  â€” Simple background slideshow + characters + CTA
+   SB-HERO  — Simple background slideshow + characters + CTA
    ================================================================ */
 
 .sb-hero {
@@ -3398,7 +3403,7 @@ h1 {
   justify-content: center;
 }
 
-/* â”€â”€ Background Slides â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Background Slides ───────────────────────────────────────── */
 .sb-slides {
   position: absolute;
   inset: 0;
@@ -3424,7 +3429,7 @@ h1 {
 
 /*
   Each slide is visible for 5 s out of 30 s = 16.67%
-  Fade-in 0.5 s â†’ hold â†’ fade-out 0.5 s
+  Fade-in 0.5 s → hold → fade-out 0.5 s
 */
 @keyframes sbFade {
   0% {
@@ -3451,7 +3456,7 @@ h1 {
   }
 }
 
-/* â”€â”€ Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Overlay ─────────────────────────────────────────────────── */
 .sb-overlay {
   position: absolute;
   inset: 0;
@@ -3462,7 +3467,7 @@ h1 {
       rgba(2, 6, 23, 0.90) 100%);
 }
 
-/* â”€â”€ Characters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Characters ──────────────────────────────────────────────── */
 .sb-char {
   position: absolute;
   bottom: 0;
@@ -3496,7 +3501,7 @@ h1 {
   }
 }
 
-/* â”€â”€ Center Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Center Content ──────────────────────────────────────────── */
 .sb-content {
   position: relative;
   z-index: 5;
@@ -3540,7 +3545,7 @@ h1 {
   background-clip: text;
 }
 
-/* â”€â”€ W300 Promo Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── W300 Promo Row ──────────────────────────────────────────── */
 .sb-promo {
   display: flex;
   align-items: center;
@@ -3586,13 +3591,13 @@ h1 {
   box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
 }
 
-/* â”€â”€ Download Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Download Button ─────────────────────────────────────────── */
 .sb-cta {
   font-size: 16px;
   padding: 14px 32px;
 }
 
-/* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sb-hero {
     height: 420px;
@@ -3631,7 +3636,7 @@ h1 {
 }
 
 /* ================================================================
-   SB-HERO FIX â€” Clean layout, characters on sides, overlay darker
+   SB-HERO FIX — Clean layout, characters on sides, overlay darker
    ================================================================ */
 
 /* Override previous sb-hero rules */
@@ -3645,7 +3650,7 @@ h1 {
   justify-content: center;
 }
 
-/* Darker overlay â€” must be readable over any image */
+/* Darker overlay — must be readable over any image */
 .sb-overlay {
   position: absolute;
   inset: 0;
@@ -3656,7 +3661,7 @@ h1 {
       rgba(2, 6, 23, 0.90) 100%);
 }
 
-/* Characters â€” pinned to sides, never overlap center text */
+/* Characters — pinned to sides, never overlap center text */
 .sb-char {
   position: absolute;
   bottom: 0;
@@ -3691,7 +3696,7 @@ h1 {
   }
 }
 
-/* Center block â€” padded away from both characters */
+/* Center block — padded away from both characters */
 .sb-content {
   position: relative;
   z-index: 5;
@@ -3790,7 +3795,7 @@ h1 {
   justify-content: center;
 }
 
-/* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Responsive ──────────────────────────────────────────────── */
 
 /* Tablet: shrink padding & characters */
 @media (max-width: 900px) {
@@ -3858,10 +3863,10 @@ h1 {
 }
 
 /* ================================================================
-   HS â€” HERO SLIDER  (matches reference mockup exactly)
+   HS — HERO SLIDER  (matches reference mockup exactly)
    ================================================================ */
 
-/* â”€â”€â”€ â‘  SLIDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── â‘  SLIDER ──────────────────────────────────────────────── */
 .hs-wrap {
   position: relative;
   width: 100%;
@@ -3922,7 +3927,7 @@ h1 {
   transform: scale(1.3);
 }
 
-/* â”€â”€â”€ â‘¡ CHARACTER + BUTTONS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── â‘¡ CHARACTER + BUTTONS STRIP ───────────────────────────── */
 .hs-strip {
   position: relative;
   display: flex;
@@ -3938,13 +3943,13 @@ h1 {
   background: var(--bg-body);
 }
 
-/* Character â€” rises above the strip into the slider area */
+/* Character — rises above the strip into the slider area */
 .hs-char {
   position: absolute;
   bottom: 0;
   left: 0;
   height: 220px;
-  /* taller than strip â€” overlaps slider bottom */
+  /* taller than strip — overlaps slider bottom */
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
@@ -4021,7 +4026,7 @@ h1 {
   font-family: monospace;
 }
 
-/* â”€â”€â”€ â‘¢ DIVIDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── â‘¢ DIVIDER ─────────────────────────────────────────────── */
 .hs-divider {
   width: 100%;
   height: 3px;
@@ -4029,7 +4034,7 @@ h1 {
   margin-bottom: 0;
 }
 
-/* â”€â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .hs-track {
     height: 200px;
@@ -4063,10 +4068,10 @@ h1 {
 }
 
 /* ================================================================
-   HS v3 â€” Hero Slider  (override all previous hs-* rules)
+   HS v3 — Hero Slider  (override all previous hs-* rules)
    ================================================================ */
 
-/* â”€â”€â”€ SLIDER WRAP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── SLIDER WRAP ────────────────────────────────────────────── */
 .hs-wrap {
   position: relative;
   width: 100%;
@@ -4102,7 +4107,7 @@ h1 {
   display: block;
 }
 
-/* â”€â”€â”€ PREV / NEXT ARROWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── PREV / NEXT ARROWS ─────────────────────────────────────── */
 .hs-arrow {
   position: absolute;
   top: 50%;
@@ -4139,7 +4144,7 @@ h1 {
   right: 12px;
 }
 
-/* â”€â”€â”€ DOTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── DOTS ───────────────────────────────────────────────────── */
 .hs-dots {
   position: absolute;
   bottom: 12px;
@@ -4164,7 +4169,7 @@ h1 {
   transform: scale(1.35);
 }
 
-/* â”€â”€â”€ CHARACTER + BUTTONS STRIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── CHARACTER + BUTTONS STRIP ──────────────────────────────── */
 .hs-strip {
   position: relative;
   display: flex;
@@ -4177,7 +4182,7 @@ h1 {
   background: var(--bg-body);
 }
 
-/* Character â€” anchored bottom-left, rises into slider */
+/* Character — anchored bottom-left, rises into slider */
 .hs-char {
   position: absolute;
   bottom: -10px;
@@ -4204,7 +4209,7 @@ h1 {
   }
 }
 
-/* Buttons column â€” offset from character */
+/* Buttons column — offset from character */
 .hs-actions {
   display: flex;
   flex-direction: column;
@@ -4220,7 +4225,7 @@ h1 {
   flex-shrink: 0;
 }
 
-/* â”€â”€â”€ 3D DOWNLOAD BUTTON â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── 3D DOWNLOAD BUTTON ─────────────────────────────────────── */
 .hs-dl-btn {
   display: flex;
   align-items: center;
@@ -4289,7 +4294,7 @@ h1 {
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* â”€â”€â”€ 3D PROMO / COPY BUTTON â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── 3D PROMO / COPY BUTTON ─────────────────────────────────── */
 .hs-promo-btn {
   display: flex;
   align-items: center;
@@ -4357,7 +4362,7 @@ h1 {
   font-weight: 300;
 }
 
-/* â”€â”€â”€ ACCENT DIVIDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── ACCENT DIVIDER ─────────────────────────────────────────── */
 .hs-divider {
   width: 100%;
   height: 3px;
@@ -4373,7 +4378,7 @@ h1 {
   z-index: 1;
 }
 
-/* â”€â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
 
 /* Tablet */
 @media (max-width: 768px) {
@@ -4937,7 +4942,7 @@ h1 {
 .hero-banner__bg {
   position: absolute;
   inset: 0;
-  background-image: url('../images/MAIN-FOOTER (2).png');
+  background-image: url('../images/main-footer-2.webp');
   background-size: cover;
   background-position: center top;
   z-index: 0;
@@ -5370,7 +5375,7 @@ h1 {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* New Games Grid layout: scroll row â†’ kept same as games-row */
+/* New Games Grid layout: scroll row → kept same as games-row */
 .new-games-section .games-row {
   padding: 0 12px 8px;
 }
@@ -5955,8 +5960,16 @@ h1 {
   }
 }
 
-/* Hide content-box-char on mobile (PC only) */
+/* Mobile default: show button character, hide content-box character */
 .content-box-char {
+  display: none;
+}
+
+.page-about .hero-buttons-with-char .hero-btn-char {
+  display: block;
+}
+
+.page-about .content-box-char {
   display: none;
 }
 
@@ -6139,9 +6152,35 @@ h1 {
     font-size: 10px;
   }
 
-  /* Hide character from hero buttons on PC */
-  .hero-buttons-with-char .hero-btn-char {
+  /* PC: hide character on button, show on content-box - positioned on left for RTL */
+  .hero-btn-char {
+    display: none;  /* Hide mobile character on PC */
+  }
+
+  .page-about .hero-buttons-with-char {
+    padding-top: 0;
+    margin-top: 0;
+  }
+  .page-about .hero-buttons-with-char .hero-btn-char {
     display: none;
+  }
+  .page-about .content-box-char {
+    display: block;
+    position: absolute;
+    top: -400px;
+    /* Character on RIGHT side for RTL */
+    left: auto;
+    right: 670px;
+    height:400px;
+    width: auto;
+    z-index: 10;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+  }
+
+  .hero-buttons-with-char {
+    padding-top: 180px;
+    margin-top: -20px;
   }
 
   /* Content box with character - PC only */
@@ -6160,4 +6199,143 @@ h1 {
     pointer-events: none;
     filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
   }
+
+  /* About page content box character - now positioned on RIGHT side */
+  /* Removed conflicting left positioning - using right: -400px above */
+}
+
+/* About Us Gallery Styles */
+.about-gallery {
+  padding: 24px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+  border: 1px solid rgba(94, 234, 212, 0.1);
+  transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(94, 234, 212, 0.3);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-caption {
+  padding: 16px;
+  text-align: center;
+}
+
+.gallery-caption h4 {
+  color: var(--accent, #5eead4);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.gallery-caption p {
+  color: var(--text-muted, #94a3b8);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Mobile responsive gallery */
+@media (max-width: 992px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .gallery-item img {
+    height: 180px;
+  }
+  
+  .about-gallery {
+    padding: 16px;
+  }
+}
+
+/* SVG Icon Styles for About Page */
+.heading-icon {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+.card-icon-img {
+  width: 40px;
+  height: 40px;
+  display: block;
+  margin: 0 auto;
+}
+
+.inline-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* RTL support for icons */
+[dir="rtl"] .heading-icon {
+  margin-left: 0;
+  margin-right: 8px;
+}
+
+/* Colored SVG Icons - Outline Icons with Custom Colors */
+/* Acid Green #c8ff00 */
+.icon-acid {
+  filter: invert(89%) sepia(39%) saturate(1099%) hue-rotate(18deg) brightness(105%) contrast(101%);
+}
+
+/* Violet #7b2fff */
+.icon-violet {
+  filter: invert(34%) sepia(85%) saturate(5478%) hue-rotate(255deg) brightness(99%) contrast(102%);
+}
+
+/* Magenta #ff44ff */
+.icon-magenta {
+  filter: invert(35%) sepia(99%) saturate(7451%) hue-rotate(292deg) brightness(105%) contrast(101%);
+}
+
+/* Gold #ffaa00 */
+.icon-gold {
+  filter: invert(60%) sepia(96%) saturate(2151%) hue-rotate(3deg) brightness(104%) contrast(102%);
+}
+
+/* Deep Space #0d0520 - for dark backgrounds */
+.icon-deep {
+  filter: invert(5%) sepia(28%) saturate(2710%) hue-rotate(234deg) brightness(92%) contrast(112%);
 }

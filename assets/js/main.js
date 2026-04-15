@@ -1,15 +1,33 @@
 function toggleSidebar() {
     const sb = document.getElementById('sidebar');
     const ov = document.getElementById('sbOverlay');
-    sb.classList.toggle('open');
-    ov.classList.toggle('open');
-    document.body.style.overflow = sb.classList.contains('open') ? 'hidden' : '';
+    if (!sb) return;
+    const isOpen = sb.classList.toggle('open');
+    if (ov) ov.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    const btn = document.getElementById('menuBtn');
+    if (btn) btn.setAttribute('aria-expanded', isOpen);
 }
 function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sbOverlay').classList.remove('open');
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sbOverlay');
+    if (sb) sb.classList.remove('open');
+    if (ov) ov.classList.remove('open');
     document.body.style.overflow = '';
+    const btn = document.getElementById('menuBtn');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
 }
+
+// Close sidebar when clicking outside (on the page body)
+document.addEventListener('click', function(e) {
+    const sb = document.getElementById('sidebar');
+    const menuBtn = document.getElementById('menuBtn');
+    if (!sb || !sb.classList.contains('open')) return;
+    // If click is outside sidebar AND outside the menu button → close
+    if (!sb.contains(e.target) && menuBtn && !menuBtn.contains(e.target)) {
+        closeSidebar();
+    }
+}, true);
 function copyCodeSb() {
     if(navigator.clipboard) navigator.clipboard.writeText("W300").catch(() => { });
     const btn = document.querySelector('.sb-promo-btn');

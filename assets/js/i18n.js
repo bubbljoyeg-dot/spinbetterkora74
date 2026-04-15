@@ -178,25 +178,43 @@
     ───────────────────────────────────────────── */
     window.i18n_setLanguage = async function (lang) {
         if (!LANGUAGES.includes(lang)) return;
-        try {
-            const res = await fetch(`${basePrefix}locales/${lang}.json`);
-            if (!res.ok) throw new Error(res.statusText);
-            translations = await res.json();
+        
+        return new Promise((resolve) => {
+            if (window[`translations_${lang}`]) {
+                translations = window[`translations_${lang}`];
+                applyLangState(lang);
+                return resolve();
+            }
 
-            currentLang = lang;
-            localStorage.setItem(STORAGE_KEY, lang);
-
-            document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
-            document.documentElement.lang = lang;
-            document.body.classList.remove('lang-ar', 'lang-en');
-            document.body.classList.add(`lang-${lang}`);
-
-            applyTranslations();
-            updateSidebarControls();
-        } catch (e) {
-            console.error('[i18n] fetch failed:', `${basePrefix}locales/${lang}.json`, e);
-        }
+            const script = document.createElement('script');
+            script.src = `${basePrefix}locales/${lang}.js`;
+            script.onload = () => {
+                if (window[`translations_${lang}`]) {
+                    translations = window[`translations_${lang}`];
+                    applyLangState(lang);
+                }
+                resolve();
+            };
+            script.onerror = (e) => {
+                console.error('[i18n] Script load failed:', script.src, e);
+                resolve();
+            };
+            document.head.appendChild(script);
+        });
     };
+
+    function applyLangState(lang) {
+        currentLang = lang;
+        localStorage.setItem(STORAGE_KEY, lang);
+
+        document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+        document.body.classList.remove('lang-ar', 'lang-en');
+        document.body.classList.add(`lang-${lang}`);
+
+        applyTranslations();
+        updateSidebarControls();
+    }
 
     window.i18n_toggle = function () {
         window.i18n_setLanguage(currentLang === 'ar' ? 'en' : 'ar');
