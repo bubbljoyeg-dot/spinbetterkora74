@@ -1,4 +1,4 @@
-{
+window.translations_en = {
   "txt_1a7882": "Download the original SpinBetter app | W300 code 🎁",
   "txt_72836e": "Exclusive Promo Code",
   "txt_30455d": "Register Now",
@@ -1763,4 +1763,4 @@
   "txt_terms_s11_note": "We aim to respond within 48 business hours. For urgent security complaints use security@kora74.online",
   "txt_terms_sb_link": "Terms & Conditions",
   "txt_terms_footer_link": "Terms & Conditions"
-}
+};

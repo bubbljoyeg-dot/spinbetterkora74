@@ -1,4 +1,4 @@
-{
+window.translations_ar = {
   "txt_1a7882": "تنزيل تطبيق SpinBetter الأصلي | كود W300 🎁",
   "txt_72836e": "بروموكود حصري",
   "txt_30455d": "سجّل\n        الآن",
@@ -1763,4 +1763,4 @@
   "txt_terms_s11_note": "نسعى للرد خلال 48 ساعة عمل. للشكاوى العاجلة الأمنية استخدم security@kora74.online",
   "txt_terms_sb_link": "الشروط والأحكام",
   "txt_terms_footer_link": "الشروط والأحكام"
-}
+};
