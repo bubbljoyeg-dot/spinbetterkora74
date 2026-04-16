@@ -409,10 +409,11 @@ a {
 
 /* ─── Page Layout Container ─────────────────────── */
 .container {
-  width: 97%;
-  max-width: 980px;
+  width: 100%;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 20px 14px 40px;
+  padding: 20px 20px 40px;
+  box-sizing: border-box;
 }
 
 /* ─── Hero Section ──────────────────────────────── */
@@ -1586,7 +1587,7 @@ h1 {
 
 /* ─── Main Container for Sports Page ───────────── */
 .main-container {
-  padding: 0;
+  padding: 0 15px;
 }
 
 .content-grid {
@@ -1604,6 +1605,28 @@ h1 {
     padding-top: calc(var(--topbar-h) + var(--header-h));
     padding-bottom: 0px;
     line-height: 1.6;
+  }
+
+  .main-container {
+    padding: 0 20px !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .container {
+    padding: 20px 16px 40px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  .content-box,
+  .content-grid > div {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .hero-center {
@@ -6113,4 +6136,218 @@ h1 {
 /* Deep Space #0d0520 - for dark backgrounds */
 .icon-deep {
   filter: invert(5%) sepia(28%) saturate(2710%) hue-rotate(234deg) brightness(92%) contrast(112%);
+}
+
+/* ============================================================
+   REGISTRATION TUTORIAL IMAGES SECTION
+   ============================================================ */
+
+.reg-tutorial-section {
+  padding: 28px 24px 32px !important;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.reg-tutorial-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.reg-tutorial-header h2 {
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 900;
+  color: #fff;
+  font-family: var(--font-ar);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.reg-tutorial-subtitle {
+  font-size: 14px;
+  color: var(--text-muted, #94a3b8);
+  font-family: var(--font-ar);
+  line-height: 1.6;
+}
+
+/* ── Grid ────────────────────────────────────────────────────── */
+.reg-tutorial-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 600px) {
+  .reg-tutorial-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+
+/* ── Card ────────────────────────────────────────────────────── */
+.reg-tutorial-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+.reg-tutorial-card:hover {
+  border-color: rgba(208, 227, 21, 0.4);
+  box-shadow: 0 8px 32px rgba(208, 227, 21, 0.12);
+  transform: translateY(-4px);
+}
+
+/* ── Badge ───────────────────────────────────────────────────── */
+.reg-tutorial-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reg-badge-num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #d0e315 0%, #46a659 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 900;
+  color: #073730;
+  font-family: var(--font-en);
+  box-shadow: 0 4px 12px rgba(208, 227, 21, 0.35);
+}
+
+.reg-badge-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #d0e315;
+  font-family: var(--font-ar);
+  letter-spacing: 0.3px;
+}
+
+/* ── Image wrapper ───────────────────────────────────────────── */
+.reg-tutorial-img-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.3);
+  line-height: 0;
+  cursor: zoom-in;
+}
+
+.reg-tutorial-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  max-height: 400px;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.reg-tutorial-card:hover .reg-tutorial-img {
+  transform: scale(1.03);
+}
+
+/* ── Hover overlay with eye icon ─────────────────────────────── */
+.reg-tutorial-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.reg-tutorial-overlay svg {
+  width: 40px;
+  height: 40px;
+  fill: rgba(255, 255, 255, 0);
+  transition: fill 0.3s, transform 0.3s;
+  transform: scale(0.7);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+
+.reg-tutorial-card:hover .reg-tutorial-overlay {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.reg-tutorial-card:hover .reg-tutorial-overlay svg {
+  fill: rgba(255, 255, 255, 0.9);
+  transform: scale(1);
+}
+
+/* ── Caption ─────────────────────────────────────────────────── */
+.reg-tutorial-caption {
+  font-size: 13px;
+  color: var(--text-muted, #94a3b8);
+  font-family: var(--font-ar);
+  line-height: 1.65;
+  text-align: center;
+  padding: 0 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 10px;
+}
+
+/* ── Responsive tweaks ───────────────────────────────────────── */
+@media (max-width: 400px) {
+  .reg-tutorial-section {
+    padding: 20px 14px 24px !important;
+  }
+
+  .reg-tutorial-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .reg-badge-num {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+
+  .reg-badge-label {
+    font-size: 12px;
+  }
+
+  .reg-tutorial-caption {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 769px) {
+  .reg-tutorial-grid {
+    gap: 28px;
+  }
+
+  .reg-tutorial-header h2 {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  .reg-tutorial-subtitle {
+    font-size: 15px;
+  }
+
+  .reg-tutorial-caption {
+    font-size: 14px;
+  }
+
+  .reg-tutorial-img {
+    max-height: 500px;
+  }
 }
