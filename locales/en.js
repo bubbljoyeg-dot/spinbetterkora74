@@ -1762,5 +1762,13 @@ window.translations_en = {
   "txt_terms_s11_p1": "For any legal, technical, or commercial inquiry related to these Terms or the site in general, you can reach us via the following dedicated channels:",
   "txt_terms_s11_note": "We aim to respond within 48 business hours. For urgent security complaints use security@kora74.online",
   "txt_terms_sb_link": "Terms & Conditions",
-  "txt_terms_footer_link": "Terms & Conditions"
+  "txt_terms_footer_link": "Terms & Conditions",
+  "txt_reg_tutorial_title": "Registration Steps in Pictures",
+  "txt_reg_tutorial_subtitle": "See how to register step by step with screenshots",
+  "txt_reg_tutorial_step1_label": "Step One",
+  "txt_reg_tutorial_step1_caption": "Choose your registration method and enter your basic details with code W300",
+  "txt_reg_tutorial_step2_label": "Step Two",
+  "txt_reg_tutorial_step2_caption": "Complete registration and instantly receive your 200% welcome bonus",
+  "txt_reg_tutorial_img1_alt": "How to register at SpinBetter - Step One",
+  "txt_reg_tutorial_img2_alt": "How to register at SpinBetter - Step Two"
 };

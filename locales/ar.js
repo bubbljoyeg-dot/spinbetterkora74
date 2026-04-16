@@ -1762,5 +1762,13 @@ window.translations_ar = {
   "txt_terms_s11_p1": "لأي استفسار قانوني أو تقني أو تجاري متعلق بهذه الشروط أو بالموقع عموماً، يمكنك التواصل معنا عبر القنوات التالية المخصصة:",
   "txt_terms_s11_note": "نسعى للرد خلال 48 ساعة عمل. للشكاوى العاجلة الأمنية استخدم security@kora74.online",
   "txt_terms_sb_link": "الشروط والأحكام",
-  "txt_terms_footer_link": "الشروط والأحكام"
+  "txt_terms_footer_link": "الشروط والأحكام",
+  "txt_reg_tutorial_title": "صور توضيحية لخطوات التسجيل",
+  "txt_reg_tutorial_subtitle": "شوف إزاي تسجل خطوة بخطوة بالصور",
+  "txt_reg_tutorial_step1_label": "الخطوة الأولى",
+  "txt_reg_tutorial_step1_caption": "اختر طريقة التسجيل وأدخل بياناتك الأساسية مع كود W300",
+  "txt_reg_tutorial_step2_label": "الخطوة الثانية",
+  "txt_reg_tutorial_step2_caption": "أكمل التسجيل واستلم مكافأتك الترحيبية 200% فوراً",
+  "txt_reg_tutorial_img1_alt": "طريقة التسجيل في سبين بيتر - الخطوة الأولى",
+  "txt_reg_tutorial_img2_alt": "طريقة التسجيل في سبين بيتر - الخطوة الثانية"
 };
