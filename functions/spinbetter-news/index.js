@@ -193,7 +193,7 @@ export async function onRequest(context) {
   html = html.replace(/<meta[^>]*property=["']og:[^"']*["'][^>]*\/?>/gi, '');
   html = html.replace(/<meta[^>]*name=["']twitter:[^"']*["'][^>]*\/?>/gi, '');
   html = html.replace(/<meta[^>]*name=["']description["'][^>]*\/?>/gi, '');
-  html = html.replace(/<title>[^<]*<\/title>/gi, '');
+  html = html.replace(/<title[^>]*>[^<]*<\/title>/gi, '');
 
   const ogTags = `
 <title>${esc(ogTitle)}</title>
