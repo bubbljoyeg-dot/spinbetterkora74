@@ -4,8 +4,6 @@ const SITE_URL = 'https://kora74.online';
 const DEFAULT_IMAGE = 'https://kora74.online/LOGO74-1-1-1-15KORA74ONLINELOGOMAIN.webp';
 const SITE_NAME = 'SpinBetter Portal';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function esc(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -36,8 +34,6 @@ function estimateReadingTime(text = '') {
   return Math.max(1, Math.round(words / 200));
 }
 
-// ── Schema builders ───────────────────────────────────────────────────────────
-
 function buildArticleSchema(post, ogImage, ogDesc, ogUrl) {
   const rawText = stripHtml(post.content || '');
   const wordCount = rawText.split(/\s+/).filter(Boolean).length;
@@ -46,39 +42,20 @@ function buildArticleSchema(post, ogImage, ogDesc, ogUrl) {
     "@type": "NewsArticle",
     "headline": post.title || SITE_NAME,
     "description": ogDesc,
-    "image": {
-      "@type": "ImageObject",
-      "url": ogImage,
-      "width": 1200,
-      "height": 630
-    },
+    "image": { "@type": "ImageObject", "url": ogImage, "width": 1200, "height": 630 },
     "url": ogUrl,
     "datePublished": post.created_at || new Date().toISOString(),
     "dateModified": post.updated_at || post.created_at || new Date().toISOString(),
-    "author": {
-      "@type": "Organization",
-      "name": SITE_NAME,
-      "url": `${SITE_URL}/spinbetter-about/`
-    },
+    "author": { "@type": "Organization", "name": SITE_NAME, "url": `${SITE_URL}/spinbetter-about/` },
     "publisher": {
-      "@type": "Organization",
-      "name": SITE_NAME,
-      "url": SITE_URL,
-      "logo": {
-        "@type": "ImageObject",
-        "url": DEFAULT_IMAGE,
-        "width": 512,
-        "height": 512
-      }
+      "@type": "Organization", "name": SITE_NAME, "url": SITE_URL,
+      "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE, "width": 512, "height": 512 }
     },
     "wordCount": wordCount,
     "timeRequired": `PT${estimateReadingTime(rawText)}M`,
     "inLanguage": "ar",
     "isAccessibleForFree": true,
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": ogUrl
-    }
+    "mainEntityOfPage": { "@type": "WebPage", "@id": ogUrl }
   };
 }
 
@@ -109,34 +86,24 @@ function buildOrganizationSchema() {
     "@type": "Organization",
     "name": SITE_NAME,
     "url": SITE_URL,
-    "logo": {
-      "@type": "ImageObject",
-      "url": DEFAULT_IMAGE,
-      "width": 512,
-      "height": 512
-    }
+    "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE, "width": 512, "height": 512 }
   };
 }
-
-// ── Main Function ─────────────────────────────────────────────────────────────
 
 export async function onRequest(context) {
   const { request, next } = context;
   const url = new URL(request.url);
 
-  // ── Static assets — pass through ──────────────────────────────────────────
   const staticExts = ['.js', '.css', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.svg', '.woff', '.woff2', '.ttf'];
   if (staticExts.some(ext => url.pathname.endsWith(ext))) {
     return next();
   }
 
-  // ── لو مفيش postId — رجّع الصفحة الأصلية ─────────────────────────────────
   const postId = url.searchParams.get('post');
   if (!postId) {
     return next();
   }
 
-  // ── جيب بيانات المقال من Supabase ─────────────────────────────────────────
   let post = null;
   try {
     const res = await fetch(
@@ -156,7 +123,6 @@ export async function onRequest(context) {
 
   if (!post) return next();
 
-  // ── الصورة: cover_image_url → MATCH_CARD → DEFAULT ─────────────────────────
   let ogImage = getValidImage(post.cover_image_url);
   if (ogImage === DEFAULT_IMAGE) {
     const m = (post.content || '').match(/\[MATCH_CARD:([A-Za-z0-9+/=]+)\]/);
@@ -173,7 +139,6 @@ export async function onRequest(context) {
   const ogDesc  = rawText.substring(0, 160) + (rawText.length > 160 ? '...' : '');
   const ogUrl   = `${SITE_URL}/spinbetter-news/?post=${postId}`;
 
-  // ── Schema scripts ─────────────────────────────────────────────────────────
   const schemas = [
     buildArticleSchema(post, ogImage, ogDesc, ogUrl),
     buildBreadcrumbSchema(post.title, postId),
@@ -184,11 +149,9 @@ export async function onRequest(context) {
     .map(s => `<script type="application/ld+json">${JSON.stringify(s)}<\/script>`)
     .join('\n');
 
-  // ── جيب الصفحة الأصلية وحقن الـ OG tags ───────────────────────────────────
   const originalRes = await next();
   let html = await originalRes.text();
 
-  // امسح الـ canonical والـ OG القديمة عشان منكررش
   html = html.replace(/<link[^>]*rel=["']canonical["'][^>]*\/?>/gi, '');
   html = html.replace(/<meta[^>]*property=["']og:[^"']*["'][^>]*\/?>/gi, '');
   html = html.replace(/<meta[^>]*name=["']twitter:[^"']*["'][^>]*\/?>/gi, '');
