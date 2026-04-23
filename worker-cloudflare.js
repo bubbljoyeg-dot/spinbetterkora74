@@ -12,8 +12,26 @@ const SUPABASE_URL     = 'https://whwilmaizmfqgcgowrwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 const SITE_URL          = 'https://kora74.online';
 const GITHUB_URL        = 'https://bubbljoyeg-dot.github.io/spinbetterkora74';
-const NEWS_PATH         = '/kora74-news/';   // ✅ المسار في مكان واحد فقط
+const NEWS_PATH         = '/kora74-news/';
 const DEFAULT_IMAGE     = 'https://kora74.online/LOGO74-1-1-1-15KORA74ONLINELOGOMAIN.webp';
+
+// ⚙️ عنوان الـ OG Image Worker بعد الـ Deploy
+// غيّره لرابط الـ Worker بتاعك بعد npm run deploy في /og-worker/
+// مثال: 'https://kora74-og.your-subdomain.workers.dev'
+// أو لو ربطته بدومين: 'https://og.kora74.online'
+const OG_WORKER_URL = 'https://kora74-og.your-subdomain.workers.dev';
+
+// ─── Helper: بناء رابط الـ Dynamic OG Image ───────────────────────────────
+function buildOgImageUrl(title, articleImage, desc = '') {
+  const params = new URLSearchParams();
+  params.set('t', title.substring(0, 80));
+  if (articleImage && articleImage.startsWith('http')) {
+    params.set('i', articleImage);
+  }
+  if (desc) params.set('d', desc.substring(0, 100));
+  return `${OG_WORKER_URL}/og?${params.toString()}`;
+}
+
 
 // ─── Helper: HTML escape ───────────────────────────────────────────────
 function esc(str) {
@@ -131,13 +149,19 @@ function injectMeta(html, { title, desc, image, url, type = 'article', jsonLd = 
     tags += `\n    <script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`;
   }
 
-  // احذف أي title أو canonical موجودين قبل ما نحط بتاعتنا
+  // ✅ احذف كل الـ meta tags القديمة قبل حقن الجديدة
+  // يمنع ظهور صورتين عند الشير (الـ static + الـ dynamic)
   html = html
-    .replace(/<title>[^<]*<\/title>/i, '')
-    .replace(/<link[^>]+rel="canonical"[^>]*>/i, '');
+    .replace(/<title>[^<]*<\/title>/gi, '')
+    .replace(/<link[^>]+rel="canonical"[^>]*\/?>/gi, '')
+    .replace(/<meta[^>]+name="description"[^>]*\/?>/gi, '')
+    .replace(/<meta[^>]+property="og:[^"]*"[^>]*\/?>/gi, '')
+    .replace(/<meta[^>]+name="twitter:[^"]*"[^>]*\/?>/gi, '')
+    .replace(/<script[^>]+type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/gi, '');
 
   return html.replace('</head>', tags + '\n  </head>');
 }
+
 
 // ══════════════════════════════════════════════════════════════════════
 // MAIN HANDLER
@@ -231,13 +255,19 @@ export default {
       // المقال مش موجود أو غير منشور → redirect للصفحة الرئيسية
       if (!post) return Response.redirect(`${SITE_URL}${NEWS_PATH}`, 302);
 
-      const rawText = cleanText(post.content);
-      const ogImage = extractImage(post);
-      const ogTitle = `${post.title || 'Kora74 News'} | Kora74`;
-      const ogDesc  = rawText.substring(0, 160) + (rawText.length > 160 ? '...' : '')
-                      || 'اقرأ آخر أخبار كرة القدم على Kora74 News';
-      const ogUrl   = `${SITE_URL}${NEWS_PATH}?post=${post.id}`;
-      const jsonLd  = buildJsonLd(post, ogImage, ogDesc, ogUrl);
+      const rawText     = cleanText(post.content);
+      const articleImage = extractImage(post);          // الصورة الأصلية للمقال
+      const ogTitle      = `${post.title || 'Kora74 News'} | Kora74`;
+      const ogDesc       = rawText.substring(0, 160) + (rawText.length > 160 ? '...' : '')
+                           || 'اقرأ آخر أخبار كرة القدم على Kora74 News';
+      const ogUrl        = `${SITE_URL}${NEWS_PATH}?post=${post.id}`;
+      const jsonLd       = buildJsonLd(post, articleImage, ogDesc, ogUrl);
+
+      // ✅ استخدم الـ Dynamic OG Image Worker لتوليد صورة مبرمجة شيك مع CTA
+      // لو الـ OG Worker لم يُنشر بعد، ارجع للصورة الأصلية كـ fallback
+      const ogImage = (OG_WORKER_URL && !OG_WORKER_URL.includes('your-subdomain'))
+        ? buildOgImageUrl(post.title || 'Kora74 News', articleImage, ogDesc)
+        : (articleImage || DEFAULT_IMAGE);
 
       // جيب الـ HTML من GitHub Pages (مسار kora74-news الجديد)
       let html;
@@ -251,6 +281,7 @@ export default {
       }
 
       html = injectMeta(html, { title: ogTitle, desc: ogDesc, image: ogImage, url: ogUrl, jsonLd });
+
 
       return new Response(html, {
         headers: {

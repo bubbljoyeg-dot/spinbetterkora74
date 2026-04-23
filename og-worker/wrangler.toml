@@ -1,0 +1,8 @@
+name            = "kora74-og"
+main            = "worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# بعد npm run deploy، الـ Worker هيكون على:
+# https://kora74-og.<your-subdomain>.workers.dev/og
+# أو لو ربطته بدومين: https://og.kora74.online/og
