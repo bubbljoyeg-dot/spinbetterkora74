@@ -7,7 +7,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@cloudflare/workers-og": "^0.6.0"
+    "workers-og": "0.0.27"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"

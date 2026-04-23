@@ -11,7 +11,7 @@
 //   d  = وصف قصير (اختياري)
 // ══════════════════════════════════════════════════════════════════
 
-import { ImageResponse } from '@cloudflare/workers-og';
+import { ImageResponse } from 'workers-og';
 
 // ── ثوابت الـ Brand ──────────────────────────────────────────────
 const SITE_NAME  = 'Kora74 News';
