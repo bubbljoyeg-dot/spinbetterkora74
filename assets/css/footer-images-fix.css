@@ -1,0 +1,119 @@
+﻿/* Footer Images - Transparent Backgrounds */
+/* Payment logos and brand logo without backgrounds */
+
+/* Payment logos - transparent background like hero section */
+.pf-payment-logos img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.95;
+  transition: all 0.3s ease;
+  /* NO background - transparent like hero images */
+  background: transparent !important;
+  padding: 0;
+  border-radius: 0;
+  mix-blend-mode: normal;
+  filter: brightness(1.1);
+}
+
+.pf-payment-logos img:hover {
+  opacity: 1;
+  filter: brightness(1.2) drop-shadow(0 4px 8px rgba(255, 255, 255, 0.15));
+  transform: scale(1.05);
+}
+
+/* Logo in footer - transparent background */
+.pf-logo-wrap img {
+  height: 38px;
+  margin-bottom: 16px;
+  /* NO background - transparent */
+  background: transparent !important;
+  padding: 0;
+  border-radius: 0;
+  filter: brightness(1.1);
+}
+
+/* Contact emails section styling */
+.pf-col-links a[href^="mailto:"] {
+  font-size: 13px;
+  color: var(--accent);
+  word-break: break-all;
+}
+
+.pf-col-links a[href^="mailto:"]:hover {
+  color: var(--text-main);
+}
+
+/* Contact emails in brand column */
+.pf-contact-emails {
+  margin-top: 12px;
+}
+
+.pf-contact-emails h5 {
+  color: var(--accent);
+  font-size: 14px;
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.pf-contact-emails a {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-decoration: none;
+  margin-right: 12px;
+  transition: color 0.2s;
+}
+
+.pf-contact-emails a:hover {
+  color: var(--accent);
+}
+
+/* Fix footer grid layout on PC - 4 columns */
+@media (min-width: 992px) {
+  .pf-grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px 30px;
+  }
+  
+  .pf-col-brand {
+    text-align: right;
+  }
+}
+
+/* Fix footer grid layout on mobile */
+@media (max-width: 768px) {
+  .pf-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 16px;
+  }
+  
+  .pf-col-brand {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+  
+  .pf-col-links:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .pf-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .pf-col-links {
+    text-align: center;
+  }
+  
+  .pf-col-title::after {
+    right: 50%;
+    transform: translateX(50%);
+  }
+  
+  .pf-nav-list a:hover {
+    transform: none;
+  }
+}

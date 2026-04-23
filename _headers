@@ -1,0 +1,76 @@
+/*
+  # ════════════════════════════════════════════════
+  # Kora74 – Cloudflare Pages Security & Cache Headers
+  # Anti-Fingerprinting + Full OWASP Header Suite
+  # ════════════════════════════════════════════════
+
+  # ── HSTS: إجبار HTTPS دائماً ──
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # ── منع تضمين الموقع في iframe خارجي (Clickjacking) ──
+  X-Frame-Options: SAMEORIGIN
+
+  # ── منع MIME-type sniffing ──
+  X-Content-Type-Options: nosniff
+
+  # ── إخفاء Referrer من الطلبات الخارجية ──
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # ── تقييد الصلاحيات الحساسة ──
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+  # ── Content Security Policy ──
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://matches-worker.bubbljoy-eg.workers.dev https://matches-worker.kora74.workers.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://redirspinner.com https://spin-b.com;
+
+  # ── Cross-Origin policies ──
+  Cross-Origin-Embedder-Policy: unsafe-none
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Cross-Origin-Resource-Policy: cross-origin
+
+  # ── DNS Prefetch ──
+  X-DNS-Prefetch-Control: off
+
+  # ── Expect-CT ──
+  Expect-CT: max-age=86400, enforce
+
+# ── Cache: HTML pages (short TTL for freshness) ──
+/*.html
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: text/html; charset=UTF-8
+
+/*/index.html
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: text/html; charset=UTF-8
+
+# ── Cache: CSS & JS (long TTL, versioned via ?v=) ──
+/assets/css/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── Cache: Images (long TTL) ──
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── Cache: Fonts ──
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
