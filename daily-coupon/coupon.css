@@ -29,8 +29,8 @@
   height: 600px;
   background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
   transform: translateX(-50%);
-  z-index: 0;
-  pointer-events: none;
+  z-index: -1;
+  
 }
 
 .hero-content {
