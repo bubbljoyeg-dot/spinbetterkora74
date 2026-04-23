@@ -3,7 +3,7 @@
 // الغرض: حقن OG/Meta tags ديناميكية للمقالات + Sitemap ديناميكي
 //
 // ⚠️  مهم: الـ Worker Route في Cloudflare يجب أن يكون محدداً هكذا:
-//       kora74.online/kora74-news*
+//       kora74.online/news*
 //       kora74.online/sitemap.xml
 //   وليس  kora74.online/*  (ده بيكسر باقي الصفحات)
 // ══════════════════════════════════════════════════════════════════════
@@ -11,8 +11,8 @@
 const SUPABASE_URL     = 'https://whwilmaizmfqgcgowrwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 const SITE_URL          = 'https://kora74.online';
-const GITHUB_URL        = 'https://bubbljoyeg-dot.github.io/spinbetterkora74';
-const NEWS_PATH         = '/kora74-news/';
+const GITHUB_URL        = 'https://bubbljoyeg-dot.github.io/kora74kora74';
+const NEWS_PATH         = '/news/';
 const DEFAULT_IMAGE     = 'https://kora74.online/LOGO74-1-1-1-15KORA74ONLINELOGOMAIN.webp';
 
 // ─── مسارات ثابتة ──────────────────────────────────────────────
@@ -222,7 +222,7 @@ export default {
     }
 
     // ══════════════════════════════════════════════════════════════
-    // 3. صفحة الـ News — كل الطلبات الجاية لـ /kora74-news/
+    // 3. صفحة الـ News — كل الطلبات الجاية لـ /news/
     // ══════════════════════════════════════════════════════════════
     const postId = url.searchParams.get('post');
 
@@ -254,7 +254,7 @@ export default {
       const ogImage = articleImage || DEFAULT_IMAGE;
 
 
-      // جيب الـ HTML من GitHub Pages (مسار kora74-news الجديد)
+      // جيب الـ HTML من GitHub Pages (مسار news الجديد)
       let html;
       try {
         const res = await fetch(`${GITHUB_URL}${NEWS_PATH}`);
@@ -343,7 +343,7 @@ export default {
 
     // ── 3C. زوار عاديين → pass-through للـ origin ────────────────
     // ✅ مش بنرجّع news page هنا — بنعدّي الطلب للـ origin بدون تعديل
-    // (طالما الـ Worker Route محدد لـ kora74-news* فقط، هذا لن يُستدعى لغير صفحة الأخبار)
+    // (طالما الـ Worker Route محدد لـ news* فقط، هذا لن يُستدعى لغير صفحة الأخبار)
     return fetch(`${SITE_URL}${NEWS_PATH}`);
   }
 };

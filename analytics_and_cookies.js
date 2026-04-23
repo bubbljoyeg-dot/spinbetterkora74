@@ -25,7 +25,7 @@ gtag('consent', 'default', {
 
 document.addEventListener('DOMContentLoaded', () => {
     // 2. Build Cookie Consent Banner
-    const cookieConsent = localStorage.getItem('spinbetter_cookie_consent');
+    const cookieConsent = localStorage.getItem('kora74_cookie_consent');
 
     if (!cookieConsent) {
         const banner = document.createElement('div');
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #38bdf8; padding: 15px 20px; z-index: 99999; display: flex; flex-direction: column; md:flex-row; justify-content: space-between; align-items: center; gap: 15px; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);">
                 <div style="color: #f8fafc; font-size: 14px; text-align: right; max-width: 800px; line-height: 1.6;">
                     <strong>🍪 استخدام ملفات تعريف الارتباط (Cookies)</strong><br>
-                    نحن نستخدم ملفات تعريف الارتباط والتقنيات المشابهة لتقديم أفضل تجربة مستخدم، ولتحليل زيارات الموقع وتخصيص المحتوى. استمرارك في تصفح الموقع أو النقر على "موافق" يعني قبولك لـ <a href="https://kora74.online/spinbetter-cookies/" style="color: #38bdf8; text-decoration: underline;">سياسة ملفات تعريف الارتباط</a>.
+                    نحن نستخدم ملفات تعريف الارتباط والتقنيات المشابهة لتقديم أفضل تجربة مستخدم، ولتحليل زيارات الموقع وتخصيص المحتوى. استمرارك في تصفح الموقع أو النقر على "موافق" يعني قبولك لـ <a href="https://kora74.online/cookies/" style="color: #38bdf8; text-decoration: underline;">سياسة ملفات تعريف الارتباط</a>.
                 </div>
                 <div style="display: flex; gap: 10px; width: 100%; max-width: 300px;">
                     <button id="accept-cookies" style="flex: 1; background: #38bdf8; color: #000; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;">موافق</button>
@@ -45,13 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(banner);
 
         document.getElementById('accept-cookies').addEventListener('click', () => {
-            localStorage.setItem('spinbetter_cookie_consent', 'accepted');
+            localStorage.setItem('kora74_cookie_consent', 'accepted');
             updateConsent('granted');
             banner.style.display = 'none';
         });
 
         document.getElementById('reject-cookies').addEventListener('click', () => {
-            localStorage.setItem('spinbetter_cookie_consent', 'rejected');
+            localStorage.setItem('kora74_cookie_consent', 'rejected');
             updateConsent('denied');
             banner.style.display = 'none';
         });

@@ -177,7 +177,7 @@ function renderSearch(query) {
     list.innerHTML = '';
     const q = query.toLowerCase().trim();
 
-    const pathPrefix = window.location.pathname.includes('/spinbetter-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
+    const pathPrefix = window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
 
     let results = [];
 
@@ -246,10 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inject News Icon for mobile
     const appHeader = document.querySelector('.app-header');
     if (appHeader && !document.getElementById('mobileNewsBtn')) {
-        const pathPrefix = window.location.pathname.includes('/spinbetter-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
+        const pathPrefix = window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
         const newsBtn = document.createElement('a');
         newsBtn.id = 'mobileNewsBtn';
-        newsBtn.href = pathPrefix + 'kora74-news/';
+        newsBtn.href = pathPrefix + 'news/';
         newsBtn.title = "الأخبار والتحليلات";
         newsBtn.innerHTML = `
             <svg viewBox="0 -0.33 20.754 20.754" style="width:24px; height:24px;" xmlns="http://www.w3.org/2000/svg"><g transform="translate(-1.623 -1.913)"><circle cx="12" cy="12" r="8.5" fill="#ffffff" /><path fill="#2ca9bc" d="M14.33,3.31,12,5,9.67,3.31a8.91,8.91,0,0,1,4.66,0ZM4.46,7.1A9,9,0,0,0,3,11.53L5.34,9.84ZM8,17.89l-.07-.23H5A8.92,8.92,0,0,0,8.78,20.4ZM12,8,8.5,10.67,9.84,15h4.32l1.34-4.33Zm4.11,9.66-.07.23-.82,2.51A8.92,8.92,0,0,0,19,17.66ZM19.54,7.11l-.88,2.73L21,11.53a8.93,8.93,0,0,0-1.46-4.42Z"/><path d="M9.67,3.31,12,5l2.33-1.69M3.02,11.53,5.34,9.84,4.46,7.1M18,18l-1.92-.04-.73,2.38M6,18l1.92-.04.73,2.38M19.55,7.1l-.89,2.74,2.32,1.69M12,8V5M8.41,10.65,5.34,9.84M9.84,15,7.89,18m6.27-3,1.95,3m-.61-7.33,3.16-.83M12,8,8.5,10.67,9.84,15h4.32l1.34-4.33Zm0-5a9,9,0,1,0,9,9A9,9,0,0,0,12,3Z" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></g></svg>
@@ -295,12 +295,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 
         const pushMessages = [
-            { title: "أهلاً بك في SpinBetter! 🎉", text: "نسعد بتواجدك في موقعنا. يمكنك الآن تصفح جميع مقالاتنا بكل سهولة، وشاركنا رأيك حول خدمات المنصة." },
+            { title: "أهلاً بك في kora74! 🎉", text: "نسعد بتواجدك في موقعنا. يمكنك الآن تصفح جميع مقالاتنا بكل سهولة، وشاركنا رأيك حول خدمات المنصة." },
             { title: "بونص ترحيبي بانتظارك 🎁", text: "استخدم الرمز الترويجي W300 الآن واستمتع بمكافأة 200% على إيداعك الأول." },
             { title: "سحب سريع وآمن ⚡", text: "هل قمت بتجربة نظام سحب الأرباح الفوري لدينا؟ لا توجد أية عمولات!" },
             { title: "ألعاب كازينو حصرية 🎰", text: "استمتع بأكثر من 7000 لعبة كازينو وماكينة سلوت مباشرة على هاتفك الآن." },
             { title: "نحن هنا لخدمتك 🎧", text: "فريق الدعم الفني متواجد على مدار 24 ساعة للرد على جميع استفساراتك." },
-            { title: "تطبيق الموبايل متاح الآن 📱", text: "حمل تطبيق SpinBetter الأسرع واحصل على تنبيهات حصرية للمباريات والبطولات الكبرى." },
+            { title: "تطبيق الموبايل متاح الآن 📱", text: "حمل تطبيق kora74 الأسرع واحصل على تنبيهات حصرية للمباريات والبطولات الكبرى." },
             { title: "أعلى احتمالات المراهنة 📈", text: "نحن نضمن توفير أفضل الاحتمالات وأعلى العوائد في سوق المراهنات الرياضية العربية." },
             { title: "كاش باك لكبار الشخصيات 💎", text: "ارتقِ في برنامج الـ VIP الخاص بنا واستمتع باسترداد نقدي كبير ومستمر يومياً." }
         ];
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let innerHTML = '';
             let styleAttr = isHistoryLoad ? 'style="animation:none;"' : '';
             if (msg.isLivePost && msg.url) {
-                const pathPrefix = window.location.pathname.includes('/spinbetter-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
+                const pathPrefix = window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
                 innerHTML = `
                     <div class="notif-item live-post" ${styleAttr}>
                         <div class="n-title" style="color:var(--accent); font-weight:bold;">${msg.title} 🚨</div>
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             isLivePost: true,
                             title: "حصري: " + post.title,
                             text: snippet,
-                            url: `kora74-news/?post=${post.id}`,
+                            url: `news/?post=${post.id}`,
                             timeStr: timeStr
                         };
 
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         incrementUnread();
                     }
 
-                    if (window.location.pathname.includes('/kora74-news')) {
+                    if (window.location.pathname.includes('/news')) {
                         if (state.lastSeenNewsId !== post.id) {
                             state.lastSeenNewsId = post.id;
                             try { sessionStorage.setItem('sb_notifs_v2', JSON.stringify(state)); } catch (e) { }

@@ -53,7 +53,7 @@ function switchTicketTab(tabId) {
 // LocalStorage Logic (Max 2 Tickets)
 function getSavedTickets() {
     try {
-        const data = localStorage.getItem('spinbetter_user_tickets');
+        const data = localStorage.getItem('kora74_user_tickets');
         if (data) return JSON.parse(data);
     } catch (e) {}
     return [];
@@ -64,7 +64,7 @@ function saveTicketToLocal(code) {
     if (!tickets.includes(code)) {
         tickets.push(code);
         if (tickets.length > 2) tickets.shift(); // Keep only last 2 tickets as requested
-        localStorage.setItem('spinbetter_user_tickets', JSON.stringify(tickets));
+        localStorage.setItem('kora74_user_tickets', JSON.stringify(tickets));
     }
 }
 
