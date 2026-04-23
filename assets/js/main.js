@@ -277,7 +277,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="bell-badge" id="bellBadge" style="display:none;">0</span>
             </button>
             <div class="notif-dropdown" id="notifDropdown">
-                <div class="notif-header-title">أحدث الإشعارات 🔔</div>
+                <div class="notif-header-title" style="display:flex; align-items:center; gap:8px;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    أحدث الإشعارات
+                </div>
                 <div class="notif-body" id="notifList">
                     <div class="notif-empty" id="notifEmpty">لا توجد إشعارات جديدة حالياً</div>
                 </div>
@@ -294,22 +297,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const SUPABASE_URL = 'https://whwilmaizmfqgcgowrwf.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 
+        const notifIcons = {
+            welcome: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>',
+            gift: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>',
+            zap: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+            chip: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>',
+            headset: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>',
+            smartphone: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+            trending: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>',
+            gem: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 18 3 22 9 12 22 2 9"></polygon><polygon points="12 22 6 3 18 3"></polygon><polygon points="12 22 2 9 6 3"></polygon><polygon points="12 22 22 9 18 3"></polygon></svg>',
+            bell: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>',
+            live: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>'
+        };
+
         const pushMessages = [
-            { title: "أهلاً بك في kora74! 🎉", text: "نسعد بتواجدك في موقعنا. يمكنك الآن تصفح جميع مقالاتنا بكل سهولة، وشاركنا رأيك حول خدمات المنصة." },
-            { title: "بونص ترحيبي بانتظارك 🎁", text: "استخدم الرمز الترويجي W300 الآن واستمتع بمكافأة 200% على إيداعك الأول." },
-            { title: "سحب سريع وآمن ⚡", text: "هل قمت بتجربة نظام سحب الأرباح الفوري لدينا؟ لا توجد أية عمولات!" },
-            { title: "ألعاب كازينو حصرية 🎰", text: "استمتع بأكثر من 7000 لعبة كازينو وماكينة سلوت مباشرة على هاتفك الآن." },
-            { title: "نحن هنا لخدمتك 🎧", text: "فريق الدعم الفني متواجد على مدار 24 ساعة للرد على جميع استفساراتك." },
-            { title: "تطبيق الموبايل متاح الآن 📱", text: "حمل تطبيق kora74 الأسرع واحصل على تنبيهات حصرية للمباريات والبطولات الكبرى." },
-            { title: "أعلى احتمالات المراهنة 📈", text: "نحن نضمن توفير أفضل الاحتمالات وأعلى العوائد في سوق المراهنات الرياضية العربية." },
-            { title: "كاش باك لكبار الشخصيات 💎", text: "ارتقِ في برنامج الـ VIP الخاص بنا واستمتع باسترداد نقدي كبير ومستمر يومياً." }
+            { icon: notifIcons.welcome, title: "أهلاً بك في kora74!", text: "نسعد بتواجدك في موقعنا. يمكنك الآن تصفح جميع مقالاتنا بكل سهولة، وشاركنا رأيك حول خدمات المنصة." },
+            { icon: notifIcons.gift, title: "بونص ترحيبي بانتظارك", text: "استخدم الرمز الترويجي W300 الآن واستمتع بمكافأة 200% على إيداعك الأول." },
+            { icon: notifIcons.zap, title: "سحب سريع وآمن", text: "هل قمت بتجربة نظام سحب الأرباح الفوري لدينا؟ لا توجد أية عمولات!" },
+            { icon: notifIcons.chip, title: "ألعاب كازينو حصرية", text: "استمتع بأكثر من 7000 لعبة كازينو وماكينة سلوت مباشرة على هاتفك الآن." },
+            { icon: notifIcons.headset, title: "نحن هنا لخدمتك", text: "فريق الدعم الفني متواجد على مدار 24 ساعة للرد على جميع استفساراتك." },
+            { icon: notifIcons.smartphone, title: "تطبيق الموبايل متاح الآن", text: "حمل تطبيق kora74 الأسرع واحصل على تنبيهات حصرية للمباريات والبطولات الكبرى." },
+            { icon: notifIcons.trending, title: "أعلى احتمالات المراهنة", text: "نحن نضمن توفير أفضل الاحتمالات وأعلى العوائد في سوق المراهنات الرياضية العربية." },
+            { icon: notifIcons.gem, title: "كاش باك لكبار الشخصيات", text: "ارتقِ في برنامج الـ VIP الخاص بنا واستمتع باسترداد نقدي كبير ومستمر يومياً." }
         ];
 
         // ── Persistent State Logic ──
         let state = {
             unreadCount: 0,
             msgIndex: 0,
-            history: [], // stores { title, text, timeStr, isLivePost, url }
+            history: [], // stores { icon, title, text, timeStr, isLivePost, url }
             lastPostId: null,
             lastSeenNewsId: null
         };
@@ -344,7 +360,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pathPrefix = window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
                 innerHTML = `
                     <div class="notif-item live-post" ${styleAttr}>
-                        <div class="n-title" style="color:var(--accent); font-weight:bold;">${msg.title} 🚨</div>
+                        <div class="n-title" style="color:var(--accent); font-weight:bold; display:flex; align-items:center; gap:6px;">
+                            ${msg.icon || notifIcons.live}
+                            <span>${msg.title}</span>
+                        </div>
                         <div style="font-size: 11.5px; opacity:0.8; margin-top:2px;">${msg.text}</div>
                         <div style="margin-top: 5px;">
                             <a href="${pathPrefix}${msg.url}" style="color:var(--accent); font-size:11px; text-decoration:underline;">اقرأ المزيد...</a>
@@ -355,7 +374,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 innerHTML = `
                     <div class="notif-item" ${styleAttr}>
-                        <div class="n-title">${msg.title}</div>
+                        <div class="n-title" style="display:flex; align-items:center; gap:6px; font-weight:bold;">
+                            ${msg.icon || notifIcons.bell}
+                            <span>${msg.title}</span>
+                        </div>
                         <div style="font-size: 11.5px; opacity:0.8; margin-top:2px;">${msg.text}</div>
                         <div class="n-time">${msg.timeStr}</div>
                     </div>
@@ -428,6 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         const notifData = {
                             isLivePost: true,
+                            icon: notifIcons.live,
                             title: "حصري: " + post.title,
                             text: snippet,
                             url: `news/?post=${post.id}`,
@@ -467,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
 
             const notifItem = {
+                icon: pm.icon,
                 title: pm.title,
                 text: pm.text,
                 timeStr: timeStr

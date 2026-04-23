@@ -1909,10 +1909,11 @@ h1 {
 
   .notif-dropdown {
     position: fixed;
-    top: var(--header-h);
-    right: 5px;
-    width: calc(100vw - 10px);
-    max-width: 360px;
+    top: calc(var(--header-h) + 10px);
+    right: 15px;
+    width: calc(100vw - 30px);
+    max-width: 320px;
+    border-radius: var(--radius-lg);
   }
 
   .notif-dropdown::before {
