@@ -19,7 +19,8 @@ const DEFAULT_IMAGE     = 'https://kora74.online/LOGO74-1-1-1-15KORA74ONLINELOGO
 // غيّره لرابط الـ Worker بتاعك بعد npm run deploy في /og-worker/
 // مثال: 'https://kora74-og.your-subdomain.workers.dev'
 // أو لو ربطته بدومين: 'https://og.kora74.online'
-const OG_WORKER_URL = 'https://kora74-og.your-subdomain.workers.dev';
+const OG_WORKER_URL = 'https://kora74-og.bubbljoy-eg.workers.dev';
+
 
 // ─── Helper: بناء رابط الـ Dynamic OG Image ───────────────────────────────
 function buildOgImageUrl(title, articleImage, desc = '') {
