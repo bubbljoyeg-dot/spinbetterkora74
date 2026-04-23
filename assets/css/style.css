@@ -1865,7 +1865,7 @@ h1 {
   position: absolute;
   top: 48px;
   right: -20px;
-  width: 310px;
+  width: 280px;
   max-height: 380px;
   background: rgba(6, 15, 36, 0.96);
   backdrop-filter: blur(12px);
@@ -1910,9 +1910,8 @@ h1 {
   .notif-dropdown {
     position: fixed;
     top: calc(var(--header-h) + 10px);
-    right: 15px;
-    width: calc(100vw - 30px);
-    max-width: 320px;
+    right: 10px;
+    width: 280px;
     border-radius: var(--radius-lg);
   }
 

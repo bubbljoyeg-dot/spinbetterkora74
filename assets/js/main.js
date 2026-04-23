@@ -341,12 +341,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const saved = sessionStorage.getItem('sb_notifs_v2');
+            const saved = sessionStorage.getItem('sb_notifs_v3');
             if (saved) state = JSON.parse(saved);
         } catch (e) { }
 
         function saveState() {
-            sessionStorage.setItem('sb_notifs_v2', JSON.stringify(state));
+            sessionStorage.setItem('sb_notifs_v3', JSON.stringify(state));
         }
 
         if (state.history.length > 0 && notifEmpty) {
