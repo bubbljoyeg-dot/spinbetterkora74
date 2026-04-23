@@ -15,24 +15,8 @@ const GITHUB_URL        = 'https://bubbljoyeg-dot.github.io/spinbetterkora74';
 const NEWS_PATH         = '/kora74-news/';
 const DEFAULT_IMAGE     = 'https://kora74.online/LOGO74-1-1-1-15KORA74ONLINELOGOMAIN.webp';
 
-// ⚙️ عنوان الـ OG Image Worker بعد الـ Deploy
-// غيّره لرابط الـ Worker بتاعك بعد npm run deploy في /og-worker/
-// مثال: 'https://kora74-og.your-subdomain.workers.dev'
-// أو لو ربطته بدومين: 'https://og.kora74.online'
-const OG_WORKER_URL = 'https://kora74-og.bubbljoy-eg.workers.dev';
+// ─── مسارات ثابتة ──────────────────────────────────────────────
 
-
-// ─── Helper: بناء رابط الـ Dynamic OG Image ───────────────────────────────
-function buildOgImageUrl(title, articleImage, desc = '') {
-  const params = new URLSearchParams();
-  params.set('t', title.substring(0, 80));
-  if (articleImage && articleImage.startsWith('http')) {
-    params.set('i', articleImage);
-  }
-  if (desc) params.set('d', desc.substring(0, 100));
-  // استخدم دومين الموقع الأساسي لتجنب حظر فيسبوك لـ workers.dev
-  return `${SITE_URL}/og.png?${params.toString()}`;
-}
 
 
 
@@ -173,15 +157,6 @@ export default {
   async fetch(request) {
     const url = new URL(request.url);
 
-    // 0. OG Image Proxy (لتجنب حظر فيسبوك لدومين workers.dev)
-    if (url.pathname === '/og.png') {
-      try {
-        return await fetch(`${OG_WORKER_URL}/og.png${url.search}`);
-      } catch (err) {
-        return Response.redirect(DEFAULT_IMAGE, 302);
-      }
-    }
-
     // ══════════════════════════════════════════════════════════════
     // 1. DYNAMIC SITEMAP
     // ══════════════════════════════════════════════════════════════
@@ -275,11 +250,9 @@ export default {
       const ogUrl        = `${SITE_URL}${NEWS_PATH}?post=${post.id}`;
       const jsonLd       = buildJsonLd(post, articleImage, ogDesc, ogUrl);
 
-      // ✅ استخدم الـ Dynamic OG Image Worker لتوليد صورة مبرمجة شيك مع CTA
-      // لو الـ OG Worker لم يُنشر بعد، ارجع للصورة الأصلية كـ fallback
-      const ogImage = (OG_WORKER_URL && !OG_WORKER_URL.includes('your-subdomain'))
-        ? buildOgImageUrl(post.title || 'Kora74 News', articleImage, ogDesc)
-        : (articleImage || DEFAULT_IMAGE);
+      // ✅ استخدم صورة المقال الأصلية مباشرة (أفضل وأضمن لفيسبوك)
+      const ogImage = articleImage || DEFAULT_IMAGE;
+
 
       // جيب الـ HTML من GitHub Pages (مسار kora74-news الجديد)
       let html;
