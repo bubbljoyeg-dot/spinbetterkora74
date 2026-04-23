@@ -11,7 +11,7 @@
 const SUPABASE_URL     = 'https://whwilmaizmfqgcgowrwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indod2lsbWFpem1mcWdjZ293cndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MDQyNDcsImV4cCI6MjA5MDQ4MDI0N30.plNnsahhJPXPo6uNOrW2GwRSwAPVcDp2PEcSlb7Wgs0';
 const SITE_URL          = 'https://kora74.online';
-const GITHUB_URL        = 'https://bubbljoyeg-dot.github.io/kora74kora74';
+const GITHUB_URL        = 'https://bubbljoyeg-dot.github.io/spinbetterkora74';
 const NEWS_PATH         = '/news/';
 const DEFAULT_IMAGE     = 'https://kora74.online/LOGO74-1-1-1-15KORA74ONLINELOGOMAIN.webp';
 
