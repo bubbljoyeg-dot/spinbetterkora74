@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+  <title>قسيمتك اليوم | كود خصم حصري من Kora74</title>
+  <link rel="canonical" href="https://kora74.online/daily-coupon/">
+  <meta name="description" content="احصل على قسيمة اليوم المدروسة بعناية من قبل خبراء المراهنات. شارك قسيمتك مع المجتمع واربح المزيد مع Kora74.">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="قسيمتك اليوم | كود خصم حصري من Kora74">
+  <meta property="og:description" content="احصل على قسيمة اليوم المدروسة بعناية من قبل خبراء المراهنات. شارك قسيمتك مع المجتمع واربح المزيد مع Kora74.">
+  <meta property="og:url" content="https://kora74.online/daily-coupon/">
+  <meta property="og:image" content="https://kora74.online/LOGO74-1-1-1-15KORA74ONLINELOGOMAIN.webp">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../assets/css/style.css?v=12">
+  <link rel="stylesheet" href="./coupon.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../favicon.png">
+</head>
+<body>
+  
+  <div class="coupon-page-wrapper">
+    <div class="hero-coupon-section">
+      <div class="glow-bg"></div>
+      <div class="hero-content">
+        <h1 class="page-title">🎯 قسيمتك اليوم</h1>
+        <p class="page-subtitle">هذه القسائم مدروسة بدقة عالية من قبل أشخاص ذوي خبرة عميقة في المجال. تضمن لك أفضل فرصة ممكنة لتحقيق أقصى استفادة!</p>
+        
+        <div class="coupon-card">
+          <div class="coupon-hidden-state" id="couponRevealBtn">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>احصل على القسيمة الآن</span>
+          </div>
+          
+          <div class="coupon-revealed-state" id="couponRevealedState" style="display:none;">
+            <div class="coupon-code-box">
+              <h2 id="dailyCode">جاري التحميل...</h2>
+            </div>
+            <p id="dailyDesc" class="coupon-desc"></p>
+            <button id="copyBtn" class="copy-btn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              نسخ الكود
+            </button>
+          </div>
+        </div>
+        
+        <a href="https://kora74.online/promo" class="cta-promo-btn" target="_blank" rel="noopener noreferrer">
+          استخدم الكود في Spinbetter واحصل على المكافأة 🚀
+        </a>
+      </div>
+    </div>
+
+    <div class="community-section">
+      <div class="community-header">
+        <h2>💬 شارك قسيمتك مع المجتمع</h2>
+        <p>هل لديك قسيمة قوية؟ شاركها هنا مع باقي الأعضاء واربح تقييماتهم (لايك/ديسلايك). أفضل القسائم يتم مراجعتها وتثبيتها من قبل الإدارة.</p>
+      </div>
+      
+      <div class="add-comment-box">
+        <input type="text" id="commentAuthorName" placeholder="اسمك الكريم..." maxlength="30">
+        <textarea id="commentBody" placeholder="اكتب كود القسيمة وتفاصيلها هنا..." rows="3"></textarea>
+        <button id="submitCommentBtn">نشر القسيمة</button>
+      </div>
+
+      <div class="comments-list" id="commentsList">
+        <div class="loading-comments" id="loadingComments">جاري تحميل القسائم...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../analytics_and_cookies.js" defer></script>
+  <script src="../assets/js/main.js" defer></script>
+  <script src="./coupon.js" defer></script>
+</body>
+</html>

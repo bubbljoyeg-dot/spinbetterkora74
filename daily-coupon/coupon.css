@@ -1,0 +1,354 @@
+/* coupon.css - Premium UI for Daily Coupon */
+.coupon-page-wrapper {
+  min-height: 100vh;
+  padding: calc(var(--header-h) + 40px) 20px 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.hero-coupon-section {
+  position: relative;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 50px 30px;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  margin-bottom: 50px;
+}
+
+.glow-bg {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.page-title {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 15px;
+  text-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+}
+
+.page-subtitle {
+  font-size: clamp(15px, 2vw, 18px);
+  color: #94a3b8;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.8;
+}
+
+/* Coupon Card */
+.coupon-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px dashed rgba(6, 182, 212, 0.5);
+  border-radius: 20px;
+  padding: 40px 20px;
+  max-width: 500px;
+  margin: 0 auto 30px;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.coupon-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.2);
+}
+
+.coupon-hidden-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+}
+
+.coupon-hidden-state:hover {
+  transform: scale(1.05);
+}
+
+.coupon-hidden-state span {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.coupon-revealed-state {
+  animation: revealFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealFade {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.coupon-code-box {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+#dailyCode {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #f8fafc;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+}
+
+.coupon-desc {
+  font-size: 15px;
+  color: #cbd5e1;
+  margin-bottom: 25px;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: #020617;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(6, 182, 212, 0.4);
+}
+
+.copy-btn.copied {
+  background: #22c55e;
+  color: white;
+}
+
+/* CTA */
+.cta-promo-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: white;
+  text-decoration: none;
+  padding: 15px 35px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+}
+
+.cta-promo-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(217, 70, 239, 0.4);
+}
+
+/* Community Section */
+.community-section {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 40px 30px;
+}
+
+.community-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.community-header h2 {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.community-header p {
+  color: #94a3b8;
+  font-size: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.add-comment-box {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.add-comment-box input,
+.add-comment-box textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 10px;
+  padding: 15px;
+  font-family: inherit;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.add-comment-box input:focus,
+.add-comment-box textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#submitCommentBtn {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+#submitCommentBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* Comments List */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.comment-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background 0.3s ease;
+}
+
+.comment-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.comment-card.featured {
+  border-color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-author {
+  font-weight: 800;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.featured-badge {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.comment-body {
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 5px;
+}
+
+.vote-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.vote-btn:hover {
+  color: #f1f5f9;
+}
+
+.vote-btn.upvoted {
+  color: #22c55e;
+}
+
+.vote-btn.downvoted {
+  color: #ef4444;
+}
+
+.loading-comments {
+  text-align: center;
+  color: #64748b;
+  padding: 30px;
+}
+
+@media(max-width: 768px) {
+  .hero-coupon-section {
+    padding: 40px 20px;
+  }
+  .community-section {
+    padding: 30px 20px;
+  }
+  #submitCommentBtn {
+    width: 100%;
+  }
+}

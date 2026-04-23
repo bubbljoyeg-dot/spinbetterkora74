@@ -496,6 +496,7 @@ function showSection(sectionName) {
     const navTrending    = document.getElementById('nav-trending');
     const navRecommended = document.getElementById('nav-recommended');
     const navComments    = document.getElementById('nav-comments');
+    const navDailyCoupon = document.getElementById('nav-daily-coupon');
 
     // Section containers
     const secDashboard   = document.getElementById('dashboard-section');
@@ -507,10 +508,11 @@ function showSection(sectionName) {
     const secTrending    = document.getElementById('trending-section');
     const secRecommended = document.getElementById('recommended-section');
     const secComments    = document.getElementById('comments-section');
+    const secDailyCoupon = document.getElementById('daily-coupon-section');
 
     // Hide / deactivate all
-    [navDashboard, navPosts, navSpotlight, navPromoBanner, navReviews, navTrending, navRecommended, navComments].forEach(n => n && n.classList.remove('active'));
-    [secDashboard, secPosts, secPostEditor, secSpotlight, secPromoBanner, secReviews, secTrending, secRecommended, secComments].forEach(s => s && (s.style.display = 'none'));
+    [navDashboard, navPosts, navSpotlight, navPromoBanner, navReviews, navTrending, navRecommended, navComments, navDailyCoupon].forEach(n => n && n.classList.remove('active'));
+    [secDashboard, secPosts, secPostEditor, secSpotlight, secPromoBanner, secReviews, secTrending, secRecommended, secComments, secDailyCoupon].forEach(s => s && (s.style.display = 'none'));
 
     if (sectionName === 'dashboard') {
         if (navDashboard) navDashboard.classList.add('active');
@@ -546,6 +548,11 @@ function showSection(sectionName) {
         if (navComments) navComments.classList.add('active');
         if (secComments) secComments.style.display = 'block';
         loadAllComments('post_comments');
+    } else if (sectionName === 'daily-coupon') {
+        if (navDailyCoupon) navDailyCoupon.classList.add('active');
+        if (secDailyCoupon) secDailyCoupon.style.display = 'block';
+        loadDailyCouponAdmin();
+        loadCouponComments();
     }
 
     if (window.innerWidth <= 768) closeAdminSidebar();
@@ -2180,3 +2187,129 @@ function uiConfirm(message, title = 'تأكيد الإجراء', isDanger = true
         btnCancel.onclick = () => { cleanup(); resolve(false); };
     });
 }
+
+// ==========================================
+// DAILY COUPON MANAGEMENT
+// ==========================================
+async function loadDailyCouponAdmin() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('daily_coupons')
+            .select('*')
+            .eq('active', true)
+            .order('created_at', { ascending: false })
+            .limit(1);
+            
+        if (data && data.length > 0) {
+            document.getElementById('daily-coupon-code').value = data[0].code;
+            document.getElementById('daily-coupon-desc').value = data[0].description || '';
+        }
+    } catch (e) {
+        console.warn("Could not load daily coupon (table might not exist yet).");
+    }
+}
+
+window.saveDailyCoupon = async function() {
+    const code = document.getElementById('daily-coupon-code').value.trim();
+    const desc = document.getElementById('daily-coupon-desc').value.trim();
+    
+    if (!code) {
+        showToast("الرجاء إدخال الكود", "error");
+        return;
+    }
+    
+    try {
+        const { error } = await supabaseClient
+            .from('daily_coupons')
+            .insert([{ code: code, description: desc, active: true }]);
+            
+        if (error) throw error;
+        showToast("تم تحديث القسيمة بنجاح!", "success");
+    } catch (e) {
+        showToast("حدث خطأ (هل أنشأت الجدول في قاعدة البيانات؟)", "error");
+        console.error(e);
+    }
+};
+
+window.loadCouponComments = async function() {
+    const list = document.getElementById('admin-coupon-comments-list');
+    list.innerHTML = '<div style="color: #64748b; text-align: center; padding: 20px;">جاري التحميل...</div>';
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('coupon_comments')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(50);
+            
+        if (error) throw error;
+        if (!data || data.length === 0) {
+            list.innerHTML = '<div style="color: #64748b; text-align: center; padding: 20px;">لا توجد تعليقات بعد.</div>';
+            return;
+        }
+        
+        list.innerHTML = '';
+        data.forEach(comment => {
+            const dateStr = new Date(comment.created_at).toLocaleString('ar-EG');
+            const featuredBtnText = comment.is_featured ? '⭐ إزالة التثبيت' : '📌 تثبيت';
+            const featuredColor = comment.is_featured ? '#f59e0b' : '#94a3b8';
+            
+            const item = document.createElement('div');
+            item.style.cssText = `background: rgba(255,255,255,0.05); border-radius: 8px; padding: 15px; border-right: 4px solid ${featuredColor};`;
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                    <strong style="color: #e2e8f0;">${comment.author_name}</strong>
+                    <span style="font-size: 12px; color: #64748b;">${dateStr}</span>
+                </div>
+                <div style="color: #cbd5e1; margin-bottom: 12px; font-size: 14px; white-space: pre-wrap;">${comment.content}</div>
+                <div style="display:flex; justify-content:space-between; align-items: center;">
+                    <div style="font-size: 13px; color: #94a3b8;">
+                        👍 ${comment.likes || 0} &nbsp;|&nbsp; 👎 ${comment.dislikes || 0}
+                    </div>
+                    <div style="display:flex; gap: 10px;">
+                        <button onclick="toggleFeatureCoupon('${comment.id}', ${comment.is_featured})" style="background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            ${featuredBtnText}
+                        </button>
+                        <button onclick="deleteCouponComment('${comment.id}')" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            🗑️ حذف
+                        </button>
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+        });
+        
+    } catch (e) {
+        list.innerHTML = '<div style="color: #ef4444; text-align: center; padding: 20px;">تعذر تحميل التعليقات. هل أنشأت الجدول؟</div>';
+    }
+};
+
+window.toggleFeatureCoupon = async function(id, currentState) {
+    if (!confirm("هل أنت متأكد من تغيير حالة التثبيت لهذه القسيمة؟")) return;
+    try {
+        const { error } = await supabaseClient
+            .from('coupon_comments')
+            .update({ is_featured: !currentState })
+            .eq('id', id);
+        if (error) throw error;
+        showToast("تم تحديث حالة القسيمة", "success");
+        loadCouponComments();
+    } catch (e) {
+        showToast("حدث خطأ", "error");
+    }
+};
+
+window.deleteCouponComment = async function(id) {
+    if (!confirm("هل أنت متأكد من الحذف النهائي؟")) return;
+    try {
+        const { error } = await supabaseClient
+            .from('coupon_comments')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        showToast("تم الحذف بنجاح", "success");
+        loadCouponComments();
+    } catch (e) {
+        showToast("حدث خطأ أثناء الحذف", "error");
+    }
+};
