@@ -38,9 +38,10 @@ export default {
       return new Response('Kora74 OG Image Worker ⚽', { status: 200 });
     }
 
-    if (url.pathname !== '/og') {
+    if (url.pathname !== '/og.png') {
       return new Response('Not Found', { status: 404 });
     }
+
 
     // ── Parameters ──────────────────────────────────────────────
     const title   = truncate(url.searchParams.get('t') || 'أخبار كرة القدم', 80);

@@ -30,7 +30,8 @@ function buildOgImageUrl(title, articleImage, desc = '') {
     params.set('i', articleImage);
   }
   if (desc) params.set('d', desc.substring(0, 100));
-  return `${OG_WORKER_URL}/og?${params.toString()}`;
+  return `${OG_WORKER_URL}/og.png?${params.toString()}`;
+
 }
 
 
