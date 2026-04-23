@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
             topNewsBtn.addEventListener('click', () => {
                 if (state.lastPostId) {
                     state.lastSeenNewsId = state.lastPostId;
-                    try { sessionStorage.setItem('sb_notifs_v2', JSON.stringify(state)); } catch (e) { }
+                    try { sessionStorage.setItem('sb_notifs_v3', JSON.stringify(state)); } catch (e) { }
                 }
             });
         }
@@ -357,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let innerHTML = '';
             let styleAttr = isHistoryLoad ? 'style="animation:none;"' : '';
             if (msg.isLivePost && msg.url) {
-                const pathPrefix = window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/kora74-') || window.location.pathname.includes('/sports/') ? '../' : './';
                 innerHTML = `
                     <div class="notif-item live-post" ${styleAttr}>
                         <div class="n-title" style="color:var(--accent); font-weight:bold; display:flex; align-items:center; gap:6px;">
@@ -366,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div style="font-size: 11.5px; opacity:0.8; margin-top:2px;">${msg.text}</div>
                         <div style="margin-top: 5px;">
-                            <a href="${pathPrefix}${msg.url}" style="color:var(--accent); font-size:11px; text-decoration:underline;">اقرأ المزيد...</a>
+                            <a href="${msg.url}" style="color:var(--accent); font-size:11px; text-decoration:underline;">اقرأ المزيد...</a>
                         </div>
                         <div class="n-time">${msg.timeStr}</div>
                     </div>
@@ -453,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             icon: notifIcons.live,
                             title: "حصري: " + post.title,
                             text: snippet,
-                            url: `news/?post=${post.id}`,
+                            url: `/news/?post=${post.id}`,
                             timeStr: timeStr
                         };
 
@@ -468,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (window.location.pathname.includes('/news')) {
                         if (state.lastSeenNewsId !== post.id) {
                             state.lastSeenNewsId = post.id;
-                            try { sessionStorage.setItem('sb_notifs_v2', JSON.stringify(state)); } catch (e) { }
+                            try { sessionStorage.setItem('sb_notifs_v3', JSON.stringify(state)); } catch (e) { }
                         }
                     } else if (state.lastSeenNewsId !== post.id) {
                         const nBadge = document.getElementById('newsBadge');
