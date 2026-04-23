@@ -30,9 +30,10 @@ function buildOgImageUrl(title, articleImage, desc = '') {
     params.set('i', articleImage);
   }
   if (desc) params.set('d', desc.substring(0, 100));
-  return `${OG_WORKER_URL}/og.png?${params.toString()}`;
-
+  // استخدم دومين الموقع الأساسي لتجنب حظر فيسبوك لـ workers.dev
+  return `${SITE_URL}/og.png?${params.toString()}`;
 }
+
 
 
 // ─── Helper: HTML escape ───────────────────────────────────────────────
@@ -171,6 +172,15 @@ function injectMeta(html, { title, desc, image, url, type = 'article', jsonLd = 
 export default {
   async fetch(request) {
     const url = new URL(request.url);
+
+    // 0. OG Image Proxy (لتجنب حظر فيسبوك لدومين workers.dev)
+    if (url.pathname === '/og.png') {
+      try {
+        return await fetch(`${OG_WORKER_URL}/og.png${url.search}`);
+      } catch (err) {
+        return Response.redirect(DEFAULT_IMAGE, 302);
+      }
+    }
 
     // ══════════════════════════════════════════════════════════════
     // 1. DYNAMIC SITEMAP
