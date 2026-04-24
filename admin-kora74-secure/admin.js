@@ -645,64 +645,181 @@ function updatePostStats(posts) {
 }
 
 function initQuill() {
-    if (!quillEditor) {
-        if (window.QuillBlotFormatter) {
-            Quill.register('modules/blotFormatter', window.QuillBlotFormatter.default);
-        }
-        quillEditor = new Quill('#quill-editor', {
-            theme: 'snow',
-            modules: {
-                blotFormatter: {},
-                toolbar: {
-                    container: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                        [{ 'align': [] }],
-                        ['link', 'image', 'video'],
-                        ['clean']
-                    ],
-                    handlers: {
-                        image: function() {
-                            const input = document.createElement('input');
-                            input.setAttribute('type', 'file');
-                            input.setAttribute('accept', 'image/*');
-                            input.click();
+    if (quillEditor) return; // already initialized
 
-                            input.onchange = async () => {
-                                const file = input.files[0];
-                                if (file) {
-                                    showToast('جاري رفع الصورة للسيرفر...', 'warning');
-                                    try {
-                                        const fileExt = file.name.split('.').pop();
-                                        const fileName = `inline_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-                                        const filePath = `inline-images/${fileName}`;
-
-                                        const { data, error } = await supabaseClient.storage.from('post-images').upload(filePath, file);
-                                        if (error) throw error;
-
-                                        const { data: publicUrlData } = supabaseClient.storage.from('post-images').getPublicUrl(filePath);
-                                        const url = publicUrlData.publicUrl;
-
-                                        const range = quillEditor.getSelection(true);
-                                        quillEditor.insertEmbed(range.index, 'image', url);
-                                        showToast('تم رفع الصورة بنجاح!', 'success');
-                                    } catch (err) {
-                                        console.error(err);
-                                        showToast('فشل في رفع الصورة: ' + err.message, 'error');
-                                    }
-                                }
-                            };
-                        }
-                    }
-                }
-            }
-        });
-        quillEditor.format('direction', 'rtl');
-        quillEditor.format('align', 'right');
+    // ── Register BlotFormatter (image resizing) ──────────────────────────
+    if (window.QuillBlotFormatter) {
+        try { Quill.register('modules/blotFormatter', window.QuillBlotFormatter.default); } catch(e) {}
     }
+
+    // ── Register Table UI module ─────────────────────────────────────────
+    if (window.QuillTableUI) {
+        try { Quill.register({ 'modules/tableUI': window.QuillTableUI.default }, true); } catch(e) {}
+    }
+
+    // ── Build the editor ─────────────────────────────────────────────────
+    quillEditor = new Quill('#quill-editor', {
+        theme: 'snow',
+        modules: {
+            blotFormatter: window.QuillBlotFormatter ? {} : undefined,
+            tableUI: window.QuillTableUI ? { backgroundColors: ['#1a1f2e','#0d1117','#111827'] } : undefined,
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, 3, 4, false] }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'script': 'sub' }, { 'script': 'super' }],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+                    [{ 'indent': '-1' }, { 'indent': '+1' }],
+                    [{ 'align': [] }],
+                    [{ 'direction': 'rtl' }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ],
+                handlers: {
+                    image: _quillImageHandler
+                }
+            },
+            history: { delay: 1000, maxStack: 100, userOnly: true },
+            clipboard: { matchVisual: false }
+        }
+    });
+
+    quillEditor.format('direction', 'rtl');
+    quillEditor.format('align', 'right');
+
+    // ── Move toolbar INSIDE the sticky wrapper ───────────────────────────
+    const stickyWrap = document.getElementById('quill-sticky-wrap');
+    const toolbar = document.querySelector('.ql-toolbar');
+    if (stickyWrap && toolbar) {
+        stickyWrap.insertBefore(toolbar, stickyWrap.firstChild);
+    }
+
+    // ── Live word/char counter ──────────────────────────────────────────
+    _initWordCounter();
+
+    showToast('المحرر المتقدم جاهز ✅', 'success');
 }
+
+async function _quillImageHandler() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.click();
+    input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        showToast('جاري رفع الصورة للسيرفر...', 'warning');
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `inline_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `inline-images/${fileName}`;
+            const { error } = await supabaseClient.storage.from('post-images').upload(filePath, file);
+            if (error) throw error;
+            const { data: pub } = supabaseClient.storage.from('post-images').getPublicUrl(filePath);
+            const range = quillEditor.getSelection(true);
+            quillEditor.insertEmbed(range.index, 'image', pub.publicUrl);
+            showToast('تم رفع الصورة بنجاح! ✅', 'success');
+        } catch (err) {
+            showToast('فشل في رفع الصورة: ' + err.message, 'error');
+        }
+    };
+}
+
+function _initWordCounter() {
+    const editorEl = document.querySelector('#quill-editor .ql-editor');
+    if (!editorEl) return;
+
+    let counter = document.getElementById('ql-word-counter');
+    if (!counter) {
+        counter = document.createElement('div');
+        counter.id = 'ql-word-counter';
+        counter.style.cssText = 'text-align:left;font-size:11px;color:#475569;padding:4px 10px;background:#080f1d;border-top:1px solid rgba(255,255,255,0.05);border-radius:0 0 8px 8px;font-family:"Tajawal",sans-serif;';
+        const container = document.querySelector('.quill-dark-theme');
+        if (container) container.insertAdjacentElement('afterend', counter);
+    }
+
+    const update = () => {
+        const text = quillEditor.getText().trim();
+        const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+        counter.textContent = `الكلمات: ${words} | الحروف: ${text.length}`;
+    };
+    quillEditor.on('text-change', update);
+    update();
+}
+
+// ── Custom block insertion helpers (called from HTML toolbar) ────────────
+
+window.insertQuillTable = function() {
+    if (!quillEditor) return;
+    const rows    = parseInt(prompt('عدد الصفوف:', '3')) || 3;
+    const cols    = parseInt(prompt('عدد الأعمدة:', '3')) || 3;
+
+    // Try official table API first (quill-table-ui)
+    if (quillEditor.getModule && quillEditor.getModule('tableUI')) {
+        try {
+            quillEditor.getModule('tableUI').insertTable(rows, cols);
+            return;
+        } catch(e) { /* fallthrough */ }
+    }
+
+    // Fallback: insert raw HTML table
+    const range = quillEditor.getSelection(true) || { index: quillEditor.getLength() };
+    let html = '<table border="1"><thead><tr>';
+    for (let c = 0; c < cols; c++) html += `<th>عنوان ${c + 1}</th>`;
+    html += '</tr></thead><tbody>';
+    for (let r = 0; r < rows - 1; r++) {
+        html += '<tr>';
+        for (let c = 0; c < cols; c++) html += `<td>خلية ${r+1}-${c+1}</td>`;
+        html += '</tr>';
+    }
+    html += '</tbody></table><p><br></p>';
+    quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+    showToast('تم إدراج الجدول ✅', 'success');
+};
+
+window.insertFaqBlock = function() {
+    if (!quillEditor) return;
+    const count = parseInt(prompt('عدد الأسئلة في الـ FAQ:', '3')) || 3;
+    const range = quillEditor.getSelection(true) || { index: quillEditor.getLength() };
+
+    let items = '';
+    for (let i = 1; i <= count; i++) {
+        items += `
+        <div class="kora-faq-item">
+            <div class="kora-faq-q">❓ السؤال رقم ${i}: اكتب سؤالك هنا</div>
+            <div class="kora-faq-a">اكتب الإجابة التفصيلية هنا...</div>
+        </div>`;
+    }
+
+    const html = `<div class="kora-faq-block">${items}</div><p><br></p>`;
+    quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+    showToast(`تم إدراج ${count} أسئلة FAQ ✅`, 'success');
+};
+
+window.insertColorBox = function(type) {
+    if (!quillEditor) return;
+    const range = quillEditor.getSelection(true) || { index: quillEditor.getLength() };
+
+    const configs = {
+        info:   { cls: 'kora-info-box',   label: 'ℹ️ معلومة مهمة',  placeholder: 'اكتب المعلومة هنا...' },
+        tip:    { cls: 'kora-tip-box',    label: '💡 نصيحة',         placeholder: 'اكتب النصيحة هنا...' },
+        warn:   { cls: 'kora-warn-box',   label: '⚠️ تحذير',          placeholder: 'اكتب التحذير هنا...' },
+        danger: { cls: 'kora-danger-box', label: '🚨 تنبيه خطر',     placeholder: 'اكتب التنبيه هنا...' },
+    };
+    const cfg = configs[type] || configs.info;
+    const html = `<div class="${cfg.cls}"><div class="kora-box-label">${cfg.label}</div>${cfg.placeholder}</div><p><br></p>`;
+    quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+    showToast('تم إدراج المربع ✅', 'success');
+};
+
+window.insertDivider = function() {
+    if (!quillEditor) return;
+    const range = quillEditor.getSelection(true) || { index: quillEditor.getLength() };
+    quillEditor.clipboard.dangerouslyPasteHTML(range.index, '<hr/><p><br></p>');
+};
 
 function openPostModal(post = null) {
     _embeddedShortcodes = {};

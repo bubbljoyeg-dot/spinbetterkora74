@@ -10,10 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
 
-    <!-- Quill.js for Rich Text Editor -->
+    <!-- Quill.js Rich Text Editor -->
     <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill-blot-formatter@1.0.5/dist/quill-blot-formatter.min.js"></script>
+    <!-- quill-table-ui: proper table insert/delete support -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill-table-ui@1.0.7/dist/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/quill-table-ui@1.0.7/dist/index.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script async src="//www.instagram.com/embed.js"></script>
     <script>
@@ -23,100 +26,125 @@
     </script>
 
     <style id="quill-dark-overrides">
-        /* Modern Select Button Styling (Hidden Checkbox + Label) */
+        /* ─── Select Button (checkbox hidden trick) ──────────────────── */
         input[type="checkbox"].row-cb,
-        input[type="checkbox"][data-target] {
-            display: none;
-        }
+        input[type="checkbox"][data-target] { display: none; }
 
         .select-btn-label {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: bold;
-            font-family: 'Tajawal', sans-serif;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            color: #94a3b8;
-            transition: all 0.2s ease;
-            user-select: none;
-            white-space: nowrap;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 16px; font-size: 13px; font-weight: bold;
+            font-family: 'Tajawal', sans-serif; border-radius: 8px; cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+            color: #94a3b8; transition: all 0.2s ease; user-select: none; white-space: nowrap;
         }
-
-        .select-btn-label:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #f8fafc;
-        }
-
+        .select-btn-label:hover { background: rgba(255,255,255,0.1); color: #f8fafc; }
         input[type="checkbox"]:checked + .select-btn-label {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #0f172a;
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
-            transform: translateY(-2px);
+            background: var(--accent); border-color: var(--accent); color: #0f172a;
+            box-shadow: 0 4px 12px rgba(6,182,212,0.4); transform: translateY(-2px);
         }
-        
-        input[type="checkbox"]:checked + .select-btn-label::before {
-            content: '✅ ';
-            margin-left: 5px;
+        input[type="checkbox"]:checked + .select-btn-label::before { content: '✅ '; margin-left: 5px; }
+
+        /* ─── Quill Editor Dark Theme ─────────────────────────────── */
+        .quill-dark-theme.ql-container.ql-snow {
+            background: #1a1f2e; color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0 0 8px 8px; font-family: inherit; font-size: 1.05rem;
+            min-height: 420px;
         }
 
-        /* Admin Quill Editor Dark Theme */
-        .quill-dark-theme.ql-container.ql-snow {
-            background: #1a1f2e;
-            color: #e2e8f0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0 0 8px 8px;
-            font-family: inherit;
-            font-size: 1.05rem;
+        /* ─── Sticky Toolbar ──────────────────────────────────────── */
+        .ql-toolbar-sticky-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .ql-toolbar.ql-snow {
             background: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: none;
             border-radius: 8px 8px 0 0;
-            padding: 12px 8px;
+            padding: 10px 8px;
+            flex-wrap: wrap;
+            gap: 4px;
         }
 
-        .ql-snow .ql-stroke {
-            stroke: #e2e8f0;
+        /* Custom toolbar row for special blocks */
+        .ql-custom-toolbar {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            padding: 8px 10px; background: #080f1d;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
-        .ql-snow .ql-fill {
-            fill: #e2e8f0;
+        .ql-custom-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 10px; border-radius: 6px; cursor: pointer;
+            font-size: 12px; font-weight: 700; font-family: 'Tajawal', sans-serif;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04); color: #94a3b8;
+            transition: all 0.2s; white-space: nowrap; user-select: none;
         }
+        .ql-custom-btn:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .ql-custom-btn.btn-table  { border-color: rgba(56,189,248,0.4); color: #38bdf8; }
+        .ql-custom-btn.btn-table:hover  { background: rgba(56,189,248,0.12); }
+        .ql-custom-btn.btn-faq    { border-color: rgba(168,85,247,0.4); color: #c084fc; }
+        .ql-custom-btn.btn-faq:hover    { background: rgba(168,85,247,0.12); }
+        .ql-custom-btn.btn-info   { border-color: rgba(34,197,94,0.4); color: #4ade80; }
+        .ql-custom-btn.btn-info:hover   { background: rgba(34,197,94,0.12); }
+        .ql-custom-btn.btn-warn   { border-color: rgba(234,179,8,0.4); color: #facc15; }
+        .ql-custom-btn.btn-warn:hover   { background: rgba(234,179,8,0.12); }
+        .ql-custom-btn.btn-tip    { border-color: rgba(6,182,212,0.4); color: #06b6d4; }
+        .ql-custom-btn.btn-tip:hover    { background: rgba(6,182,212,0.12); }
+        .ql-custom-btn.btn-danger-box { border-color: rgba(239,68,68,0.4); color: #f87171; }
+        .ql-custom-btn.btn-danger-box:hover { background: rgba(239,68,68,0.12); }
 
-        .ql-snow .ql-picker {
-            color: #e2e8f0;
-        }
-
+        /* ─── Quill Snow SVG icon overrides ──────────────────────── */
+        .ql-snow .ql-stroke { stroke: #e2e8f0; }
+        .ql-snow .ql-fill   { fill: #e2e8f0; }
+        .ql-snow .ql-picker  { color: #e2e8f0; }
         .ql-snow .ql-picker-options {
-            background: #1a1f2e;
-            color: #e2e8f0;
-            border-color: rgba(255, 255, 255, 0.1);
+            background: #1a1f2e; color: #e2e8f0;
+            border-color: rgba(255,255,255,0.1);
         }
+        .ql-snow .ql-picker-item { color: #e2e8f0; }
+        .ql-snow .ql-picker-item:hover { color: #38bdf8; }
+        .ql-snow .ql-active .ql-stroke { stroke: #38bdf8; }
+        .ql-snow .ql-active .ql-fill   { fill: #38bdf8; }
+        .ql-snow button:hover .ql-stroke { stroke: #38bdf8; }
+        .ql-snow button:hover .ql-fill   { fill: #38bdf8; }
 
-        .ql-editor::-webkit-scrollbar {
-            width: 8px;
-        }
+        .ql-editor::-webkit-scrollbar { width: 8px; }
+        .ql-editor::-webkit-scrollbar-track { background: #0d1117; }
+        .ql-editor::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
 
-        .ql-editor::-webkit-scrollbar-track {
-            background: #0d1117;
+        /* ─── Table UI (inside editor dark fix) ──────────────────── */
+        .ql-editor table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .ql-editor td, .ql-editor th {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 12px; color: #e2e8f0; min-width: 80px;
         }
+        .ql-editor th { background: rgba(56,189,248,0.1); font-weight: 800; color: #f8fafc; }
+        .ql-editor tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+        /* table-ui context menus */
+        .ql-better-table-wrapper table td.ql-better-table-selected { background: rgba(56,189,248,0.25) !important; }
+        .ql-table-tooltip { background: #1a1f2e !important; color: #e2e8f0 !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+        .ql-table-tooltip button { color: #94a3b8 !important; }
+        .ql-table-tooltip button:hover { color: #38bdf8 !important; }
 
-        .ql-editor::-webkit-scrollbar-thumb {
-            background: #374151;
-            border-radius: 4px;
-        }
-
-        /* Better padding for Modal Content */
-        #post-modal .modal-content {
-            padding: 30px;
-        }
+        /* ─── Rich block previews inside editor ──────────────────── */
+        .ql-editor .kora-faq-block { margin: 18px 0; border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; overflow: hidden; }
+        .ql-editor .kora-faq-item { border-bottom: 1px solid rgba(168,85,247,0.15); }
+        .ql-editor .kora-faq-item:last-child { border-bottom: none; }
+        .ql-editor .kora-faq-q { padding: 12px 16px; background: rgba(168,85,247,0.08); font-weight: 800; color: #c084fc; cursor: pointer; }
+        .ql-editor .kora-faq-a { padding: 10px 16px; color: #94a3b8; font-size: 14px; line-height: 1.7; }
+        .ql-editor .kora-info-box  { margin: 16px 0; padding: 14px 18px; border-right: 4px solid #22c55e; background: rgba(34,197,94,0.07); border-radius: 0 10px 10px 0; color: #86efac; }
+        .ql-editor .kora-warn-box  { margin: 16px 0; padding: 14px 18px; border-right: 4px solid #eab308; background: rgba(234,179,8,0.07); border-radius: 0 10px 10px 0; color: #fde047; }
+        .ql-editor .kora-tip-box   { margin: 16px 0; padding: 14px 18px; border-right: 4px solid #06b6d4; background: rgba(6,182,212,0.07); border-radius: 0 10px 10px 0; color: #67e8f9; }
+        .ql-editor .kora-danger-box{ margin: 16px 0; padding: 14px 18px; border-right: 4px solid #ef4444; background: rgba(239,68,68,0.07); border-radius: 0 10px 10px 0; color: #fca5a5; }
+        .ql-editor .kora-box-label { font-size: 11px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.7; }
     </style>
 </head>
 
@@ -439,6 +467,21 @@
                             placeholder="أدخل عنوان المقال هنا...">
 
                         <div class="form-group" style="margin-bottom:0;">
+                            <!-- Sticky wrapper for the entire Quill toolbar + editor -->
+                            <div class="ql-toolbar-sticky-wrap" id="quill-sticky-wrap">
+                                <!-- Quill mounts its toolbar here (inside #quill-editor below) -->
+                                <!-- Custom rich-block toolbar row -->
+                                <div class="ql-custom-toolbar" id="quill-custom-toolbar">
+                                    <span style="font-size:11px;color:#475569;align-self:center;font-family:'Tajawal';margin-left:4px;">إدراج:</span>
+                                    <button type="button" class="ql-custom-btn btn-table" onclick="insertQuillTable()" title="إدراج جدول">📊 جدول</button>
+                                    <button type="button" class="ql-custom-btn btn-faq"   onclick="insertFaqBlock()"   title="إدراج قسم FAQ">❓ FAQ</button>
+                                    <button type="button" class="ql-custom-btn btn-info"  onclick="insertColorBox('info')"  title="مربع معلومات">ℹ️ معلومة</button>
+                                    <button type="button" class="ql-custom-btn btn-tip"   onclick="insertColorBox('tip')"   title="مربع نصيحة">💡 نصيحة</button>
+                                    <button type="button" class="ql-custom-btn btn-warn"  onclick="insertColorBox('warn')"  title="مربع تحذير">⚠️ تحذير</button>
+                                    <button type="button" class="ql-custom-btn btn-danger-box" onclick="insertColorBox('danger')" title="مربع خطر">🚨 خطر</button>
+                                    <button type="button" class="ql-custom-btn" onclick="insertDivider()" title="خط فاصل" style="border-color:rgba(255,255,255,0.2);color:#64748b;">─ فاصل</button>
+                                </div>
+                            </div>
                             <div id="quill-editor" class="quill-dark-theme quill-full-container"></div>
                         </div>
 

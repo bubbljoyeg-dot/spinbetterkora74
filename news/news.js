@@ -1834,6 +1834,11 @@ function openArticle(post) {
             }
             bodyEl.innerHTML = processed;
 
+            // ── Activate FAQ accordion blocks ─────────────────────────────
+            if (typeof window.activateFaqBlocks === 'function') {
+                window.activateFaqBlocks(bodyEl);
+            }
+
             // Execute scripts inserted via innerHTML natively (Crucial for Twitter, TikTok, FB, etc.)
             const runScripts = () => {
                 const scripts = bodyEl.querySelectorAll('script');
