@@ -2775,70 +2775,7 @@
         opacity: 1;
       }
 
-      /* Color theming per category */
-      .cat-filter-pill[data-filter="all"] {
-        --fp-bg: rgba(6, 182, 212, 0.15);
-        --fp-border: rgba(6, 182, 212, 0.35);
-        --fp-color: #06b6d4;
-      }
-
-      .cat-filter-pill[data-filter="ai"] {
-        --fp-bg: rgba(139, 92, 246, 0.15);
-        --fp-border: rgba(139, 92, 246, 0.35);
-        --fp-color: #8b5cf6;
-      }
-
-      .cat-filter-pill[data-filter="business"] {
-        --fp-bg: rgba(245, 158, 11, 0.15);
-        --fp-border: rgba(245, 158, 11, 0.35);
-        --fp-color: #f59e0b;
-      }
-
-      .cat-filter-pill[data-filter="phones"] {
-        --fp-bg: rgba(34, 197, 94, 0.15);
-        --fp-border: rgba(34, 197, 94, 0.35);
-        --fp-color: #22c55e;
-      }
-
-      .cat-filter-pill[data-filter="reviews"] {
-        --fp-bg: rgba(236, 72, 153, 0.15);
-        --fp-border: rgba(236, 72, 153, 0.35);
-        --fp-color: #ec4899;
-      }
-
-      .cat-filter-pill[data-filter="gaming"] {
-        --fp-bg: rgba(249, 115, 22, 0.15);
-        --fp-border: rgba(249, 115, 22, 0.35);
-        --fp-color: #f97316;
-      }
-
-      .cat-filter-pill[data-filter="casino"] {
-        --fp-bg: rgba(227, 30, 36, 0.15);
-        --fp-border: rgba(227, 30, 36, 0.35);
-        --fp-color: #e31e24;
-      }
-
-      .cat-filter-pill[data-filter="news"] {
-        --fp-bg: rgba(56, 189, 248, 0.15);
-        --fp-border: rgba(56, 189, 248, 0.35);
-        --fp-color: #38bdf8;
-      }
-
-      .cat-filter-pill[data-filter="prediction"] {
-        --fp-bg: rgba(245, 158, 11, 0.15);
-        --fp-border: rgba(245, 158, 11, 0.35);
-        --fp-color: #f59e0b;
-      }
-
-      .cat-filter-pill[data-filter="analysis"] {
-        --fp-bg: rgba(167, 139, 250, 0.15);
-        --fp-border: rgba(167, 139, 250, 0.35);
-        --fp-color: #a78bfa;
-      }
-
-      .cat-filter-pill.active svg {
-        color: var(--fp-color, #06b6d4);
-      }
+      
 
       /* Live badge on the right of the strip */
       .cat-filter-live {
@@ -3410,6 +3347,59 @@
             <path d="M10 7h8M10 11h8M10 15h5" />
           </svg>
           أخبار
+        </button>
+
+        
+        <!-- ذكاء اصطناعي -->
+        <button class="cat-filter-pill hcb-cat-pill" data-filter="ai" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 3H5a2 2 0 0 0-2 2v4" />
+            <path d="M9 3h6" />
+            <path d="M15 3h4a2 2 0 0 1 2 2v4" />
+            <path d="M3 9v6" />
+            <path d="M21 9v6" />
+            <path d="M3 15v2a2 2 0 0 0 2 2h4" />
+            <path d="M9 21h6" />
+            <path d="M15 21h4a2 2 0 0 0 2-2v-2" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          ذكاء اصطناعي
+        </button>
+
+        <!-- المال والأعمال -->
+        <button class="cat-filter-pill hcb-cat-pill" data-filter="business" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          المال والأعمال
+        </button>
+
+        <!-- هواتف -->
+        <button class="cat-filter-pill hcb-cat-pill" data-filter="phones" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" />
+            <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none" />
+          </svg>
+          هواتف
+        </button>
+
+        <!-- مراجعات -->
+        <button class="cat-filter-pill hcb-cat-pill" data-filter="reviews" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          مراجعات
+        </button>
+
+        <!-- الألعاب -->
+        <button class="cat-filter-pill hcb-cat-pill" data-filter="gaming" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="8" width="20" height="12" rx="3" />
+            <path d="M8 12v4M6 14h4" />
+            <circle cx="16" cy="13" r="1" fill="currentColor" stroke="none" />
+            <circle cx="18" cy="15" r="1" fill="currentColor" stroke="none" />
+          </svg>
+          ألعاب
         </button>
 
         <!-- توقعات -->
